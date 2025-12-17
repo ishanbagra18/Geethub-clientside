@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
-.bg {
-  background-color: #F8F2DC;
+@layer utilities {
+  .bg-size-200 {
+    background-size: 200% 100%;
+  }
+  .bg-pos-0 {
+    background-position: 0% 0%;
+  }
+  .bg-pos-100 {
+    background-position: 100% 0%;
+  }
+  .delay-1000 {
+    animation-delay: 1000ms;
+  }
+  .delay-500 {
+    animation-delay: 500ms;
+  }
+}
+
+/* Hide scrollbar for Topcharts slider but allow scroll */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
