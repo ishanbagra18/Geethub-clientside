@@ -159,11 +159,13 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
   };
 
   // ---------------- LIKE ----------------
+
   const handleLike = async () => {
+    if (!song || !song.song_id) return;
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:9000/music/like/${songId}`,
+        `http://localhost:9000/music/like/${song.song_id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -182,11 +184,13 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
   };
 
   // ---------------- SAVE ----------------
+
   const handleSave = async () => {
+    if (!song || !song.song_id) return;
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:9000/music/save/${songId}`,
+        `http://localhost:9000/music/save/${song.song_id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
