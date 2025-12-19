@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Music, Edit2, Play, Mail, Phone, Fingerprint, Lock, Settings } from "lucide-react";
+import { Music, Edit2, Play, Mail, Phone, Fingerprint, Lock, Settings,Book  } from "lucide-react";
 
 const getUidFromToken = () => {
   try {
@@ -92,11 +92,30 @@ export default function MyProfile() {
               <button className="flex items-center gap-2 px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-full transition-all active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
                 <Play fill="currentColor" size={18} /> Play Mix
               </button>
+
+
+
+
+
+
               <button 
                 onClick={() => (window.location.href = "/updateprofile")}
                 className="flex items-center gap-2 px-6 py-3 bg-zinc-800/50 hover:bg-zinc-800 text-white font-semibold rounded-full border border-zinc-700/50 transition-all"
               >
                 <Edit2 size={16} /> Edit Profile
+              </button>
+
+
+
+
+
+
+
+               <button 
+                onClick={() => (window.location.href = "/mylibrary")}
+                className="flex items-center gap-2 px-8 py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-full transition-all active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+              >
+                <Book  size={16} /> My Library
               </button>
             </div>
           </div>

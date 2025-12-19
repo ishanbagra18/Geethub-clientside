@@ -10,6 +10,7 @@ import MyProfile from "./pages/MyProfile";
 import UpdateProfile from "./pages/UpdateProfile";
 import PlaySong from "./pages/PlaySong";
 import Playlist from "./pages/Playlist";
+import Mylibrary from "./pages/Mylibrary";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/updateprofile" element={<UpdateProfile />} />
         <Route path="/playsong/:id" element={<PlaySong />} />
         <Route path="/playlist/:id" element={<Playlist />} />
+        <Route path="/mylibrary" element={<Mylibrary />} />
       </Routes>
     </>
   );
