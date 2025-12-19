@@ -65,71 +65,35 @@ const Signuppage = () => {
 
       <div className="relative w-full max-w-5xl bg-slate-900/70 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-2xl shadow-indigo-500/10 overflow-hidden flex flex-col lg:flex-row">
 
-        {/* Left Section - Hero */}
-        <div className="lg:w-1/2 w-full bg-gradient-to-br from-indigo-900/80 via-violet-900/80 to-slate-900/80 p-8 flex items-center justify-center relative overflow-hidden">
-          
-          {/* Decorative circles */}
-          <div className="absolute -top-20 -left-20 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl"></div>
-          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-violet-500/20 rounded-full blur-2xl"></div>
-          
-          <div className="w-full max-w-md relative z-10">
-            {/* Logo & Branding */}
-            <div className="mb-8 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl mb-4 shadow-lg shadow-indigo-500/30">
-                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+        {/* Left Section - Modern Hero with Background Image */}
+        <div className="lg:w-1/2 w-full flex items-center justify-center bg-gradient-to-br from-indigo-900 via-violet-900 to-slate-900 p-0 relative overflow-hidden">
+          {/* No overlay, clean gradient background */}
+          {/* Large gradient circle background */}
+          <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-indigo-500/30 via-violet-500/20 to-pink-500/10 rounded-full blur-3xl" style={{zIndex: 2}}></div>
+          <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-tr from-pink-500/20 via-indigo-500/10 to-violet-500/10 rounded-full blur-2xl" style={{zIndex: 2}}></div>
+          <div className="relative z-10 w-full flex flex-col items-center justify-center px-8 py-16" style={{zIndex: 3}}>
+            <div className="flex flex-col items-center mb-8">
+              <div className="w-20 h-20 flex items-center justify-center bg-gradient-to-br from-indigo-500 via-violet-600 to-pink-500 rounded-full shadow-2xl mb-6 animate-pulse">
+                <svg className="w-12 h-12 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                 </svg>
               </div>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-                GeetHub
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white text-center leading-tight mb-2 drop-shadow-xl">
+                Welcome to GeetHub
               </h2>
-              <p className="text-indigo-200/70 mt-2 text-sm md:text-base">
-                Find your frequency • Discover your sound
+              <p className="text-indigo-200/80 text-lg md:text-xl text-center max-w-xs mb-4">
+                Your music, your vibe. Join a vibrant community and discover your next favorite song.
               </p>
             </div>
-
-            {/* Image Gallery with hover effects */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="group relative overflow-hidden rounded-2xl">
-                <img
-                  src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=60"
-                  alt="guitar"
-                  className="w-full h-28 object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-              </div>
-              <div className="group relative overflow-hidden rounded-2xl">
-                <img
-                  src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=800&q=60"
-                  alt="studio"
-                  className="w-full h-28 object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-              </div>
-              <div className="group relative overflow-hidden rounded-2xl col-span-2">
-                <img
-                  src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=800&q=60"
-                  alt="concert"
-                  className="w-full h-32 object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div className="absolute bottom-3 left-3 text-white">
-                  <p className="text-xs text-indigo-300">Join the community</p>
-                  <p className="font-semibold">10K+ Music Lovers</p>
-                </div>
-              </div>
+            <div className="flex flex-wrap gap-3 justify-center mb-6">
+              <span className="px-4 py-2 bg-indigo-600/20 text-indigo-200 rounded-full font-semibold text-sm shadow">🎵 Curated Playlists</span>
+              <span className="px-4 py-2 bg-violet-600/20 text-violet-200 rounded-full font-semibold text-sm shadow">🎧 HD Audio</span>
+              <span className="px-4 py-2 bg-pink-600/20 text-pink-200 rounded-full font-semibold text-sm shadow">💜 Community</span>
+              <span className="px-4 py-2 bg-white/10 text-white/80 rounded-full font-semibold text-sm shadow">🌟 Exclusive</span>
             </div>
-
-            {/* Feature badges */}
-            <div className="flex flex-wrap gap-2 justify-center">
-              {['🎵 Playlists', '🎧 HD Audio', '💜 Community', '🌟 Exclusive'].map((feature, i) => (
-                <span 
-                  key={i}
-                  className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-xs text-white/80 border border-white/10"
-                >
-                  {feature}
-                </span>
-              ))}
+            <div className="mt-4 text-center">
+              <p className="text-indigo-100/80 text-base font-medium">"Music is the shorthand of emotion."</p>
+              <p className="text-indigo-300 text-xs mt-1">— Leo Tolstoy</p>
             </div>
           </div>
         </div>
