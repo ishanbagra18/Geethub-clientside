@@ -9,7 +9,7 @@ const PlaySong = () => {
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />
-      <SongPlayer songId={id} />
+        <SongPlayer key={id} songId={id} />
     </div>
   );
 };

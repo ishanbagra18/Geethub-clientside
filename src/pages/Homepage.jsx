@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../../Components/Navbar.jsx";
 import { useUser } from "../context/UserContext.jsx";
 import { usePlaylist } from "../context/PlaylistContext.jsx"; 
+import { useHistory } from "../context/historyContext.jsx";
 // Import the Myplaylist component
 import Myplaylist from "../../Components/Myplaylist.jsx";
 
@@ -135,7 +136,8 @@ const PublicPlaylistsSection = () => {
 const Homepage = () => {
   const navigate = useNavigate();
   const { user } = useUser(); // Get user object from context
-  
+  const { history, loading: historyLoading } = useHistory();
+
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -151,6 +153,17 @@ const Homepage = () => {
   const handleVideoLoad = useCallback(() => {
     setIsVideoLoaded(true);
   }, []);
+
+  // Play last song handler
+  const handlePlayLastSong = useCallback(() => {
+    if (history && history.length > 0) {
+      const lastSong = history[0];
+      const songId = lastSong.song_id || lastSong.id;
+      if (songId) {
+        navigate(`/playsong/${songId}`);
+      }
+    }
+  }, [history, navigate]);
 
   if (!mounted) {
     return (
@@ -219,11 +232,14 @@ const Homepage = () => {
               <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
               <span className="relative z-10">CREATE FREE ACCOUNT</span>
             </button>
-            <button 
-              className="border-2 border-white/30 text-white px-8 md:px-10 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg tracking-wide hover:bg-white/10 hover:border-white/60 backdrop-blur-sm transition-all duration-400 hover:scale-105 shadow-xl focus:outline-none focus:ring-4 focus:ring-cyan-400/50"
-              aria-label="Browse music library"
+            {/* Browse Library button removed as requested */}
+            <button
+              onClick={handlePlayLastSong}
+              disabled={historyLoading || !history || history.length === 0}
+              className="border-2 border-blue-400 text-blue-400 px-8 md:px-10 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg tracking-wide hover:bg-blue-400 hover:text-black backdrop-blur-sm transition-all duration-400 hover:scale-105 shadow-xl focus:outline-none focus:ring-4 focus:ring-yellow-400/50 disabled:opacity-50"
+              aria-label="Play Last Song"
             >
-              Browse Library
+              ▶ Play Last Song
             </button>
           </div>
 
@@ -316,8 +332,8 @@ const Homepage = () => {
         {user && (
           <section aria-labelledby="my-playlists">
             <SectionHeading  emoji="🎧" title={`${user.first_name}'s Playlists`} subtitle="Your Library" />
-            {/* Myplaylist handles its own fetching and rendering logic */}
-            <Myplaylist />
+            {/* Myplaylist handles its own fetching and rendering logic, but we want to show only 4 playlists */}
+            <Myplaylist maxToShow={4} />
             <div className="mt-8 text-center">
               <Link 
                 to="/my-library/playlists" 
@@ -339,35 +355,35 @@ const Homepage = () => {
               ))}
             </div>
           }>
-            <RandomSongs />
+            <RandomSongs maxToShow={10} />
           </Suspense>
         </section>
 
         <section aria-labelledby="top-charts">
           <SectionHeading emoji="🚀" title="The Industry's Hottest" subtitle="Top Charts" />
           <Suspense fallback={<div className="h-4 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 rounded-full w-48 animate-pulse mx-auto" />}>
-            <Topcharts />
+            <Topcharts maxToShow={10} />
           </Suspense>
         </section>
 
         <section aria-labelledby="most-liked">
           <SectionHeading emoji="💖" title="Filmmaker Favorites" subtitle="Most Liked" />
           <Suspense fallback={<div className="h-4 bg-gradient-to-r from-pink-400/30 to-blue-400/30 rounded-full w-48 animate-pulse mx-auto" />}>
-            <Mostliked />
+            <Mostliked maxToShow={10} />
           </Suspense>
         </section>
 
         <section aria-labelledby="most-saved">
           <SectionHeading emoji="🎬" title="Essential Soundtracks" subtitle="Most Saved" />
           <Suspense fallback={<div className="h-4 bg-gradient-to-r from-green-400/30 to-cyan-400/30 rounded-full w-48 animate-pulse mx-auto" />}>
-            <Mostsaved />
+            <Mostsaved maxToShow={10} />
           </Suspense>
         </section>
 
         {/* Community Playlists (Original Public Section) */}
         <section aria-labelledby="public-playlists">
           <SectionHeading emoji="🌐" title="Community Playlists" subtitle="Featured Public Playlists" />
-          <PublicPlaylistsSection />
+          <PublicPlaylistsSection maxToShow={5} />
         </section>
         
       </main>

@@ -28,7 +28,7 @@ const UpdateProfileCard = ({ firstName, lastName, email, phone }) => {
 
       {/* Profile initials icon */}
       <div
-        className="rounded-full border-4 w-36 h-36 flex items-center justify-center text-6xl font-extrabold text-white"
+        className="rounded-full  w-36 h-36 flex items-center justify-center text-6xl font-extrabold text-white"
         style={{
           borderColor: "rgba(6,182,212,0.95)",
           background: "linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02))",

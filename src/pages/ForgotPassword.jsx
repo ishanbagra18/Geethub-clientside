@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, Lock, Mail, CheckCircle, Key } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, CheckCircle, ShieldCheck, Key, ArrowLeft, ShieldAlert, LifeBuoy, Globe } from "lucide-react";
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
@@ -21,6 +21,14 @@ export default function ForgotPassword() {
     return score;
   };
 
+
+  const handlehome=()=>{
+    window.location.href="/";
+  }
+
+
+
+
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     setError("");
@@ -40,169 +48,195 @@ export default function ForgotPassword() {
 
     try {
       setLoading(true);
-
       await axios.put("http://localhost:9000/forgotpassword", {
         email: email,
         new_password: newPassword,
       });
-
       setSuccess(true);
       toast.success("Password reset successfully!");
-
       setEmail("");
       setNewPassword("");
     } catch (err) {
       setError("Something went wrong. Check the email or try again.");
-      toast.error("Reset failed, please try again.");
+      toast.error("Reset failed.");
     } finally {
       setLoading(false);
     }
   };
 
+
+
+
+
+
   const strength = passwordStrength(newPassword);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-rose-950 via-purple-900 to-slate-800 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-[#020617] p-6 font-sans relative overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-600/10 rounded-full blur-[120px]"></div>
+      </div>
 
-      {/* 🔥 TOASTER ADDED HERE 🔥 */}
       <Toaster position="top-right" />
 
-      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left: Image + Tips */}
-        <div className="hidden md:flex flex-col justify-center rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-indigo-900 via-slate-900 to-gray-800">
-          <div className="p-10 text-center">
-            <h2 className="text-3xl font-extrabold text-white mb-3">Forgot your password?</h2>
-            <p className="text-slate-300 mb-6">
-              No problem — enter your registered email and a new password.
-            </p>
+      <div className="relative z-10 w-full max-w-5xl grid grid-cols-1 md:grid-cols-12 gap-0 overflow-hidden rounded-[2rem] shadow-2xl border border-slate-800">
+        
+        {/* Left Section: Information (Occupies 5 columns) */}
+        <div className="hidden md:flex md:col-span-5 flex-col justify-between bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900 p-10 text-white border-r border-slate-800">
+          
+          <div className="space-y-8">
+            <div className="flex items-center gap-2 text-cyan-400 font-semibold tracking-wider text-xs uppercase">
+              <Globe size={14} />
+              <span>Secure Network Active</span>
+            </div>
 
-            <div className="mx-auto w-120 h-50 rounded-xl overflow-hidden">
-              <img
-                src="https://i.pinimg.com/1200x/d2/61/0a/d2610a9eaeaa14228e1be5e1c9aabc7b.jpg"
-                alt="security"
-                className="w-full h-full object-cover"
-              />
+            <div>
+              <h2 className="text-4xl font-bold mb-4 tracking-tight leading-tight">
+                Secure your <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Digital Identity.</span>
+              </h2>
+              <p className="text-slate-400 leading-relaxed text-sm">
+                If you've forgotten your access credentials, please follow the verification process to regain control of your account.
+              </p>
+            </div>
+
+            {/* Empty Space Filler 1: System Status */}
+            <div className="bg-slate-800/40 border border-white/5 rounded-2xl p-5 space-y-4">
+               <h3 className="text-xs font-semibold text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                 <ShieldAlert size={14} className="text-cyan-400"/> Security Environment
+               </h3>
+               <div className="space-y-3">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-500">Encryption</span>
+                    <span className="text-cyan-400 font-mono">AES-256 Bit</span>
+                  </div>
+                  <div className="w-full bg-slate-700 h-1 rounded-full overflow-hidden">
+                    <div className="bg-cyan-500 h-full w-[85%]"></div>
+                  </div>
+                  <div className="flex justify-between items-center text-xs pt-1">
+                    <span className="text-slate-500">Firewall Status</span>
+                    <span className="text-emerald-400 font-mono">Active</span>
+                  </div>
+               </div>
             </div>
           </div>
 
-          <div className="p-6 bg-slate-900/40 text-slate-300">
-            <h3 className="text-sm font-medium uppercase tracking-wide mb-2">Security Tips</h3>
-            <ul className="text-sm space-y-2">
-              <li>• Use strong passwords with uppercase & numbers.</li>
-              <li>• Do not reuse passwords.</li>
-              <li>• Enable 2-factor authentication.</li>
-            </ul>
+          {/* Empty Space Filler 2: Quick Support */}
+          <div className="pt-8 mt-8 border-t border-slate-800">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-blue-500/10 rounded-xl">
+                <LifeBuoy size={20} className="text-blue-400" />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-white">Need help?</h4>
+                <p className="text-xs text-slate-500 mt-1">Contact our 24/7 security desk for immediate assistance with account recovery.</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Right: Form */}
-        <div className="bg-slate-900/70 backdrop-blur rounded-2xl p-8 shadow-2xl border border-slate-800">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-rose-500 to-fuchsia-600 shadow-lg">
-              <Key size={20} className="text-white" />
+        {/* Right Section: Form (Occupies 7 columns) */}
+        <div className="md:col-span-7 bg-slate-900/50 backdrop-blur-xl p-8 md:p-14 flex flex-col justify-center">
+          <div className="mb-10 text-center md:text-left">
+            <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 mb-6">
+              <Key size={28} className="text-cyan-400" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">Reset your password</h1>
-              <p className="text-slate-400 text-sm">
-                Enter your email and choose a strong new password.
-              </p>
-            </div>
+            <h1 className="text-3xl font-bold text-white mb-2">Reset Password</h1>
+            <p className="text-slate-400 text-sm">Enter your registered email to update your security.</p>
           </div>
 
-          <form onSubmit={handleForgotPassword} className="space-y-5">
+          <form onSubmit={handleForgotPassword} className="space-y-6">
             {success && (
-              <div className="flex items-center gap-2 bg-green-900/40 border border-green-700 rounded-md p-3 text-green-200">
+              <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-emerald-400 text-sm animate-pulse">
                 <CheckCircle size={18} />
-                <span className="text-sm">Password reset successfully.</span>
+                <span>Password updated successfully! Redirecting...</span>
               </div>
             )}
 
             {error && (
-              <div className="text-sm text-red-300 bg-red-900/30 border border-red-700 rounded-md p-3">
+              <div className="text-sm text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl p-4">
                 {error}
               </div>
             )}
 
-            {/* Email */}
-            <label className="block">
-              <span className="text-sm text-slate-200 font-medium">Email</span>
-              <div className="relative mt-2">
+            <div className="space-y-2">
+              <label className="text-xs text-slate-400 font-bold uppercase tracking-widest ml-1">Email Address</label>
+              <div className="relative group">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-100 py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+                  placeholder="name@company.com"
+                  className="w-full rounded-xl bg-slate-950 border border-slate-800 text-white py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500 transition-all"
                 />
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-cyan-400 transition-colors" size={20} />
               </div>
-            </label>
+            </div>
 
-            {/* New Password */}
-            <label className="block">
-              <span className="text-sm text-slate-200 font-medium">New password</span>
-              <div className="relative mt-2">
+            <div className="space-y-2">
+              <label className="text-xs text-slate-400 font-bold uppercase tracking-widest ml-1">New Secure Password</label>
+              <div className="relative group">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="At least 8 characters"
-                  className="w-full rounded-lg bg-slate-800 border border-slate-700 text-slate-100 py-3 pl-12 pr-11 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+                  placeholder="••••••••"
+                  className="w-full rounded-xl bg-slate-950 border border-slate-800 text-white py-4 pl-12 pr-12 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500 transition-all"
                 />
-
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-cyan-400 transition-colors" size={20} />
                 <button
                   type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-white transition-colors"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
 
-              {/* Strength Meter */}
-              <div className="mt-2">
-                <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-200 ${
-                      strength === 0
-                        ? "w-0 bg-transparent"
-                        : strength === 1
-                        ? "w-1/4 bg-red-500"
-                        : strength === 2
-                        ? "w-1/2 bg-yellow-400"
-                        : strength === 3
-                        ? "w-3/4 bg-teal-400"
-                        : "w-full bg-green-400"
-                    }`}
-                  />
+              {/* Enhanced Segmented Strength Meter */}
+              <div className="pt-3">
+                <div className="flex gap-2 h-1.5">
+                  {[1, 2, 3, 4].map((step) => (
+                    <div
+                      key={step}
+                      className={`h-full flex-1 rounded-full transition-all duration-500 ${
+                        strength >= step 
+                          ? (strength <= 1 ? "bg-rose-500" : strength <= 2 ? "bg-amber-400" : "bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.5)]")
+                          : "bg-slate-800"
+                      }`}
+                    />
+                  ))}
                 </div>
-
-                <div className="flex justify-between text-xs text-slate-400 mt-2">
-                  <span>Password strength</span>
-                  <span>{["Very weak", "Weak", "Okay", "Good", "Strong"][strength]}</span>
+                <div className="flex justify-between mt-3 px-1">
+                  <span className="text-[10px] uppercase tracking-tighter text-slate-500 font-bold">Safety Rating</span>
+                  <span className={`text-[10px] uppercase tracking-widest font-bold ${strength >= 3 ? 'text-cyan-400' : 'text-slate-400'}`}>
+                    {["Low", "Weak", "Average", "Good", "Strong"][strength]}
+                  </span>
                 </div>
               </div>
-            </label>
+            </div>
 
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 rounded-lg font-semibold text-white shadow ${
+              className={`w-full py-4 rounded-xl font-bold text-white shadow-xl transform transition-all active:scale-[0.98] mt-4 ${
                 loading
-                  ? "opacity-70 cursor-not-allowed bg-gradient-to-r from-slate-600 to-slate-700"
-                  : "bg-gradient-to-r from-rose-500 to-indigo-600 hover:opacity-95"
-              } transition`}
+                  ? "bg-slate-800 cursor-not-allowed text-slate-500"
+                  : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 hover:shadow-cyan-900/20"
+              }`}
             >
-              {loading ? "Please wait..." : "Reset password"}
+              {loading ? "Authorizing..." : "Update Security Credentials"}
             </button>
 
-            <div className="text-center text-xs text-slate-500">
-              By resetting you agree to our{" "}
-              <span className="text-teal-300">Terms</span> and{" "}
-              <span className="text-teal-300">Privacy</span>.
-            </div>
+            <button 
+            onClick={handlehome}
+              type="button"
+              className="w-full flex items-center justify-center gap-2 text-sm text-slate-500 hover:text-white transition-colors py-2"
+            >
+              <ArrowLeft size={16} /> Back to Home
+            </button>
           </form>
         </div>
       </div>

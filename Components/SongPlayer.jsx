@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import axios from "axios";
@@ -7,6 +8,7 @@ import { Heart, Star, SkipBack, SkipForward, Play, Pause, Volume2 } from "lucide
 
 const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = null }) => {
   const playerRef = useRef(null);
+  const navigate = useNavigate();
   const [song, setSong] = useState(null);
   const [queue, setQueue] = useState([]); // array of songs
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -130,6 +132,11 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
     const nextSong = queue[index];
     setCurrentIndex(index);
     setSong(nextSong);
+
+    // Update the route to reflect the new song id
+    if (nextSong.song_id) {
+      navigate(`/playsong/${nextSong.song_id}`, { replace: true });
+    }
 
     const audio = playerRef.current?.audio?.current;
     if (!audio) return;

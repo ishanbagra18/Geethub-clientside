@@ -41,7 +41,7 @@ const Navbar = () => {
           <button>Most Liked</button>
         </div>
 
-        <div className="flex items-center cursor-pointer hover:opacity-80">
+        <div className="flex items-center cursor-pointer hover:opacity-80" onClick={() => navigate('/mylibrary', { state: { scrollToRecent: true } })}>
           <CiViewTimeline className="mr-2" />
           <button>Recently</button>
         </div>
