@@ -42,7 +42,7 @@ const Signuppage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 p-4 md:p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-indigo to-slate-900 p-4 md:p-6">
       
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">

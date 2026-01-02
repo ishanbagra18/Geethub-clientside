@@ -148,9 +148,9 @@ const Mostliked = () => {
     cursor: "pointer",
     padding: 10,
     background:
-      "linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,64,175,0.7))",
+      "linear-gradient(135deg, rgba(6,182,212,0.10) 0%, rgba(16,185,129,0.10) 100%, rgba(24,24,27,0.96) 100%)",
     boxShadow: "0 18px 45px rgba(15,23,42,0.7)",
-    border: "1px solid rgba(148, 163, 184, 0.18)",
+    border: "1px solid rgba(34,211,238,0.18)",
     position: "relative",
     overflow: "hidden",
     transition:
@@ -258,9 +258,8 @@ const Mostliked = () => {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background:
-      "radial-gradient(circle at 10% 20%, #fb7185, #f97316)",
-    color: "#0f172a",
+    background: "#ef4444", // solid red
+    color: "#fff",
     fontSize: 11,
   };
 

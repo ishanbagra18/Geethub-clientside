@@ -112,7 +112,6 @@ const Loginpage = () => {
 
               <div className="flex items-center justify-between text-sm text-slate-400 mt-2">
                 <a href="/signup" className="hover:underline text-indigo-300 transition-colors">Create Account</a>
-                <a href="/forgotpassword" className="hover:underline text-indigo-300 transition-colors">Forgot?</a>
               </div>
 
               <div className="mt-4 text-center text-xs text-slate-500">© GeetHub {new Date().getFullYear()}</div>

@@ -127,7 +127,7 @@ const Mostsaved = () => {
     cursor: "pointer",
     padding: 10,
     background:
-      "linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,64,175,0.7))",
+      "linear-gradient(135deg, rgba(15,23,42,0.98), rgba(30,41,59,0.92) 60%, rgba(24,24,27,0.96) 100%)",
     boxShadow: "0 18px 45px rgba(15,23,42,0.7)",
     border: "1px solid rgba(148, 163, 184, 0.18)",
     position: "relative",
@@ -153,6 +153,7 @@ const Mostsaved = () => {
     width: "100%",
     height: "100%",
     objectFit: "cover",
+    display: "block",     
     transition: "transform 0.35s ease",
   };
 
@@ -188,17 +189,21 @@ const Mostsaved = () => {
     display: "inline-flex",
     alignItems: "center",
     gap: 6,
-    padding: "4px 10px",
+    padding: "4px 12px",
     borderRadius: 999,
-    background: "rgba(15, 23, 42, 0.9)",
-    border: "1px solid rgba(248, 113, 113, 0.55)",
-    color: "#fecaca",
-    fontSize: 11,
+    background: "linear-gradient(90deg, rgba(6,182,212,0.18) 0%, rgba(16,185,129,0.18) 100%)",
+    border: "1px solid rgba(34,211,238,0.35)",
+    color: "#67e8f9",
+    fontSize: 12,
     fontWeight: 600,
-    boxShadow: "0 6px 18px rgba(15,23,42,0.8)",
+    boxShadow: "0 6px 18px rgba(15,23,42,0.7)",
+    marginTop: 6,
+    marginBottom: 2,
+    minHeight: 28,
+    alignItems: 'flex-end',
   };
 
-  const bookmarkIconStyle = {
+  const saveIconStyle = {
     width: 16,
     height: 16,
     borderRadius: 999,
@@ -206,9 +211,11 @@ const Mostsaved = () => {
     alignItems: "center",
     justifyContent: "center",
     background:
-      "radial-gradient(circle at 10% 20%, #facc15, #38bdf8)",
+      "radial-gradient(circle at 10% 20%, #06b6d4, #10b981)",
     color: "#0f172a",
-    fontSize: 12,
+    fontSize: 13,
+    marginRight: 4,
+    marginTop: 4,
   };
 
   return (
@@ -307,14 +314,21 @@ const Mostsaved = () => {
                 {song.title}
               </h3>
 
-              <p style={{ fontSize: 12, color: "#9ca3af" }}>
-                Uploaded by{" "}
+              <p style={{ fontSize: 12, color: "#9ca3af", marginBottom: 8 }}>
+                Uploaded by {" "}
                 <span style={{ color: "#38bdf8" }}>{song.artist}</span>
               </p>
 
               <div style={saveChipStyle}>
-                <span style={bookmarkIconStyle}>🔖</span>
-                <span>
+                <span style={saveIconStyle}>
+                  {/* Floppy disk SVG icon for save, improved contrast */}
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="3" width="14" height="14" rx="2.5" fill="#06b6d4" stroke="#fff" strokeWidth="1.2"/>
+                    <rect x="6" y="6" width="8" height="5" rx="1" fill="#fff"/>
+                    <rect x="8.5" y="13" width="3" height="2" rx="0.5" fill="#10b981"/>
+                  </svg>
+                </span>
+                <span style={{ fontSize: 12, letterSpacing: 0.2 }}>
                   {Array.isArray(song.saves)
                     ? song.saves.length
                     : typeof song.saves === "number"

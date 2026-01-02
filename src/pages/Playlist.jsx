@@ -119,7 +119,7 @@ const Playlist = () => {
     s.artist.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) return <div className="min-h-screen bg-[#050507] flex items-center justify-center text-emerald-500">Loading...</div>;
+  if (loading) return <div className="min-h-screen bg-[#050507] flex items-center justify-center text-blue-500">Loading...</div>;
   if (!playlist) return <div className="text-white text-center mt-20">Playlist not found.</div>;
 
   return (

@@ -37,7 +37,7 @@ export const UserProvider = ({ children }) => {
         }
 
         const res = await axios.get(
-          `http://localhost:9000/myprofile/${userId}`,
+          `http://localhost:9000/auth/myprofile/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

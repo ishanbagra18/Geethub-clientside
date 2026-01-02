@@ -207,7 +207,9 @@ const Homepage = () => {
               className="text-xl md:text-3xl lg:text-4xl font-heading font-black bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent tracking-wide drop-shadow-lg"
               role="banner"
             >
-              Welcome {user?.first_name || "Guest"} 👋
+Welcome {user?.first_name
+  ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}`
+  : "Guest"} 👋
             </h1>
             <p className="text-xs lg:text-sm tracking-[0.3em] font-heading2 font-semibold bg-gradient-to-r from-blue-400/90 to-cyan-400/90 bg-clip-text text-transparent uppercase pt-1">
               MUSIC LICENSING FOR FILM
@@ -325,13 +327,20 @@ const Homepage = () => {
         </div>
       </section>
 
+
+
       {/* CONTENT SECTIONS - Better loading states */}
       <main className="px-4 md:px-10 lg:px-20 xl:px-28 max-w-7xl mx-auto mb-20 space-y-24 lg:space-y-32">
         
+
+              {/* <Myplaylist /> */}
+
+
+
         {/* 🚀 NEW SECTION: User's Private Playlists */}
         {user && (
           <section aria-labelledby="my-playlists">
-            <SectionHeading  emoji="🎧" title={`${user.first_name}'s Playlists`} subtitle="Your Library" />
+            <SectionHeading  emoji="🎧" title={`${user?.first_name ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}` : "User"}'s Playlists`} subtitle="Your Library" />
             {/* Myplaylist handles its own fetching and rendering logic, but we want to show only 4 playlists */}
             <Myplaylist maxToShow={4} />
             <div className="mt-8 text-center">

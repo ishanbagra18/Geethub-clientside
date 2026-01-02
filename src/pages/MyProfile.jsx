@@ -24,7 +24,7 @@ export default function MyProfile() {
         const userId = getUidFromToken();
         if (!userId) return setLoading(false);
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:9000/myprofile/${userId}`, {
+        const res = await axios.get(`http://localhost:9000/auth/myprofile/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data.user);
@@ -86,7 +86,9 @@ export default function MyProfile() {
           <div className="flex-1 text-center md:text-left">
             <h2 className="text-zinc-500 uppercase tracking-[0.3em] text-xs font-bold mb-2">Verified Listener</h2>
             <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent">
-              {user.first_name} {user.last_name}
+              {user?.first_name?user.first_name.charAt(0).toUpperCase() + user.first_name.slice(1) : ""}
+
+               {user.last_name?" " + user.last_name.charAt(0).toUpperCase() + user.last_name.slice(1) : ""}
             </h1>
             <div className="flex flex-wrap justify-center md:justify-start gap-3">
               <button className="flex items-center gap-2 px-8 py-3 bg-blue-500 hover:bg-blue-400 text-black font-bold rounded-full transition-all active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
