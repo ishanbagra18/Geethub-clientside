@@ -1,19 +1,26 @@
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { FaMusic, FaFire } from "react-icons/fa";
 import { BiSolidLike } from "react-icons/bi";
 import { CiViewTimeline } from "react-icons/ci";
 import { PiChatsTeardropThin } from "react-icons/pi";
 import { CgProfile } from "react-icons/cg";
 
-
 const Navbar = () => {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
 
   const handleMyProfile = () => navigate("/myprofile");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    setIsLoggedIn(false);
     navigate("/login");
   };
 
@@ -55,7 +62,7 @@ const Navbar = () => {
       <div>
         <input
           type="text"
-          placeholder="   Search for songs, artists, albums..."
+          placeholder="  Search for songs, artists, albums..."
           className="pr-4 py-2 rounded-lg bg-[#222] dark:bg-gray-200 
                      text-white dark:text-black placeholder-gray-400 
                      dark:placeholder-gray-600 focus:outline-none 
@@ -64,14 +71,20 @@ const Navbar = () => {
       </div>
 
       <div className="flex items-center ml-6 gap-3">
-        
-
         <button
           onClick={handleMyProfile}
-          className="flex items-center justify-center p-1 rounded-full 
-                     hover:bg-gray-800 dark:hover:bg-gray-200 transition"
+          className="relative flex items-center justify-center p-1 rounded-full 
+                     hover:bg-gray-800 dark:hover:bg-gray-200 transition group"
         >
-          <CgProfile className="w-7 h-7" />
+          {isLoggedIn && (
+            <>
+              <div className="absolute inset-0 rounded-full bg-purple-400/80 backdrop-blur-sm animate-ping"></div>
+              <div className="absolute inset-0 rounded-full 
+                              bg-gradient-to-r from-purple-500/40 via-blue-500/30 to-cyan-400/40 
+                              shadow-[0_0_20px_rgba(168,85,247,0.6)] animate-pulse"></div>
+            </>
+          )}
+          <CgProfile className="w-7 h-7 relative z-10 drop-shadow-sm" />
         </button>
 
         <button

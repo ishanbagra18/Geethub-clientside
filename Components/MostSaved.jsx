@@ -187,7 +187,7 @@ const Mostsaved = () => {
 
   const saveChipStyle = {
     display: "inline-flex",
-    alignItems: "center",
+    alignItems: "flex-end",
     gap: 6,
     padding: "4px 12px",
     borderRadius: 999,
@@ -200,7 +200,6 @@ const Mostsaved = () => {
     marginTop: 6,
     marginBottom: 2,
     minHeight: 28,
-    alignItems: 'flex-end',
   };
 
   const saveIconStyle = {
