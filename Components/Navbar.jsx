@@ -24,6 +24,9 @@ const Navbar = () => {
     navigate("/login");
   };
 
+
+  // some frontend chages like userprofile has been done
+
   return (
     <nav className="w-full bg-[#111] dark:bg-white pt-4 px-6 py-4 flex items-center justify-between shadow-lg text-white dark:text-black">
       <div
@@ -70,6 +73,9 @@ const Navbar = () => {
         />
       </div>
 
+
+      
+
       <div className="flex items-center ml-6 gap-3">
         <button
           onClick={handleMyProfile}
@@ -101,3 +107,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
