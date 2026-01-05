@@ -55,7 +55,7 @@ export default function MyProfile() {
   const initials = `${user.first_name?.[0] || ""}${user.last_name?.[0] || ""}`.toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#050505] text-zinc-100 selection:bg-blue-500/30 font-sans antialiased overflow-hidden">
+    <div className="min-h-screen bg-[#050505] text-zinc-100 selection:bg-blue-500/30 font-sans antialiased overflow-hidden pb-32">
       
       {/* Background Ambient Orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">

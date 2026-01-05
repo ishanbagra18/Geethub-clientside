@@ -6,6 +6,10 @@ import { usePlaylist } from "../context/PlaylistContext.jsx";
 import { useHistory } from "../context/historyContext.jsx";
 // Import the Myplaylist component
 import Myplaylist from "../../Components/Myplaylist.jsx";
+import Hindisongs from "../../Components/Hindisongs.jsx";
+import Punjabisongs from "../../Components/Punjabisongs.jsx";
+import Latestreleased from "../../Components/Latestreleased.jsx";
+import Dashboard from "../../Components/Dashboard.jsx";
 
 // Lazy load components for better performance
 const Mostliked = lazy(() => import("../../Components/Mostliked.jsx"));
@@ -174,7 +178,7 @@ const Homepage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-black to-[#1a0a1a] text-white font-body overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-black to-[#1a0a1a] text-white font-body overflow-x-hidden pb-32">
       {/* NAVBAR */}
       <Navbar />
 
@@ -394,6 +398,13 @@ Welcome {user?.first_name
           <SectionHeading emoji="🌐" title="Community Playlists" subtitle="Featured Public Playlists" />
           <PublicPlaylistsSection maxToShow={5} />
         </section>
+
+
+
+        <Hindisongs/>
+        <Punjabisongs/>
+        <Latestreleased/>
+        <Dashboard/>
         
       </main>
 

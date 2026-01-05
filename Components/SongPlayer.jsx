@@ -1,326 +1,54 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import AudioPlayer from "react-h5-audio-player";
-import "react-h5-audio-player/lib/styles.css";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { useMusicPlayer } from "../src/context/MusicPlayerContext";
 import { Heart, Star, SkipBack, SkipForward, Play, Pause, Volume2 } from "lucide-react";
 
 const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = null }) => {
-  const playerRef = useRef(null);
-  const navigate = useNavigate();
   const [song, setSong] = useState(null);
-  const [queue, setQueue] = useState([]); // array of songs
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progressPct, setProgressPct] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [isSeeking, setIsSeeking] = useState(false);
-  const [volume, setVolume] = useState(() => {
-    // load saved volume or default to 1
-    const v = localStorage.getItem("player_volume");
-    return v !== null ? Number(v) : 1;
-  });
+  
+  // Use global music player context
+  const {
+    currentSong,
+    isPlaying,
+    volume,
+    currentTime,
+    duration,
+    isLiked,
+    isSaved,
+    togglePlayPause,
+    playNext,
+    playPrevious,
+    seekTo,
+    changeVolume,
+    toggleLike,
+    toggleSave,
+    playSong,
+  } = useMusicPlayer();
 
-  // ---------------- USER ID FROM TOKEN ----------------
-  const getUserIdFromToken = () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return null;
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.Uid || payload.uid || payload.id;
-    } catch {
-      return null;
-    }
-  };
-
-  // ---------------- FETCH SONG ----------------
+  // Initialize or sync with the song from URL
   useEffect(() => {
-    const uid = getUserIdFromToken();
-    setCurrentUser(uid);
-
-    const fetchSong = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:9000/song/${songId}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-
-        const s = res.data.song;
-        setSong(s);
-
-        if (uid) {
-          setIsLiked(Boolean(s.likes?.includes(uid)));
-          setIsSaved(Boolean(s.saves?.includes(uid)));
-        }
-      } catch (err) {
-        console.error("Error fetching song:", err);
-      }
-    };
-
-    fetchSong();
+    if (currentSong && currentSong.song_id === songId) {
+      setSong(currentSong);
+    } else {
+      playSong(songId, initialQueue, mode, contextId);
+    }
   }, [songId]);
 
-  // ---------------- BUILD QUEUE ----------------
+  // Update local song state when global current song changes
   useEffect(() => {
-    let cancelled = false;
-
-    const buildQueue = async () => {
-      if (initialQueue && initialQueue.length) {
-        setQueue(initialQueue);
-        const idx = initialQueue.findIndex((s) => s.song_id === songId);
-        setCurrentIndex(idx >= 0 ? idx : 0);
-        return;
-      }
-
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:9000/music/allsongs", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-
-        let songs = res.data.songs || [];
-
-        if (mode === "artist" && contextId) {
-          songs = songs.filter((s) => (s.artist || "").toLowerCase() === String(contextId).toLowerCase());
-        }
-
-        const shuffle = (arr) => {
-          const a = arr.slice();
-          for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-          }
-          return a;
-        };
-
-        let q = shuffle(songs);
-
-        const existing = q.findIndex((s) => s.song_id === songId);
-        if (existing === -1) {
-          const curRes = await axios.get(`http://localhost:9000/song/${songId}`, {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          });
-          q.unshift(curRes.data.song);
-          setCurrentIndex(0);
-        } else {
-          setCurrentIndex(existing);
-        }
-
-        if (!cancelled) setQueue(q);
-      } catch (err) {
-        console.error("Error building queue:", err);
-      }
-    };
-
-    buildQueue();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [songId, initialQueue, mode, contextId]);
-
-  // ---------------- PLAY INDEX / NEXT / PREV ----------------
-  const playIndex = async (index) => {
-    if (!queue || queue.length === 0) return;
-    if (index < 0 || index >= queue.length) return;
-
-    const nextSong = queue[index];
-    setCurrentIndex(index);
-    setSong(nextSong);
-
-    // Update the route to reflect the new song id
-    if (nextSong.song_id) {
-      navigate(`/playsong/${nextSong.song_id}`, { replace: true });
+    if (currentSong) {
+      setSong(currentSong);
     }
+  }, [currentSong]);
 
-    const audio = playerRef.current?.audio?.current;
-    if (!audio) return;
-
-    try {
-      audio.pause();
-      audio.src = nextSong.file_url;
-      audio.currentTime = 0;
-      await audio.play();
-      setIsPlaying(true);
-    } catch (err) {
-      console.warn("Autoplay blocked or failed:", err);
-      setIsPlaying(false);
-    }
+  const formatTime = (t = 0) => {
+    if (!t || isNaN(t)) return "0:00";
+    const m = Math.floor(t / 60);
+    const s = Math.floor(t % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
   };
 
-  const nextSong = () => {
-    if (!queue || queue.length === 0) return;
-    const nextIdx = (currentIndex + 1) % queue.length;
-    playIndex(nextIdx);
-  };
-
-  const prevSong = () => {
-    if (!queue || queue.length === 0) return;
-    const prevIdx = (currentIndex - 1 + queue.length) % queue.length;
-    playIndex(prevIdx);
-  };
-
-  // ---------------- LIKE ----------------
-
-  const handleLike = async () => {
-    if (!song || !song.song_id) return;
-    try {
-      const token = localStorage.getItem("token");
-      await axios.patch(
-        `http://localhost:9000/music/like/${song.song_id}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setIsLiked((prev) => !prev);
-      setSong((prev) => {
-        if (!prev) return prev;
-        const likes = prev.likes || [];
-        return isLiked
-          ? { ...prev, likes: likes.filter((id) => id !== currentUser) }
-          : { ...prev, likes: [...likes, currentUser] };
-      });
-    } catch (err) {
-      console.error("Like error:", err);
-    }
-  };
-
-  // ---------------- SAVE ----------------
-
-  const handleSave = async () => {
-    if (!song || !song.song_id) return;
-    try {
-      const token = localStorage.getItem("token");
-      await axios.patch(
-        `http://localhost:9000/music/save/${song.song_id}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setIsSaved((prev) => !prev);
-    } catch (err) {
-      console.error("Save error:", err);
-    }
-  };
-
-  // ---------------- NATIVE AUDIO LISTENERS ----------------
-  useEffect(() => {
-    const audio = playerRef.current?.audio?.current;
-    if (!audio) return;
-
-    audio.volume = volume;
-
-    const onTimeUpdate = () => {
-      if (!isSeeking) {
-        setCurrentTime(audio.currentTime || 0);
-      }
-      if (audio.duration > 0) {
-        setDuration(audio.duration);
-        setProgressPct(((audio.currentTime || 0) / audio.duration) * 100);
-      }
-    };
-
-    const onLoadedMetadata = () => {
-      setDuration(audio.duration || 0);
-      setCurrentTime(audio.currentTime || 0);
-    };
-
-    const onPlay = () => setIsPlaying(true);
-    const onPause = () => setIsPlaying(false);
-    const onEnded = () => {
-      if (!queue || queue.length === 0) {
-        setIsPlaying(false);
-        return;
-      }
-
-      setCurrentIndex((ci) => {
-        const nextIdx = (ci + 1) % queue.length;
-        const next = queue[nextIdx];
-        if (next) {
-          setSong(next);
-          const audio2 = playerRef.current?.audio?.current;
-          if (audio2) {
-            try {
-              audio2.pause();
-              audio2.src = next.file_url;
-              audio2.play().catch(() => {});
-              setIsPlaying(true);
-            } catch (e) {
-              console.warn("Auto-play prevented", e);
-            }
-          }
-        }
-        return nextIdx;
-      });
-    };
-
-    audio.addEventListener("timeupdate", onTimeUpdate);
-    audio.addEventListener("loadedmetadata", onLoadedMetadata);
-    audio.addEventListener("play", onPlay);
-    audio.addEventListener("pause", onPause);
-    audio.addEventListener("ended", onEnded);
-
-    onLoadedMetadata();
-    onTimeUpdate();
-
-    return () => {
-      audio.removeEventListener("timeupdate", onTimeUpdate);
-      audio.removeEventListener("loadedmetadata", onLoadedMetadata);
-      audio.removeEventListener("play", onPlay);
-      audio.removeEventListener("pause", onPause);
-      audio.removeEventListener("ended", onEnded);
-    };
-  }, [song?.file_url, volume, isSeeking, queue]);
-
-  // ---------------- SEEK HANDLERS ----------------
-  const handleSeekChange = (e) => {
-    const audio = playerRef.current?.audio?.current;
-    const val = Number(e.target.value);
-    setCurrentTime(val);
-    if (!audio) return;
-    audio.currentTime = val;
-  };
-
-  const handleSeekMouseDown = () => setIsSeeking(true);
-  const handleSeekMouseUp = (e) => {
-    const audio = playerRef.current?.audio?.current;
-    const val = Number(e.target.value);
-    if (audio) {
-      audio.currentTime = val;
-    }
-    setIsSeeking(false);
-  };
-
-  // ---------------- VOLUME ----------------
-  useEffect(() => {
-    const audio = playerRef.current?.audio?.current;
-    if (!audio) return;
-    audio.volume = volume;
-    localStorage.setItem("player_volume", String(volume));
-  }, [volume]);
-
-  const handleVolumeChange = (e) => {
-    const val = Number(e.target.value);
-    setVolume(val);
-  };
-
-  // ---------------- PLAY / PAUSE ----------------
-  const togglePlayPause = () => {
-    const audio = playerRef.current?.audio?.current;
-    if (!audio) return;
-
-    if (audio.paused) {
-      audio.play();
-      setIsPlaying(true);
-    } else {
-      audio.pause();
-      setIsPlaying(false);
-    }
-  };
+  const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   if (!song) {
     return (
@@ -338,7 +66,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
           <img src="https://i.pinimg.com/originals/fb/76/a2/fb76a2a20ba498c2867f018fe12caa40.gif" alt="" className="w-full h-full object-cover" />
         </div>
 
-        <div className="absolute -inset-1 bg-gradient-to-br from-purple-600/30 to-indigo-700/20 blur-3xl opacity-40 pointer-events-none" />
+        <div className="absolute -inset-1 bg-gradient-to-br from-blue-600/30 to-blue-800/20 blur-3xl opacity-40 pointer-events-none" />
 
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-[160px_1fr] gap-6 items-center">
           {/* Album Art */}
@@ -361,7 +89,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                   {song.title}
                 </h2>
                 <p className="text-gray-300">
-                  {song.artist} • <span className="text-purple-300">{song.genre}</span>
+                  {song.artist} • <span className="text-blue-300">{song.genre}</span>
                 </p>
               </div>
               {/* GIF Visualizer in the empty space of the header */}
@@ -377,7 +105,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
             {/* Like + Save */}
             <div className="flex items-center gap-4 flex-wrap">
               <button
-                onClick={handleLike}
+                onClick={toggleLike}
                 className="flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition"
               >
                 <Heart
@@ -389,7 +117,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
               </button>
 
               <button
-                onClick={handleSave}
+                onClick={toggleSave}
                 className="flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition"
               >
                 <Star
@@ -406,7 +134,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
               {/* Prev / Play / Next */}
               <div className="flex items-center justify-center gap-6">
                 <button
-                  onClick={prevSong}
+                  onClick={playPrevious}
                   className="p-3 rounded-full bg-white/6 hover:bg-white/10"
                 >
                   <SkipBack size={22} />
@@ -414,13 +142,13 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
 
                 <button
                   onClick={togglePlayPause}
-                  className="p-4 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 shadow-lg hover:scale-105"
+                  className="p-4 rounded-full bg-gradient-to-br from-blue-500 to-blue-500 shadow-lg hover:scale-105"
                 >
                   {isPlaying ? <Pause size={26} /> : <Play size={26} />}
                 </button>
 
                 <button
-                  onClick={nextSong}
+                  onClick={playNext}
                   className="p-3 rounded-full bg-white/6 hover:bg-white/10"
                 >
                   <SkipForward size={22} />
@@ -441,20 +169,12 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                       max={duration || 0}
                       step={0.01}
                       value={currentTime}
-                      onChange={handleSeekChange}
-                      onMouseDown={handleSeekMouseDown}
-                      onMouseUp={handleSeekMouseUp}
-                      onTouchStart={handleSeekMouseDown}
-                      onTouchEnd={handleSeekMouseUp}
+                      onChange={(e) => seekTo(parseFloat(e.target.value))}
                       className="w-full h-2 appearance-none bg-white/10 rounded-lg"
-                      aria-label="Seek"
-                    />
-                    <div
-                      aria-hidden
-                      className="h-0.5 mt-[-8px] rounded-full pointer-events-none"
                       style={{
-                        width: `${progressPct}%`,
+                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${progressPct}%, rgba(255,255,255,0.1) ${progressPct}%, rgba(255,255,255,0.1) 100%)`,
                       }}
+                      aria-label="Seek"
                     />
                   </div>
 
@@ -475,7 +195,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                   max={1}
                   step={0.01}
                   value={volume}
-                  onChange={handleVolumeChange}
+                  onChange={(e) => changeVolume(parseFloat(e.target.value))}
                   className="w-48 h-2 appearance-none bg-white/10 rounded-lg"
                   aria-label="Volume"
                 />
@@ -489,32 +209,12 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                   className="h-6 w-12 mix-blend-screen opacity-50"
                 />
               </div>
-
-              <AudioPlayer
-                ref={playerRef}
-                src={song.file_url}
-                autoPlay={false}
-                showJumpControls={false}
-                showDownloadProgress={false}
-                customAdditionalControls={[]}
-                customVolumeControls={[]}
-                listenInterval={500}
-                autoPlayAfterSrcChange={false}
-                style={{ display: "none" }}
-              />
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-const formatTime = (t = 0) => {
-  if (!t || isNaN(t)) return "0:00";
-  const m = Math.floor(t / 60);
-  const s = Math.floor(t % 60).toString().padStart(2, "0");
-  return `${m}:${s}`;
 };
 
 export default SongPlayer;

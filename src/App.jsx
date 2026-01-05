@@ -11,10 +11,13 @@ import UpdateProfile from "./pages/UpdateProfile";
 import PlaySong from "./pages/PlaySong";
 import Playlist from "./pages/Playlist";
 import Mylibrary from "./pages/Mylibrary";
+import Dashboard from "../Components/Dashboard";
+import { MusicPlayerProvider } from "./context/MusicPlayerContext";
+import GlobalMusicPlayer from "../Components/GlobalMusicPlayer";
 
 function App() {
   return (
-    <>
+    <MusicPlayerProvider>
       {/* 🔥 Toast container (GLOBAL) */}
       <Toaster
         position="top-right"
@@ -28,6 +31,7 @@ function App() {
         <Route path="/login" element={<Loginpage />} />
         <Route path="/signup" element={<Signuppage />} />
         <Route path="/" element={<Homepage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/myprofile" element={<MyProfile />} />
         <Route path="/updateprofile" element={<UpdateProfile />} />
@@ -35,7 +39,10 @@ function App() {
         <Route path="/playlist/:id" element={<Playlist />} />
         <Route path="/mylibrary" element={<Mylibrary />} />
       </Routes>
-    </>
+
+      {/* Global Music Player Bar */}
+      <GlobalMusicPlayer />
+    </MusicPlayerProvider>
   );
 }
 

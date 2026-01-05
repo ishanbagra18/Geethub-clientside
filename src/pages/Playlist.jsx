@@ -123,7 +123,7 @@ const Playlist = () => {
   if (!playlist) return <div className="text-white text-center mt-20">Playlist not found.</div>;
 
   return (
-    <div className="min-h-screen bg-[#050507] text-white font-sans pb-20">
+    <div className="min-h-screen bg-[#050507] text-white font-sans pb-32">
       <Toaster position="bottom-right" />
 
       {/* --- DYNAMIC HEADER --- */}

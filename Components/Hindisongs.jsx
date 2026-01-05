@@ -1,38 +1,41 @@
-// Mostsaved.jsx
+// Hindisongs.jsx
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
-const Mostsaved = () => {
-  const [mostsaved, setMostsaved] = useState([]);
+const Hindisongs = () => {
+  const [hindisongs, setHindisongs] = useState([]);
   const navigate = useNavigate();
   const rowRef = useRef(null);
 
   useEffect(() => {
-    const fetchMostSaved = async () => {
+    const fetchHindisongs = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          console.warn("[Mostsaved] no token found in localStorage");
-          setMostsaved([]);
+          console.warn("[Hindisongs] no token found in localStorage");
+          setHindisongs([]);
           return;
         }
 
-        const response = await axios.get("http://localhost:9000/music/saved", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "http://localhost:9000/music/hindisongs",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-        console.log("[Mostsaved] fetch response:", response?.data);
-        setMostsaved(response.data.songs || []);
+        console.log("[Hindisongs] fetch response:", response?.data);
+        setHindisongs(response.data.songs || []);
       } catch (error) {
-        console.error("❌ Error fetching saved songs:", error);
-        setMostsaved([]);
+        console.error("❌ Error fetching Hindi songs:", error);
+        setHindisongs([]);
       }
     };
 
-    fetchMostSaved();
+    fetchHindisongs();
   }, []);
 
   const scrollByAmount = (direction) => {
@@ -45,7 +48,7 @@ const Mostsaved = () => {
     });
   };
 
-  const hasScroll = mostsaved.length > 6;
+  const hasScroll = hindisongs.length > 6;
 
   const containerStyle = {
     marginTop: 80,
@@ -227,34 +230,34 @@ const Mostsaved = () => {
     fontWeight: 500,
   };
 
-  const saveRowStyle = {
+  const likeRowStyle = {
     marginTop: 10,
     display: "flex",
     justifyContent: "flex-start",
   };
 
-  const saveChipStyle = {
+  const likeChipStyle = {
     display: "inline-flex",
     alignItems: "center",
     gap: 6,
     padding: "4px 10px",
     borderRadius: 999,
     background: "rgba(15, 23, 42, 0.9)",
-    border: "1px solid rgba(34,211,238,0.55)",
-    color: "#67e8f9",
+    border: "1px solid rgba(248, 113, 113, 0.55)",
+    color: "#fecaca",
     fontSize: 11,
     fontWeight: 600,
     boxShadow: "0 6px 18px rgba(15,23,42,0.8)",
   };
 
-  const saveIconStyle = {
+  const heartIconStyle = {
     width: 16,
     height: 16,
     borderRadius: 999,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "#06b6d4",
+    background: "#ef4444",
     color: "#fff",
     fontSize: 11,
   };
@@ -281,10 +284,10 @@ const Mostsaved = () => {
                 marginBottom: 2,
               }}
             >
-              Your collection
+              Explore & Discover
             </p>
             <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-              <h2>Most Saved Songs</h2>
+              <h2>Hindi Songs</h2>
               <span
                 style={{
                   fontSize: 11,
@@ -292,8 +295,8 @@ const Mostsaved = () => {
                   fontWeight: 400,
                 }}
               >
-                {mostsaved.length > 0
-                  ? `${mostsaved.length} tracks`
+                {hindisongs.length > 0
+                  ? `${hindisongs.length} tracks`
                   : "No tracks yet"}
               </span>
             </div>
@@ -303,7 +306,7 @@ const Mostsaved = () => {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button
             style={seeAllButtonStyle}
-            onClick={() => navigate("/saved")}
+            onClick={() => navigate("/hindisongs")}
           >
             See All
             <span style={{ fontSize: 16 }}>↗</span>
@@ -333,12 +336,12 @@ const Mostsaved = () => {
           className={hasScroll ? "hide-scrollbar" : ""}
           style={scrollerStyle}
         >
-          {mostsaved.map((song) => (
+          {hindisongs.map((song) => (
             <div
               key={song.song_id}
               onClick={() => {
                 console.log(
-                  "[Mostsaved] navigate to:",
+                  "[Hindisongs] navigate to:",
                   `/playsong/${song.song_id}`
                 );
                 navigate(`/playsong/${song.song_id}`);
@@ -349,8 +352,8 @@ const Mostsaved = () => {
                 e.currentTarget.style.boxShadow =
                   "0 26px 55px rgba(15,23,42,0.9)";
                 const overlay =
-                  e.currentTarget.querySelector(".ms-overlay");
-                const img = e.currentTarget.querySelector(".ms-cover-img");
+                  e.currentTarget.querySelector(".hs-overlay");
+                const img = e.currentTarget.querySelector(".hs-cover-img");
                 if (overlay) overlay.style.opacity = 1;
                 if (img) img.style.transform = "scale(1.08)";
               }}
@@ -359,15 +362,15 @@ const Mostsaved = () => {
                 e.currentTarget.style.boxShadow =
                   "0 18px 45px rgba(15,23,42,0.7)";
                 const overlay =
-                  e.currentTarget.querySelector(".ms-overlay");
-                const img = e.currentTarget.querySelector(".ms-cover-img");
+                  e.currentTarget.querySelector(".hs-overlay");
+                const img = e.currentTarget.querySelector(".hs-cover-img");
                 if (overlay) overlay.style.opacity = 0;
                 if (img) img.style.transform = "scale(1)";
               }}
             >
               <div style={imgContainerStyle}>
                 <img
-                  className="ms-cover-img"
+                  className="hs-cover-img"
                   src={song.image_url || PLACEHOLDER}
                   alt={song.title || "cover"}
                   style={imgStyle}
@@ -377,7 +380,7 @@ const Mostsaved = () => {
                     }
                   }}
                 />
-                <div className="ms-overlay" style={overlayStyle}>
+                <div className="hs-overlay" style={overlayStyle}>
                   <div style={playCircleStyle}>▶</div>
                 </div>
               </div>
@@ -391,17 +394,17 @@ const Mostsaved = () => {
                 </span>
               </p>
 
-              {/* Save chip row */}
-              <div style={saveRowStyle}>
-                <div style={saveChipStyle}>
-                  <span style={saveIconStyle}>💾</span>
+              {/* Like chip row */}
+              <div style={likeRowStyle}>
+                <div style={likeChipStyle}>
+                  <span style={heartIconStyle}>♥</span>
                   <span>
-                    {Array.isArray(song.saves)
-                      ? song.saves.length
-                      : typeof song.saves === "number"
-                      ? song.saves
+                    {Array.isArray(song.likes)
+                      ? song.likes.length
+                      : typeof song.likes === "number"
+                      ? song.likes
                       : 0}{" "}
-                    saves
+                    likes
                   </span>
                 </div>
               </div>
@@ -409,9 +412,9 @@ const Mostsaved = () => {
           ))}
         </div>
 
-        {mostsaved.length === 0 && (
+        {hindisongs.length === 0 && (
           <p style={noDataStyle}>
-            No saved songs to display yet. Start saving tracks to see them here.
+            No Hindi songs to display yet. Check back later for updates.
           </p>
         )}
       </div>
@@ -419,4 +422,4 @@ const Mostsaved = () => {
   );
 };
 
-export default Mostsaved;
+export default Hindisongs;

@@ -250,7 +250,7 @@ const Mylibrary = () => {
     // recetly played border added 
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white">
+        <div className="min-h-screen bg-[#0a0a0a] text-white pb-32">
             <div className="pt-6 pb-12 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
                 <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
