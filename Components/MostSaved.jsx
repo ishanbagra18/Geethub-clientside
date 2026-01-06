@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useMusicPlayer } from "../src/context/MusicPlayerContext";
+import { ListPlus } from "lucide-react";
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
@@ -9,6 +11,7 @@ const Mostsaved = () => {
   const [mostsaved, setMostsaved] = useState([]);
   const navigate = useNavigate();
   const rowRef = useRef(null);
+  const { addToQueue } = useMusicPlayer();
 
   useEffect(() => {
     const fetchMostSaved = async () => {
@@ -336,13 +339,6 @@ const Mostsaved = () => {
           {mostsaved.map((song) => (
             <div
               key={song.song_id}
-              onClick={() => {
-                console.log(
-                  "[Mostsaved] navigate to:",
-                  `/playsong/${song.song_id}`
-                );
-                navigate(`/playsong/${song.song_id}`);
-              }}
               style={cardStyle}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-4px) scale(1.02)";
@@ -365,7 +361,16 @@ const Mostsaved = () => {
                 if (img) img.style.transform = "scale(1)";
               }}
             >
-              <div style={imgContainerStyle}>
+              <div 
+                style={{...imgContainerStyle, position: 'relative', cursor: 'pointer'}}
+                onClick={() => {
+                  console.log(
+                    "[Mostsaved] navigate to:",
+                    `/playsong/${song.song_id}`
+                  );
+                  navigate(`/playsong/${song.song_id}`);
+                }}
+              >
                 <img
                   className="ms-cover-img"
                   src={song.image_url || PLACEHOLDER}
@@ -379,6 +384,45 @@ const Mostsaved = () => {
                 />
                 <div className="ms-overlay" style={overlayStyle}>
                   <div style={playCircleStyle}>▶</div>
+                </div>
+                
+                {/* Queue Button Overlay */}
+                <div style={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  display: 'flex',
+                  gap: 6,
+                }}>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToQueue(song.song_id);
+                    }}
+                    style={{
+                      background: 'rgba(0, 0, 0, 0.75)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(59, 130, 246, 0.5)',
+                      borderRadius: 8,
+                      padding: '8px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(59, 130, 246, 0.8)';
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(0, 0, 0, 0.75)';
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                    title="Add to Queue (Play Next)"
+                  >
+                    <ListPlus size={18} color="#3b82f6" />
+                  </button>
                 </div>
               </div>
 

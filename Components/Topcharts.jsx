@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useMusicPlayer } from "../src/context/MusicPlayerContext";
+import { ListPlus, PlayCircle } from "lucide-react";
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
@@ -9,6 +11,7 @@ const Topcharts = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const rowRef = useRef(null);
+  const { addToQueue } = useMusicPlayer();
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -102,16 +105,18 @@ const Topcharts = () => {
           {recentSongs.map((song) => (
             <div
               key={song.song_id}
-              onClick={() => {
-                console.log("[Topcharts] navigate to:", `/playsong/${song.song_id}`);
-                navigate(`/playsong/${song.song_id}`);
-              }}
               style={cardStyle}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
               {/* FIXED SIZE IMAGE CONTAINER */}
-              <div style={imgContainerStyle}>
+              <div 
+                style={{ ...imgContainerStyle, position: 'relative', cursor: 'pointer' }}
+                onClick={() => {
+                  console.log("[Topcharts] navigate to:", `/playsong/${song.song_id}`);
+                  navigate(`/playsong/${song.song_id}`);
+                }}
+              >
                 <img
                   src={song.image_url || PLACEHOLDER}
                   alt={song.title || "cover"}
@@ -122,6 +127,45 @@ const Topcharts = () => {
                     }
                   }}
                 />
+                
+                {/* Queue Button Overlay */}
+                <div style={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  display: 'flex',
+                  gap: 6,
+                }}>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToQueue(song.song_id);
+                    }}
+                    style={{
+                      background: 'rgba(0, 0, 0, 0.75)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(59, 130, 246, 0.5)',
+                      borderRadius: 8,
+                      padding: '8px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(59, 130, 246, 0.8)';
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(0, 0, 0, 0.75)';
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                    title="Add to Queue (Play Next)"
+                  >
+                    <ListPlus size={18} color="#3b82f6" />
+                  </button>
+                </div>
               </div>
 
               <h3 style={{ marginTop: 12, fontWeight: 700, fontSize: 15, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>

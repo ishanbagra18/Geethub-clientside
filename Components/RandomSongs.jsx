@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Play } from "lucide-react";
+import { Play, ListPlus } from "lucide-react";
+import { useMusicPlayer } from "../src/context/MusicPlayerContext";
 
 const PLACEHOLDER = "https://via.placeholder.com/600x300?text=No+Image";
 
@@ -18,6 +19,7 @@ const RandomSongs = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { addToQueue } = useMusicPlayer();
 
   const pickRandom = (songs) => shuffle(songs).slice(0, 4);
 
@@ -76,7 +78,6 @@ return (
         {items.map((s, i) => (
           <div
             key={s.song_id}
-            onClick={() => navigate(`/playsong/${s.song_id}`)}
             className="
               relative group cursor-pointer overflow-hidden rounded-2xl shadow-xl
               bg-black/20 backdrop-blur-xl
@@ -86,39 +87,76 @@ return (
             "
             style={{ height: 290, animationDelay: `${i * 0.12}s` }}
           >
-            <img
-              src={s.img}
-              alt={s.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
-              onError={(e) => (e.target.src = PLACEHOLDER)}
-            />
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-
-            <span className="absolute top-3 right-3 bg-yellow-400/90 text-black px-3 py-1 text-xs font-semibold rounded-full shadow">
-              {s.lang}
-            </span>
-
-            <span className="absolute top-3 left-3 bg-yellow-300/90 text-black px-3 py-1 text-xs font-semibold rounded-full shadow">
-              {s.genre}
-            </span>
-
-            <div
-              className="
-                absolute inset-0 flex items-center justify-center 
-                opacity-0 group-hover:opacity-100 
-                transition-all duration-500
-              "
+            <div 
+              onClick={() => navigate(`/playsong/${s.song_id}`)}
+              className="w-full h-full"
             >
-              <div className="w-14 h-14 flex items-center justify-center rounded-full bg-white/90 shadow-lg">
-                <Play size={28} className="text-black ml-1" />
+              <img
+                src={s.img}
+                alt={s.title}
+                className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
+                onError={(e) => (e.target.src = PLACEHOLDER)}
+              />
+
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+
+              <span className="absolute top-3 right-3 bg-yellow-400/90 text-black px-3 py-1 text-xs font-semibold rounded-full shadow">
+                {s.lang}
+              </span>
+
+              <span className="absolute top-3 left-3 bg-yellow-300/90 text-black px-3 py-1 text-xs font-semibold rounded-full shadow">
+                {s.genre}
+              </span>
+
+              <div
+                className="
+                  absolute inset-0 flex items-center justify-center 
+                  opacity-0 group-hover:opacity-100 
+                  transition-all duration-500
+                "
+              >
+                <div className="w-14 h-14 flex items-center justify-center rounded-full bg-white/90 shadow-lg">
+                  <Play size={28} className="text-black ml-1" />
+                </div>
+              </div>
+
+              <div className="absolute bottom-6 left-6 text-white drop-shadow-lg">
+                <h3 className="text-2xl font-bold leading-tight">{s.title}</h3>
+                <p className="text-gray-300 text-sm mt-1">{s.artist}</p>
               </div>
             </div>
-
-            <div className="absolute bottom-6 left-6 text-white drop-shadow-lg">
-              <h3 className="text-2xl font-bold leading-tight">{s.title}</h3>
-              <p className="text-gray-300 text-sm mt-1">{s.artist}</p>
-            </div>
+            
+            {/* Queue Button Overlay */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                addToQueue(s.song_id);
+              }}
+              className="absolute top-16 right-3 z-10"
+              style={{
+                background: 'rgba(0, 0, 0, 0.75)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(59, 130, 246, 0.5)',
+                borderRadius: 8,
+                padding: '10px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.8)';
+                e.currentTarget.style.transform = 'scale(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.75)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              title="Add to Queue (Play Next)"
+            >
+              <ListPlus size={20} color="#3b82f6" />
+            </button>
           </div>
         ))}
       </div>

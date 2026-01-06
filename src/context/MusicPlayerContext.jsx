@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { createContext, useContext, useState, useRef, useEffect } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const MusicPlayerContext = createContext();
 
@@ -269,6 +270,68 @@ export const MusicPlayerProvider = ({ children }) => {
     }
   };
 
+  // Add song to queue (play next)
+  const addToQueue = async (songId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`http://localhost:9000/song/${songId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      const song = res.data.song;
+      
+      // If no queue exists, start playing this song
+      if (queue.length === 0) {
+        playSong(songId);
+        toast.success(`Playing "${song.title}"`);
+        return;
+      }
+
+      // Insert the song right after the current playing song
+      const newQueue = [...queue];
+      newQueue.splice(currentIndex + 1, 0, song);
+      setQueue(newQueue);
+      
+      console.log(`✅ Added "${song.title}" to queue (will play next)`);
+      toast.success(`Added "${song.title}" to queue (Play Next)`);
+      return true;
+    } catch (err) {
+      console.error("Error adding to queue:", err);
+      toast.error("Failed to add song to queue");
+      return false;
+    }
+  };
+
+  // Add song to end of queue
+  const addToQueueEnd = async (songId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`http://localhost:9000/song/${songId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      const song = res.data.song;
+      
+      // If no queue exists, start playing this song
+      if (queue.length === 0) {
+        playSong(songId);
+        toast.success(`Playing "${song.title}"`);
+        return;
+      }
+
+      // Add to the end of the queue
+      setQueue((prevQueue) => [...prevQueue, song]);
+      
+      console.log(`✅ Added "${song.title}" to end of queue`);
+      toast.success(`Added "${song.title}" to queue`);
+      return true;
+    } catch (err) {
+      console.error("Error adding to queue end:", err);
+      toast.error("Failed to add song to queue");
+      return false;
+    }
+  };
+
   const value = {
     // State
     currentSong,
@@ -293,6 +356,8 @@ export const MusicPlayerProvider = ({ children }) => {
     changeVolume,
     toggleLike,
     toggleSave,
+    addToQueue,
+    addToQueueEnd,
   };
 
   return (

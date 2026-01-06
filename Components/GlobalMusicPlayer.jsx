@@ -40,7 +40,7 @@ const GlobalMusicPlayer = () => {
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-blue-950/95 via-blue-900/95 to-indigo-950/95 backdrop-blur-lg border-t border-blue-500/40 shadow-2xl z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-blue-500/40 shadow-2xl z-50">
       <div className="max-w-screen-2xl mx-auto px-4 py-3">
         {/* Progress Bar */}
         <div className="mb-2">
