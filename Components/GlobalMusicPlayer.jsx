@@ -1,4 +1,6 @@
 /* eslint-disable react/prop-types */
+
+// state mannagement code added 
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
 import { Heart, Star, SkipBack, SkipForward, Play, Pause, Volume2 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
