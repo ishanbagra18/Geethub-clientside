@@ -126,37 +126,7 @@ return (
               </div>
             </div>
             
-            {/* Queue Button Overlay */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                addToQueue(s.song_id);
-              }}
-              className="absolute top-16 right-3 z-10"
-              style={{
-                background: 'rgba(0, 0, 0, 0.75)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(59, 130, 246, 0.5)',
-                borderRadius: 8,
-                padding: '10px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(59, 130, 246, 0.8)';
-                e.currentTarget.style.transform = 'scale(1.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.75)';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-              title="Add to Queue (Play Next)"
-            >
-              <ListPlus size={20} color="#3b82f6" />
-            </button>
+            
           </div>
         ))}
       </div>
