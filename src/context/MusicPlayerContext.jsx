@@ -270,7 +270,7 @@ export const MusicPlayerProvider = ({ children }) => {
     }
   };
 
-  // Add song to queue (play next)
+  // Addtion of the song in the queue here
   const addToQueue = async (songId) => {
     try {
       const token = localStorage.getItem("token");
