@@ -1,45 +1,20 @@
 // Hindisongs.jsx
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
+import { useMusicSections } from "../src/context/MusicSectionsContext";
 import { ListPlus } from "lucide-react";
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
-const Hindisongs = () => {
-  const [hindisongs, setHindisongs] = useState([]);
+const Hindisongs = ({ limitToHome = false }) => {
+  const { sections, loading } = useMusicSections();
   const navigate = useNavigate();
   const rowRef = useRef(null);
   const { addToQueue } = useMusicPlayer();
 
-  useEffect(() => {
-    const fetchHindisongs = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.warn("[Hindisongs] no token found in localStorage");
-          setHindisongs([]);
-          return;
-        }
-
-        const response = await axios.get(
-          "http://localhost:9000/music/hindisongs",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        console.log("[Hindisongs] fetch response:", response?.data);
-        setHindisongs(response.data.songs || []);
-      } catch (error) {
-        console.error("❌ Error fetching Hindi songs:", error);
-        setHindisongs([]);
-      }
-    };
-
-    fetchHindisongs();
-  }, []);
+  // Get songs from context and limit if on homepage
+  const hindisongs = limitToHome ? (sections.hindiSongs || []).slice(0, 10) : (sections.hindiSongs || []);
 
   const scrollByAmount = (direction) => {
     if (!rowRef.current) return;
@@ -93,7 +68,7 @@ const Hindisongs = () => {
     borderRadius: 999,
     padding: "6px 14px",
     cursor: "pointer",
-    display: "flex",
+    display: limitToHome ? "flex" : "none",
     alignItems: "center",
     gap: 6,
     backdropFilter: "blur(10px)",

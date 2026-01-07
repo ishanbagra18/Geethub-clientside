@@ -1,45 +1,20 @@
 // Mostliked.jsx
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
+import { useMusicSections } from "../src/context/MusicSectionsContext";
 import { ListPlus } from "lucide-react";
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
-const Mostliked = () => {
-  const [mostliked, setMostliked] = useState([]);
+const Mostliked = ({ limitToHome = false }) => {
+  const { sections, loading } = useMusicSections();
   const navigate = useNavigate();
   const rowRef = useRef(null);
   const { addToQueue } = useMusicPlayer();
 
-  useEffect(() => {
-    const fetchMostLiked = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.warn("[Mostliked] no token found in localStorage");
-          setMostliked([]);
-          return;
-        }
-
-        const response = await axios.get(
-          "http://localhost:9000/music/topsongs",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        console.log("[Mostliked] fetch response:", response?.data);
-        setMostliked(response.data.songs || []);
-      } catch (error) {
-        console.error("❌ Error fetching most liked songs:", error);
-        setMostliked([]);
-      }
-    };
-
-    fetchMostLiked();
-  }, []);
+  // Get songs from context and limit if on homepage
+  const mostliked = limitToHome ? (sections.mostLiked || []).slice(0, 10) : (sections.mostLiked || []);
 
   const scrollByAmount = (direction) => {
     if (!rowRef.current) return;
@@ -93,7 +68,7 @@ const Mostliked = () => {
     borderRadius: 999,
     padding: "6px 14px",
     cursor: "pointer",
-    display: "flex",
+    display: limitToHome ? "flex" : "none",
     alignItems: "center",
     gap: 6,
     backdropFilter: "blur(10px)",
@@ -310,7 +285,7 @@ const Mostliked = () => {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button
             style={seeAllButtonStyle}
-            onClick={() => navigate("/topsongs")}
+            onClick={() => navigate("/mostliked")}
           >
             See All
             <span style={{ fontSize: 16 }}>↗</span>

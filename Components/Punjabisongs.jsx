@@ -1,45 +1,20 @@
 // Punjabisongs.jsx
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
+import { useMusicSections } from "../src/context/MusicSectionsContext";
 import { ListPlus } from "lucide-react";
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
-const Punjabisongs = () => {
-  const [punjabisongs, setPunjabisongs] = useState([]);
+const Punjabisongs = ({ limitToHome = false }) => {
+  const { sections, loading } = useMusicSections();
   const navigate = useNavigate();
   const rowRef = useRef(null);
   const { addToQueue } = useMusicPlayer();
 
-  useEffect(() => {
-    const fetchPunjabiSongs = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.warn("[Punjabisongs] no token found in localStorage");
-          setPunjabisongs([]);
-          return;
-        }
-
-        const response = await axios.get(
-          "http://localhost:9000/music/punjabisongs",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        console.log("[Punjabisongs] fetch response:", response?.data);
-        setPunjabisongs(response.data.songs || []);
-      } catch (error) {
-        console.error("❌ Error fetching Punjabi songs:", error);
-        setPunjabisongs([]);
-      }
-    };
-
-    fetchPunjabiSongs();
-  }, []);
+  // Get songs from context and limit if on homepage
+  const punjabisongs = limitToHome ? (sections.punjabiSongs || []).slice(0, 10) : (sections.punjabiSongs || []);
 
   const scrollByAmount = (direction) => {
     if (!rowRef.current) return;
@@ -93,7 +68,7 @@ const Punjabisongs = () => {
     borderRadius: 999,
     padding: "6px 14px",
     cursor: "pointer",
-    display: "flex",
+    display: limitToHome ? "flex" : "none",
     alignItems: "center",
     gap: 6,
     backdropFilter: "blur(10px)",

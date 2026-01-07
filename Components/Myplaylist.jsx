@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ListMusic, Globe, Lock, Clock, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useMusicSections } from '../src/context/MusicSectionsContext';
 
 const formatDate = (dateString) => {
   if (!dateString) return "N/A";
@@ -12,46 +13,67 @@ const formatDate = (dateString) => {
 const getToken = () => localStorage.getItem("token");
 const DEFAULT_IMAGE = 'https://i.pinimg.com/736x/26/5a/a4/265aa4c9bbd82ccde7ff7de3e8011fd0.jpg';
 
-const Myplaylist = () => {
+const Myplaylist = ({ showCommunity = false, limitToHome = false }) => {
   const [playlists, setPlaylists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { sections, loading: contextLoading } = useMusicSections();
 
   useEffect(() => {
-    const fetchPlaylists = async () => {
-      const token = getToken();
-      if (!token) {
-        setError("User not authenticated.");
-        setLoading(false);
-        return;
-      }
-      try {
-        const response = await axios.get('http://localhost:9000/playlist/myplaylists', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setPlaylists(response.data?.playlists || []);
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to load playlists.");
-        setLoading(false);
-      }
-    };
-    fetchPlaylists();
-  }, []);
+    if (!showCommunity) {
+      const fetchPlaylists = async () => {
+        const token = getToken();
+        if (!token) {
+          setError("User not authenticated.");
+          setLoading(false);
+          return;
+        }
+        try {
+          const response = await axios.get('http://localhost:9000/playlist/myplaylists', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setPlaylists(response.data?.playlists || []);
+          setLoading(false);
+        } catch (err) {
+          setError("Failed to load playlists.");
+          setLoading(false);
+        }
+      };
+      fetchPlaylists();
+    } else {
+      setLoading(false);
+    }
+  }, [showCommunity]);
 
-  if (loading) return <div className="p-10 text-center text-purple-300">Loading...</div>;
+  // Use community playlists from context when showCommunity is true
+  const displayPlaylists = showCommunity 
+    ? (limitToHome ? (sections.communityPlaylists || []).slice(0, 10) : (sections.communityPlaylists || []))
+    : playlists;
+
+  const isLoading = showCommunity ? contextLoading.communityPlaylists : loading;
+
+  if (isLoading) return <div className="p-10 text-center text-purple-300">Loading...</div>;
   if (error) return <div className="p-10 text-center text-red-400">{error}</div>;
 
   return (
     <div className="p-6 bg-gray-900 text-white">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-white tracking-tight">My Library</h1>
-        <button className="text-sm font-semibold text-purple-400 hover:text-purple-300 transition">View All</button>
+        <h1 className="text-3xl font-bold text-white tracking-tight">
+          {showCommunity ? 'Community Playlists' : 'My Library'}
+        </h1>
+        {showCommunity && limitToHome && (
+          <button 
+            onClick={() => navigate('/communityplaylists')}
+            className="text-sm font-semibold text-purple-400 hover:text-purple-300 transition"
+          >
+            See All
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {playlists.map((playlist) => (
+        {displayPlaylists.map((playlist) => (
           <div
             key={playlist.id || playlist._id}
             onClick={() => navigate(`/playlist/${playlist.id || playlist._id}`)}

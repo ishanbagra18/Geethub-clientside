@@ -33,7 +33,7 @@ const Navbar = () => {
         className="flex items-center gap-1 cursor-pointer"
         onClick={() => navigate("/")}
       >
-        <FaMusic className="text-purple-500 dark:text-purple-700" />
+        <FaMusic className="text-white-500 dark:text-white-700" />
         <span className="text-3xl font-bold">Geet</span>
         <span className="text-blue-400 dark:text-blue-600 font-bold text-3xl">
           Hub
@@ -41,22 +41,34 @@ const Navbar = () => {
       </div>
 
       <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-        <div className="flex items-center cursor-pointer hover:opacity-80">
+        <div 
+          className="flex items-center cursor-pointer hover:opacity-80 hover:text-red-400 transition-colors"
+          onClick={() => navigate('/trending')}
+        >
           <FaFire className="mr-2" />
           <button>Trending</button>
         </div>
 
-        <div className="flex items-center cursor-pointer hover:opacity-80">
+        <div 
+          className="flex items-center cursor-pointer hover:opacity-80 hover:text-purple-400 transition-colors"
+          onClick={() => navigate('/mostliked')}
+        >
           <BiSolidLike className="mr-2" />
           <button>Most Liked</button>
         </div>
 
-        <div className="flex items-center cursor-pointer hover:opacity-80" onClick={() => navigate('/mylibrary', { state: { scrollToRecent: true } })}>
+        <div 
+          className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors" 
+          onClick={() => navigate('/mylibrary', { state: { scrollToRecent: true } })}
+        >
           <CiViewTimeline className="mr-2" />
           <button>Recently</button>
         </div>
 
-        <div className="flex items-center cursor-pointer hover:opacity-80">
+        <div 
+          className="flex items-center cursor-pointer hover:opacity-80 hover:text-cyan-400 transition-colors"
+          onClick={() => navigate('/topcharts')}
+        >
           <PiChatsTeardropThin className="mr-2" />
           <button>Top Charts</button>
         </div>
@@ -65,11 +77,11 @@ const Navbar = () => {
       <div>
         <input
           type="text"
-          placeholder="  Search for songs, artists, albums..."
+          placeholder="Search for songs, artists, albums..."
           className="pr-4 py-2 rounded-lg bg-[#222] dark:bg-gray-200 
-                     text-white dark:text-black placeholder-gray-400 
+                     text-black dark:text-black placeholder-gray-400 
                      dark:placeholder-gray-600 focus:outline-none 
-                     focus:ring-2 focus:ring-purple-500 transition w-80"
+                     focus:ring-2 focus:ring-purple-500 transition w-80 p-3"
         />
       </div>
 

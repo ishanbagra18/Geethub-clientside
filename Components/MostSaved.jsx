@@ -1,42 +1,20 @@
 // Mostsaved.jsx
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
+import { useMusicSections } from "../src/context/MusicSectionsContext";
 import { ListPlus } from "lucide-react";
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
-const Mostsaved = () => {
-  const [mostsaved, setMostsaved] = useState([]);
+const Mostsaved = ({ limitToHome = false }) => {
+  const { sections, loading } = useMusicSections();
   const navigate = useNavigate();
   const rowRef = useRef(null);
   const { addToQueue } = useMusicPlayer();
 
-  useEffect(() => {
-    const fetchMostSaved = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.warn("[Mostsaved] no token found in localStorage");
-          setMostsaved([]);
-          return;
-        }
-
-        const response = await axios.get("http://localhost:9000/music/saved", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        console.log("[Mostsaved] fetch response:", response?.data);
-        setMostsaved(response.data.songs || []);
-      } catch (error) {
-        console.error("❌ Error fetching saved songs:", error);
-        setMostsaved([]);
-      }
-    };
-
-    fetchMostSaved();
-  }, []);
+  // Get songs from context and limit if on homepage
+  const mostsaved = limitToHome ? (sections.mostSaved || []).slice(0, 10) : (sections.mostSaved || []);
 
   const scrollByAmount = (direction) => {
     if (!rowRef.current) return;
@@ -90,7 +68,7 @@ const Mostsaved = () => {
     borderRadius: 999,
     padding: "6px 14px",
     cursor: "pointer",
-    display: "flex",
+    display: limitToHome ? "flex" : "none",
     alignItems: "center",
     gap: 6,
     backdropFilter: "blur(10px)",
@@ -306,7 +284,7 @@ const Mostsaved = () => {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button
             style={seeAllButtonStyle}
-            onClick={() => navigate("/saved")}
+            onClick={() => navigate("/mostsaved")}
           >
             See All
             <span style={{ fontSize: 16 }}>↗</span>

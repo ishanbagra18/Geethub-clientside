@@ -1,45 +1,20 @@
 // Latestreleased.jsx
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
+import { useMusicSections } from "../src/context/MusicSectionsContext";
 import { ListPlus } from "lucide-react";
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
 const Latestreleased = () => {
-  const [latestReleased, setLatestReleased] = useState([]);
+  const { sections, loading } = useMusicSections();
   const navigate = useNavigate();
   const rowRef = useRef(null);
   const { addToQueue } = useMusicPlayer();
 
-  useEffect(() => {
-    const fetchLatestReleased = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.warn("[Latestreleased] no token found in localStorage");
-          setLatestReleased([]);
-          return;
-        }
-
-        const response = await axios.get(
-          "http://localhost:9000/music/latestreleased",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        console.log("[Latestreleased] fetch response:", response?.data);
-        setLatestReleased(response.data.songs || []);
-      } catch (error) {
-        console.error("❌ Error fetching latest released songs:", error);
-        setLatestReleased([]);
-      }
-    };
-
-    fetchLatestReleased();
-  }, []);
+  // Get all latest released songs from context
+  const latestReleased = sections.latestReleased || [];
 
   const scrollByAmount = (direction) => {
     if (!rowRef.current) return;
@@ -93,7 +68,7 @@ const Latestreleased = () => {
     borderRadius: 999,
     padding: "6px 14px",
     cursor: "pointer",
-    display: "flex",
+    display: "none",
     alignItems: "center",
     gap: 6,
     backdropFilter: "blur(10px)",

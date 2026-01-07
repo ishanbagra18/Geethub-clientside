@@ -13,35 +13,52 @@ import Playlist from "./pages/Playlist";
 import Mylibrary from "./pages/Mylibrary";
 import Dashboard from "../Components/Dashboard";
 import { MusicPlayerProvider } from "./context/MusicPlayerContext";
+import { MusicSectionsProvider } from "./context/MusicSectionsContext";
 import GlobalMusicPlayer from "../Components/GlobalMusicPlayer";
+import SeeAllTopCharts from "./pages/SeeAllTopCharts";
+import SeeAllMostLiked from "./pages/SeeAllMostLiked";
+import SeeAllMostSaved from "./pages/SeeAllMostSaved";
+import SeeAllHindiSongs from "./pages/SeeAllHindiSongs";
+import SeeAllPunjabiSongs from "./pages/SeeAllPunjabiSongs";
+import SeeAllCommunityPlaylists from "./pages/SeeAllCommunityPlaylists";
+import TrendingPage from "./pages/TrendingPage";
 
 function App() {
   return (
     <MusicPlayerProvider>
-      {/* 🔥 Toast container (GLOBAL) */}
-      <Toaster
-        position="top-right"
-        reverseOrder={false}
-        toastOptions={{
-          duration: 3000,
-        }}
-      />
+      <MusicSectionsProvider>
+        {/* 🔥 Toast container (GLOBAL) */}
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+          toastOptions={{
+            duration: 3000,
+          }}
+        />
 
-      <Routes>
-        <Route path="/login" element={<Loginpage />} />
-        <Route path="/signup" element={<Signuppage />} />
-        <Route path="/" element={<Homepage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
-        <Route path="/myprofile" element={<MyProfile />} />
-        <Route path="/updateprofile" element={<UpdateProfile />} />
-        <Route path="/playsong/:id" element={<PlaySong />} />
-        <Route path="/playlist/:id" element={<Playlist />} />
-        <Route path="/mylibrary" element={<Mylibrary />} />
-      </Routes>
+        <Routes>
+          <Route path="/login" element={<Loginpage />} />
+          <Route path="/signup" element={<Signuppage />} />
+          <Route path="/" element={<Homepage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/myprofile" element={<MyProfile />} />
+          <Route path="/updateprofile" element={<UpdateProfile />} />
+          <Route path="/playsong/:id" element={<PlaySong />} />
+          <Route path="/playlist/:id" element={<Playlist />} />
+          <Route path="/mylibrary" element={<Mylibrary />} />
+          <Route path="/topcharts" element={<SeeAllTopCharts />} />
+          <Route path="/mostliked" element={<SeeAllMostLiked />} />
+          <Route path="/mostsaved" element={<SeeAllMostSaved />} />
+          <Route path="/hindisongs" element={<SeeAllHindiSongs />} />
+          <Route path="/punjabisongs" element={<SeeAllPunjabiSongs />} />
+          <Route path="/communityplaylists" element={<SeeAllCommunityPlaylists />} />
+          <Route path="/trending" element={<TrendingPage />} />
+        </Routes>
 
-      {/* Global Music Player Bar */}
-      <GlobalMusicPlayer />
+        {/* Global Music Player Bar */}
+        <GlobalMusicPlayer />
+      </MusicSectionsProvider>
     </MusicPlayerProvider>
   );
 }

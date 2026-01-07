@@ -16,6 +16,7 @@ const Mostliked = lazy(() => import("../../Components/Mostliked.jsx"));
 const Topcharts = lazy(() => import("../../Components/Topcharts.jsx"));
 const Mostsaved = lazy(() => import("../../Components/MostSaved.jsx"));
 const RandomSongs = lazy(() => import("../../Components/RandomSongs.jsx"));
+const TrendingSongs = lazy(() => import("../../Components/TrendingSongs.jsx"));
 
 // --- Helper Components ---
 
@@ -375,34 +376,34 @@ Welcome {user?.first_name
         <section aria-labelledby="top-charts">
           <SectionHeading emoji="🚀" title="The Industry's Hottest" subtitle="Top Charts" />
           <Suspense fallback={<div className="h-4 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 rounded-full w-48 animate-pulse mx-auto" />}>
-            <Topcharts maxToShow={10} />
+            <Topcharts limitToHome={true} />
           </Suspense>
         </section>
 
         <section aria-labelledby="most-liked">
           <SectionHeading emoji="💖" title="Filmmaker Favorites" subtitle="Most Liked" />
           <Suspense fallback={<div className="h-4 bg-gradient-to-r from-pink-400/30 to-blue-400/30 rounded-full w-48 animate-pulse mx-auto" />}>
-            <Mostliked maxToShow={10} />
+            <Mostliked limitToHome={true} />
           </Suspense>
         </section>
 
         <section aria-labelledby="most-saved">
           <SectionHeading emoji="🎬" title="Essential Soundtracks" subtitle="Most Saved" />
           <Suspense fallback={<div className="h-4 bg-gradient-to-r from-green-400/30 to-cyan-400/30 rounded-full w-48 animate-pulse mx-auto" />}>
-            <Mostsaved maxToShow={10} />
+            <Mostsaved limitToHome={true} />
           </Suspense>
         </section>
 
         {/* Community Playlists (Original Public Section) */}
         <section aria-labelledby="public-playlists">
           <SectionHeading emoji="🌐" title="Community Playlists" subtitle="Featured Public Playlists" />
-          <PublicPlaylistsSection maxToShow={5} />
+          <Myplaylist showCommunity={true} limitToHome={true} />
         </section>
 
+       
 
-
-        <Hindisongs/>
-        <Punjabisongs/>
+        <Hindisongs limitToHome={true} />
+        <Punjabisongs limitToHome={true} />
         <Latestreleased/>
         <Dashboard/>
         

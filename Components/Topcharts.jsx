@@ -1,44 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
+import { useMusicSections } from "../src/context/MusicSectionsContext";
 import { ListPlus, PlayCircle } from "lucide-react";
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
-const Topcharts = () => {
-  const [recentSongs, setRecentSongs] = useState([]);
-  const [loading, setLoading] = useState(true);
+const Topcharts = ({ limitToHome = false }) => {
+  const { sections, loading } = useMusicSections();
   const navigate = useNavigate();
   const rowRef = useRef(null);
   const { addToQueue } = useMusicPlayer();
 
-  useEffect(() => {
-    const fetchSongs = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.warn("[Topcharts] no token found in localStorage");
-          setRecentSongs([]);
-          return;
-        }
-
-        const response = await axios.get("http://localhost:9000/music/allsongs", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        console.log("[Topcharts] fetch response:", response?.data);
-        setRecentSongs(response.data.songs || []);
-      } catch (err) {
-        console.error("❌ Error fetching songs:", err);
-        setRecentSongs([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSongs();
-  }, []);
+  // Get songs from context and limit if on homepage
+  const recentSongs = limitToHome ? (sections.topCharts || []).slice(0, 10) : (sections.topCharts || []);
 
   // Inline styles - these hard-force equal sizes
   const cardStyle = {
@@ -74,16 +49,18 @@ const Topcharts = () => {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: 0.6 }}>Top Charts</h2>
 
-        <button
-          onClick={() => navigate("/allsongs")}
-          style={{ color: "#f87171", fontSize: 14, fontWeight: 600, background: "transparent", border: "none", cursor: "pointer" }}
-        >
-          See All
-        </button>
+        {limitToHome && (
+          <button
+            onClick={() => navigate("/topcharts")}
+            style={{ color: "#f87171", fontSize: 14, fontWeight: 600, background: "transparent", border: "none", cursor: "pointer" }}
+          >
+            See All
+          </button>
+        )}
       </div>
 
       {/* Song List */}
-      {loading ? (
+      {loading.topCharts ? (
         <div style={{ textAlign: "center", color: "#9ca3af" }}>Loading songs...</div>
       ) : recentSongs.length === 0 ? (
         <div style={{ textAlign: "center", color: "#9ca3af" }}>No songs found</div>
