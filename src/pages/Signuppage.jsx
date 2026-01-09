@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
@@ -13,32 +13,163 @@ const Signuppage = () => {
   const [usertype, setUsertype] = useState("USER");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  
+  // Field validation states
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+  const [passwordStrength, setPasswordStrength] = useState(0);
 
   const navigate = useNavigate();
 
+  // Password strength calculator
+  useEffect(() => {
+    if (password) {
+      let strength = 0;
+      if (password.length >= 8) strength++;
+      if (password.length >= 12) strength++;
+      if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+      if (/\d/.test(password)) strength++;
+      if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+      setPasswordStrength(strength);
+    } else {
+      setPasswordStrength(0);
+    }
+  }, [password]);
+
+  // Validation functions
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const validatePhone = (phone) => {
+    const cleaned = phone.replace(/\D/g, '');
+    return cleaned.length >= 10;
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 8;
+  };
+
+  const validateField = (name, value) => {
+    let error = "";
+    switch (name) {
+      case "firstname":
+        if (!value.trim()) error = "First name is required";
+        else if (value.length < 2) error = "First name must be at least 2 characters";
+        break;
+      case "lastname":
+        if (!value.trim()) error = "Last name is required";
+        else if (value.length < 2) error = "Last name must be at least 2 characters";
+        break;
+      case "email":
+        if (!value) error = "Email is required";
+        else if (!validateEmail(value)) error = "Please enter a valid email address";
+        break;
+      case "password":
+        if (!value) error = "Password is required";
+        else if (!validatePassword(value)) error = "Password must be at least 8 characters";
+        break;
+      case "phone":
+        if (!value) error = "Phone number is required";
+        else if (!validatePhone(value)) error = "Please enter a valid phone number";
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
+  const handleBlur = (field) => {
+    setTouched({ ...touched, [field]: true });
+    const error = validateField(field, eval(field));
+    setErrors({ ...errors, [field]: error });
+  };
+
+  const formatPhoneNumber = (value) => {
+    const cleaned = value.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+    if (match) {
+      return !match[2] ? match[1] : `(${match[1]}) ${match[2]}${match[3] ? '-' + match[3] : ''}`;
+    }
+    return value;
+  };
+
+  const handlePhoneChange = (e) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setPhone(formatted);
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
+    
+    // Validate all fields
+    const newErrors = {};
+    newErrors.firstname = validateField("firstname", firstname);
+    newErrors.lastname = validateField("lastname", lastname);
+    newErrors.email = validateField("email", email);
+    newErrors.password = validateField("password", password);
+    newErrors.phone = validateField("phone", phone);
+    
+    setErrors(newErrors);
+    setTouched({
+      firstname: true,
+      lastname: true,
+      email: true,
+      password: true,
+      phone: true
+    });
+
+    // Check if there are any errors
+    if (Object.values(newErrors).some(error => error)) {
+      toast.error("Please fix all errors before submitting");
+      return;
+    }
+
+    if (!agreedToTerms) {
+      toast.error("Please agree to the Terms and Privacy Policy");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
+      const cleanedPhone = phone.replace(/\D/g, '');
       const response = await axios.post("http://localhost:9000/register", {
         first_name: firstname,
         last_name: lastname,
         email: email,
         password: password,
-        phone: phone,
+        phone: cleanedPhone,
         user_type: usertype,
       });
 
       console.log("✅ Signup Success:", response.data);
       toast.success("Signup successful! Redirecting to login...");
-      navigate("/login");
+      setTimeout(() => navigate("/login"), 1500);
     } catch (error) {
       console.error("❌ Signup Error:", error.response?.data || error.message);
       toast.error("Signup failed: " + (error.response?.data?.error || "Unknown error"));
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getPasswordStrengthColor = () => {
+    if (passwordStrength <= 1) return "bg-red-500";
+    if (passwordStrength <= 2) return "bg-orange-500";
+    if (passwordStrength <= 3) return "bg-yellow-500";
+    if (passwordStrength <= 4) return "bg-lime-500";
+    return "bg-green-500";
+  };
+
+  const getPasswordStrengthText = () => {
+    if (passwordStrength <= 1) return "Weak";
+    if (passwordStrength <= 2) return "Fair";
+    if (passwordStrength <= 3) return "Good";
+    if (passwordStrength <= 4) return "Strong";
+    return "Very Strong";
   };
 
   return (
@@ -55,6 +186,7 @@ const Signuppage = () => {
         position="top-right" 
         reverseOrder={false}
         toastOptions={{
+          duration: 5000,
           style: {
             background: '#1e293b',
             color: '#fff',
@@ -124,12 +256,27 @@ const Signuppage = () => {
                     <input
                       value={firstname}
                       onChange={(e) => setFirstname(e.target.value)}
+                      onBlur={() => handleBlur("firstname")}
                       type="text"
                       required
                       placeholder="John"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border ${
+                        touched.firstname && errors.firstname 
+                          ? "border-red-500 focus:ring-red-500" 
+                          : touched.firstname && !errors.firstname
+                          ? "border-green-500 focus:ring-green-500"
+                          : "border-slate-700 focus:ring-indigo-500"
+                      } text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
                     />
                   </div>
+                  {touched.firstname && errors.firstname && (
+                    <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors.firstname}
+                    </p>
+                  )}
                 </div>
 
                 <div className="group">
@@ -143,12 +290,27 @@ const Signuppage = () => {
                     <input
                       value={lastname}
                       onChange={(e) => setLastname(e.target.value)}
+                      onBlur={() => handleBlur("lastname")}
                       type="text"
                       required
                       placeholder="Doe"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border ${
+                        touched.lastname && errors.lastname 
+                          ? "border-red-500 focus:ring-red-500" 
+                          : touched.lastname && !errors.lastname
+                          ? "border-green-500 focus:ring-green-500"
+                          : "border-slate-700 focus:ring-indigo-500"
+                      } text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
                     />
                   </div>
+                  {touched.lastname && errors.lastname && (
+                    <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {errors.lastname}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -164,12 +326,27 @@ const Signuppage = () => {
                   <input
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onBlur={() => handleBlur("email")}
                     type="email"
                     required
                     placeholder="john@example.com"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border ${
+                      touched.email && errors.email 
+                        ? "border-red-500 focus:ring-red-500" 
+                        : touched.email && !errors.email
+                        ? "border-green-500 focus:ring-green-500"
+                        : "border-slate-700 focus:ring-indigo-500"
+                    } text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
                   />
                 </div>
+                {touched.email && errors.email && (
+                  <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    {errors.email}
+                  </p>
+                )}
               </div>
 
               {/* Password Field */}
@@ -184,10 +361,17 @@ const Signuppage = () => {
                   <input
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onBlur={() => handleBlur("password")}
                     type={showPassword ? "text" : "password"}
                     required
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-12 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                    className={`w-full pl-10 pr-12 py-2.5 rounded-xl bg-slate-800/50 border ${
+                      touched.password && errors.password 
+                        ? "border-red-500 focus:ring-red-500" 
+                        : touched.password && !errors.password
+                        ? "border-green-500 focus:ring-green-500"
+                        : "border-slate-700 focus:ring-indigo-500"
+                    } text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
                   />
                   <button
                     type="button"
@@ -206,6 +390,43 @@ const Signuppage = () => {
                     )}
                   </button>
                 </div>
+                {touched.password && errors.password && (
+                  <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    {errors.password}
+                  </p>
+                )}
+                {password && (
+                  <div className="mt-2">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs text-slate-400">Password strength:</span>
+                      <span className={`text-xs font-medium ${
+                        passwordStrength <= 1 ? "text-red-400" :
+                        passwordStrength <= 2 ? "text-orange-400" :
+                        passwordStrength <= 3 ? "text-yellow-400" :
+                        passwordStrength <= 4 ? "text-lime-400" :
+                        "text-green-400"
+                      }`}>
+                        {getPasswordStrengthText()}
+                      </span>
+                    </div>
+                    <div className="flex gap-1 h-1">
+                      {[...Array(5)].map((_, i) => (
+                        <div
+                          key={i}
+                          className={`flex-1 rounded-full transition-all duration-300 ${
+                            i < passwordStrength ? getPasswordStrengthColor() : "bg-slate-700"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Use 8+ characters with uppercase, lowercase, numbers & symbols
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Phone Field */}
@@ -219,15 +440,30 @@ const Signuppage = () => {
                   </span>
                   <input
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={handlePhoneChange}
+                    onBlur={() => handleBlur("phone")}
                     type="tel"
                     required
-                    placeholder="+1 (555) 000-0000"
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                    placeholder="(555) 123-4567"
+                    maxLength="14"
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800/50 border ${
+                      touched.phone && errors.phone 
+                        ? "border-red-500 focus:ring-red-500" 
+                        : touched.phone && !errors.phone
+                        ? "border-green-500 focus:ring-green-500"
+                        : "border-slate-700 focus:ring-indigo-500"
+                    } text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-300`}
                   />
                 </div>
+                {touched.phone && errors.phone && (
+                  <p className="text-red-400 text-xs mt-1 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    {errors.phone}
+                  </p>
+                )}
               </div>
-
 
               {/* User Type Selector */}
               <div className="mt-2">
@@ -254,10 +490,41 @@ const Signuppage = () => {
                 </div>
               </div>
 
+              {/* Terms and Conditions Checkbox */}
+              <div className="mt-2">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <div className="relative flex items-center justify-center mt-0.5">
+                    <input
+                      type="checkbox"
+                      checked={agreedToTerms}
+                      onChange={(e) => setAgreedToTerms(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-5 h-5 border-2 border-slate-600 rounded-md bg-slate-800/50 peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-all duration-300 flex items-center justify-center">
+                      {agreedToTerms && (
+                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
+                    I agree to the{" "}
+                    <a href="#" className="text-indigo-400 hover:text-indigo-300 font-medium underline" onClick={(e) => e.stopPropagation()}>
+                      Terms of Service
+                    </a>
+                    {" "}and{" "}
+                    <a href="#" className="text-indigo-400 hover:text-indigo-300 font-medium underline" onClick={(e) => e.stopPropagation()}>
+                      Privacy Policy
+                    </a>
+                  </span>
+                </label>
+              </div>
+
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || !agreedToTerms}
                 className="w-full relative bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 bg-size-200 bg-pos-0 hover:bg-pos-100 text-white font-semibold py-3 rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
               >
                 <span className={`flex items-center justify-center gap-2 ${isLoading ? 'opacity-0' : ''}`}>
@@ -288,13 +555,19 @@ const Signuppage = () => {
               </p>
             </form>
 
-            {/* Terms */}
-            <p className="text-center text-slate-500 text-xs mt-6">
-              By signing up, you agree to our{" "}
-              <a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors">Terms</a>
-              {" "}and{" "}
-              <a href="#" className="text-slate-400 hover:text-indigo-400 transition-colors">Privacy Policy</a>
-            </p>
+            {/* Security Notice */}
+            <div className="mt-6 p-3 bg-slate-800/30 border border-slate-700/50 rounded-lg">
+              <div className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-indigo-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <div>
+                  <p className="text-xs text-slate-400">
+                    <span className="text-indigo-400 font-semibold">Secure & Private:</span> Your data is encrypted and protected. We never share your information with third parties.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

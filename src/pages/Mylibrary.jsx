@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useHistory } from '../context/historyContext';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../../Components/Navbar';
 
 Modal.setAppElement('#root'); 
 
@@ -204,6 +205,7 @@ const Mylibrary = () => {
 
         const displayList = getDisplayList();
         return (
+            
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -251,7 +253,8 @@ const Mylibrary = () => {
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white pb-32">
-            <div className="pt-6 pb-12 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+            <Navbar />
+            <div className="pt-24 pb-12 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
                 <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
                         <h1 className="text-5xl lg:text-6xl font-black mb-6">Your Library</h1>
@@ -371,7 +374,9 @@ const Mylibrary = () => {
                 </Modal>
             </div>
         </div>
+
     );
+
 };
 
 const Tab = ({ active, label, count, icon, onClick }) => (
@@ -405,6 +410,7 @@ const SongCard = React.forwardRef(({ song, isHovered, onHover, onLeave, onClick,
             <span className="absolute top-2 right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full shadow">Last Played</span>
         )}
     </div>
+    
 ));
 
 export default Mylibrary;

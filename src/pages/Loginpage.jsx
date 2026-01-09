@@ -87,7 +87,7 @@ const Loginpage = () => {
                   value={Password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Your password"
-                  className="pl-10 mt-1 w-full px-3 py-2 rounded-lg bg-slate-900/70 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 shadow-sm hover:border-indigo-400"
+                  className="pl-10  w-full px-3 py-2 rounded-lg bg-slate-900/70 text-white border border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 shadow-sm hover:border-indigo-400"
                   required
                   autoComplete="current-password"
                 />
