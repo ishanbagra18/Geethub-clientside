@@ -1,3 +1,5 @@
+//treanding page added
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMusicSections } from '../context/MusicSectionsContext';
