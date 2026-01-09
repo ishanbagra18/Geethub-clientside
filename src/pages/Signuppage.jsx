@@ -155,7 +155,7 @@ const Signuppage = () => {
       setIsLoading(false);
     }
   };
-
+// this was added in this 
   const getPasswordStrengthColor = () => {
     if (passwordStrength <= 1) return "bg-red-500";
     if (passwordStrength <= 2) return "bg-orange-500";
