@@ -89,7 +89,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                   {song.title}
                 </h2>
                 <p className="text-gray-300">
-                  {song.artist} • <span className="text-blue-300">{song.genre}</span>
+                  {song.artist} 
                 </p>
               </div>
               {/* GIF Visualizer in the empty space of the header */}

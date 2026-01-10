@@ -187,7 +187,7 @@ const Playlist = () => {
               <div className="col-span-7 md:col-span-6 flex items-center gap-4">
                 <img src={song.image_url || PLACEHOLDER} className="w-10 h-10 rounded object-cover shadow-lg" alt="" />
                 <div className="truncate">
-                  <p className="font-semibold text-white group-hover:text-blue-400 cursor-pointer transition-colors" onClick={() => navigate(`/playsong/${song.song_id}`)}>{song.title}</p>
+                  <p className="font-semibold text-white group-hover:text-blue-400 cursor-pointer transition-colors" onClick={() => navigate(`/playsong/${song.song_id}?playlist=${id}`)}>{song.title}</p>
                   <p className="text-xs text-gray-500 md:hidden">{song.artist}</p>
                 </div>
               </div>

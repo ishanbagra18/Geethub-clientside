@@ -42,7 +42,7 @@ const Navbar = () => {
 
       <div className="hidden md:flex items-center gap-8 text-sm font-medium">
         <div 
-          className="flex items-center cursor-pointer hover:opacity-80 hover:text-cyan-400 transition-colors"
+          className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors"
           onClick={() => navigate('/trending')}
         >
           <FaFire className="mr-2" />
@@ -50,7 +50,7 @@ const Navbar = () => {
         </div>
 
         <div 
-          className="flex items-center cursor-pointer hover:opacity-80 hover:text-cyan-400 transition-colors"
+          className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors"
           onClick={() => navigate('/mostliked')}
         >
           <BiSolidLike className="mr-2" />
@@ -58,7 +58,7 @@ const Navbar = () => {
         </div>
 
         <div 
-          className="flex items-center cursor-pointer hover:opacity-80 hover:text-cyan-400 transition-colors" 
+          className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors" 
           onClick={() => navigate('/mylibrary', { state: { scrollToRecent: true } })}
         >
           <CiViewTimeline className="mr-2" />
@@ -66,11 +66,11 @@ const Navbar = () => {
         </div>
 
         <div 
-          className="flex items-center cursor-pointer hover:opacity-80 hover:text-cyan-400 transition-colors"
-          onClick={() => navigate('/topcharts')}
+          className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors"
+          onClick={() => navigate('/mymostplayed')}
         >
           <PiChatsTeardropThin className="mr-2" />
-          <button>Top Charts</button>
+          <button>Most Played</button>
         </div>
       </div>
 

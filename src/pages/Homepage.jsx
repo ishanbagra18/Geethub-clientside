@@ -9,14 +9,13 @@ import Myplaylist from "../../Components/Myplaylist.jsx";
 import Hindisongs from "../../Components/Hindisongs.jsx";
 import Punjabisongs from "../../Components/Punjabisongs.jsx";
 import Latestreleased from "../../Components/Latestreleased.jsx";
-import Dashboard from "../../Components/Dashboard.jsx";
+import Artists from "../../Components/Artists.jsx";
 
 // Lazy load components for better performance
 const Mostliked = lazy(() => import("../../Components/Mostliked.jsx"));
 const Topcharts = lazy(() => import("../../Components/Topcharts.jsx"));
 const Mostsaved = lazy(() => import("../../Components/MostSaved.jsx"));
 const RandomSongs = lazy(() => import("../../Components/RandomSongs.jsx"));
-const TrendingSongs = lazy(() => import("../../Components/TrendingSongs.jsx"));
 
 // --- Helper Components ---
 
@@ -405,7 +404,7 @@ Welcome {user?.first_name
         <Hindisongs limitToHome={true} />
         <Punjabisongs limitToHome={true} />
         <Latestreleased/>
-        <Dashboard/>
+        <Artists/>
         
       </main>
 

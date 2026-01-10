@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Music, Edit2, Play, Mail, Phone, Fingerprint, Lock, Settings,Book  } from "lucide-react";
+import { Music, Edit2, Play, Mail, Phone, Fingerprint, Lock, Settings,Book,User  } from "lucide-react";
+
+
+
 
 const getUidFromToken = () => {
   try {
@@ -119,6 +122,20 @@ export default function MyProfile() {
               >
                 <Book  size={16} /> My Library
               </button>
+
+
+
+               <button 
+                onClick={() => (window.location.href = "/myfollowing")}
+                className="flex items-center gap-2 px-6 py-3 bg-zinc-800/50 hover:bg-zinc-800 text-white font-semibold rounded-full border border-zinc-700/50 transition-all"
+              >
+                <User size={16} /> My Following
+              </button>
+
+
+
+
+
             </div>
           </div>
         </div>

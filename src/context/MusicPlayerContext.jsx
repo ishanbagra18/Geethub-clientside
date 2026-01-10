@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { createContext, useContext, useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -15,6 +16,8 @@ export const useMusicPlayer = () => {
 
 export const MusicPlayerProvider = ({ children }) => {
   const audioRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
   
   const [currentSong, setCurrentSong] = useState(null);
   const [queue, setQueue] = useState([]);
@@ -187,6 +190,11 @@ export const MusicPlayerProvider = ({ children }) => {
     const nextSong = queue[index];
     setCurrentIndex(index);
     setCurrentSong(nextSong);
+
+    // Update URL if on playsong page
+    if (location.pathname.startsWith('/playsong/')) {
+      navigate(`/playsong/${nextSong.song_id}`, { replace: true });
+    }
 
     const audio = audioRef.current;
     if (!audio) return;

@@ -22,6 +22,9 @@ import SeeAllHindiSongs from "./pages/SeeAllHindiSongs";
 import SeeAllPunjabiSongs from "./pages/SeeAllPunjabiSongs";
 import SeeAllCommunityPlaylists from "./pages/SeeAllCommunityPlaylists";
 import TrendingPage from "./pages/TrendingPage";
+import Artistdes from "./pages/Artistdes";
+import Myfollowing from "./pages/Myfollowing";
+import Mymostplayed from "./pages/Mymostplayed";
 
 function App() {
   return (
@@ -54,6 +57,9 @@ function App() {
           <Route path="/punjabisongs" element={<SeeAllPunjabiSongs />} />
           <Route path="/communityplaylists" element={<SeeAllCommunityPlaylists />} />
           <Route path="/trending" element={<TrendingPage />} />
+          <Route path="/artist/:id" element={<Artistdes />} />
+          <Route path="/myfollowing" element={<Myfollowing />} />
+          <Route path="/mymostplayed" element={<Mymostplayed />} />
         </Routes>
 
         {/* Global Music Player Bar */}
