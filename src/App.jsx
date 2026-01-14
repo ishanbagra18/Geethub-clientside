@@ -25,6 +25,8 @@ import TrendingPage from "./pages/TrendingPage";
 import Artistdes from "./pages/Artistdes";
 import Myfollowing from "./pages/Myfollowing";
 import Mymostplayed from "./pages/Mymostplayed";
+import UsersList from "./pages/UsersList";
+import ChatConversation from "./pages/ChatConversation";
 
 function App() {
   return (
@@ -60,6 +62,8 @@ function App() {
           <Route path="/artist/:id" element={<Artistdes />} />
           <Route path="/myfollowing" element={<Myfollowing />} />
           <Route path="/mymostplayed" element={<Mymostplayed />} />
+          <Route path="/messages" element={<UsersList />} />
+          <Route path="/messages/:userId" element={<ChatConversation />} />
         </Routes>
 
         {/* Global Music Player Bar */}

@@ -104,10 +104,6 @@ return (
                 {s.lang}
               </span>
 
-              <span className="absolute top-3 left-3 bg-yellow-300/90 text-black px-3 py-1 text-xs font-semibold rounded-full shadow">
-                {s.genre}
-              </span>
-
               <div
                 className="
                   absolute inset-0 flex items-center justify-center 
@@ -121,7 +117,6 @@ return (
               </div>
 
               <div className="absolute bottom-6 left-6 text-white drop-shadow-lg">
-                <h3 className="text-2xl font-bold leading-tight">{s.title}</h3>
                 <p className="text-gray-300 text-sm mt-1">{s.artist}</p>
               </div>
             </div>

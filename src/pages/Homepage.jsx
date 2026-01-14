@@ -9,6 +9,7 @@ import Myplaylist from "../../Components/Myplaylist.jsx";
 import Hindisongs from "../../Components/Hindisongs.jsx";
 import Punjabisongs from "../../Components/Punjabisongs.jsx";
 import Latestreleased from "../../Components/Latestreleased.jsx";
+import Dashboard from "../../Components/Dashboard.jsx";
 import Artists from "../../Components/Artists.jsx";
 
 // Lazy load components for better performance
@@ -368,7 +369,7 @@ Welcome {user?.first_name
               ))}
             </div>
           }>
-            <RandomSongs maxToShow={10} />
+            <RandomSongs maxToShow={4} />
           </Suspense>
         </section>
 
@@ -405,6 +406,43 @@ Welcome {user?.first_name
         <Punjabisongs limitToHome={true} />
         <Latestreleased/>
         <Artists/>
+        
+        {/* Messages Section */}
+        <section aria-labelledby="messages" className="mt-12">
+          <SectionHeading emoji="💬" title="Messages" subtitle="Connect with Users" />
+          <div className="flex justify-center items-center py-12">
+            <button
+              onClick={() => navigate('/messages')}
+              className="group relative px-12 py-6 bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500 text-white text-xl font-bold rounded-2xl shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 overflow-hidden"
+            >
+              <span className="relative z-10 flex items-center gap-3">
+                <svg 
+                  className="w-8 h-8 group-hover:rotate-12 transition-transform duration-300" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                Chat Now
+                <svg 
+                  className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+          </div>
+          <p className="text-center text-gray-400 mt-4 text-sm">
+            Connect with other users and start conversations
+          </p>
+        </section>
+
+        <Dashboard/>
         
       </main>
 
