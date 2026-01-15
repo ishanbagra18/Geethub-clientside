@@ -22,7 +22,7 @@ const Navbar = () => {
     setIsLoggedIn(!!token);
   }, []);
 
-  // Close suggestions when clicking outside
+  // Close suggestions when clicking outside this is added but all songs are coming , no scroll bar
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -150,6 +150,10 @@ const Navbar = () => {
         </div>
 
         {/* Suggestions Dropdown */}
+
+        
+
+        
         {showSuggestions && (
           <div className="absolute top-full left-0 w-full mt-2 bg-[#1a1a1a] dark:bg-white 
                           rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-gray-700 dark:border-gray-300">
