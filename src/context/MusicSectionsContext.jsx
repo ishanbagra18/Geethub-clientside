@@ -43,7 +43,7 @@ export const MusicSectionsProvider = ({ children }) => {
       const token = getToken();
       if (!token) return;
 
-      const response = await axios.get('${API_BASE_URL}/music/allsongs', {
+      const response = await axios.get(`${API_BASE_URL}/music/allsongs`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -62,7 +62,7 @@ export const MusicSectionsProvider = ({ children }) => {
       const token = getToken();
       if (!token) return;
 
-      const response = await axios.get('${API_BASE_URL}/music/topsongs', {
+      const response = await axios.get(`${API_BASE_URL}/music/topsongs`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -81,7 +81,7 @@ export const MusicSectionsProvider = ({ children }) => {
       const token = getToken();
       if (!token) return;
 
-      const response = await axios.get('${API_BASE_URL}/music/saved', {
+      const response = await axios.get(`${API_BASE_URL}/music/saved`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -100,7 +100,7 @@ export const MusicSectionsProvider = ({ children }) => {
       const token = getToken();
       if (!token) return;
 
-      const response = await axios.get('${API_BASE_URL}/music/hindisongs', {
+      const response = await axios.get(`${API_BASE_URL}/music/hindisongs`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -119,7 +119,7 @@ export const MusicSectionsProvider = ({ children }) => {
       const token = getToken();
       if (!token) return;
 
-      const response = await axios.get('${API_BASE_URL}/music/punjabisongs', {
+      const response = await axios.get(`${API_BASE_URL}/music/punjabisongs`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -138,7 +138,7 @@ export const MusicSectionsProvider = ({ children }) => {
       const token = getToken();
       if (!token) return;
 
-      const response = await axios.get('${API_BASE_URL}/music/latestreleased', {
+      const response = await axios.get(`${API_BASE_URL}/music/latestreleased`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -157,7 +157,7 @@ export const MusicSectionsProvider = ({ children }) => {
       const token = getToken();
       if (!token) return;
 
-      const response = await axios.get('${API_BASE_URL}/playlists', {
+      const response = await axios.get(`${API_BASE_URL}/playlists`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -176,7 +176,7 @@ export const MusicSectionsProvider = ({ children }) => {
       const token = getToken();
       if (!token) return;
 
-      const response = await axios.get('${API_BASE_URL}/music/trendingsongs', {
+      const response = await axios.get(`${API_BASE_URL}/music/trendingsongs`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

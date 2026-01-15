@@ -31,7 +31,7 @@ const Myplaylist = ({ showCommunity = false, limitToHome = false }) => {
           return;
         }
         try {
-          const response = await axios.get('${API_BASE_URL}/playlist/myplaylists', {
+          const response = await axios.get(`${API_BASE_URL}/playlist/myplaylists`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           setPlaylists(response.data?.playlists || []);
