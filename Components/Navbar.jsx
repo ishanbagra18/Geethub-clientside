@@ -143,7 +143,7 @@ const Navbar = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => searchQuery && setShowSuggestions(true)}
             className="pl-10 pr-4 py-2 rounded-lg bg-[#222] dark:bg-gray-200 
-                       text-white dark:text-black placeholder-gray-400 
+                       text-black dark:text-black placeholder-gray-400 
                        dark:placeholder-gray-600 focus:outline-none 
                        focus:ring-2 focus:ring-purple-500 transition w-80"
           />

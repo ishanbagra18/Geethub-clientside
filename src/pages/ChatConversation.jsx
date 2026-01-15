@@ -274,7 +274,7 @@ const ChatConversation = () => {
                             </button>
                           )}
                           <div
-                            className={`max-w-[70%] rounded-2xl px-4 py-2 ${
+                            className={`max-w-[80%] min-w-[100px] rounded-2xl px-4 py-2 ${
                               isCurrentUser
                                 ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
                                 : 'bg-gray-800 text-gray-100'
@@ -291,7 +291,7 @@ const ChatConversation = () => {
                             />
                           )}
                           {msg.message_text && (
-                            <p className="break-words">{msg.message_text}</p>
+                            <p className="break-words whitespace-pre-wrap">{msg.message_text}</p>
                           )}
                           <span
                             className={`text-xs mt-1 block ${
@@ -330,7 +330,7 @@ const ChatConversation = () => {
                       fileInputRef.current.value = '';
                     }
                   }}
-                  className="px-3 text-gray-400 hover:text-white"
+                  className="px-3 text-gray-400 hover:text-white flex-shrink-0"
                 >
                   <X size={20} />
                 </button>
@@ -341,11 +341,11 @@ const ChatConversation = () => {
                 Selected: {selectedFile.name}
               </div>
             )}
-            <form onSubmit={sendMessage} className="flex gap-2">
+            <form onSubmit={sendMessage} className="flex gap-2 items-center w-full">
               <button
                 type="button"
                 onClick={() => setShowImageInput(!showImageInput)}
-                className="px-3 py-2 bg-gray-800 text-gray-400 hover:text-white rounded-lg transition-colors"
+                className="flex-shrink-0 p-2 bg-gray-800 text-gray-400 hover:text-white rounded-lg transition-colors"
               >
                 <ImageIcon size={20} />
               </button>
@@ -354,13 +354,13 @@ const ChatConversation = () => {
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 placeholder="Type a message..."
-                className="flex-1 px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500"
+                className="flex-1 min-w-0 px-4 py-2.5 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500 whitespace-nowrap overflow-x-auto"
                 disabled={sendingMessage}
               />
               <button
                 type="submit"
                 disabled={sendingMessage || (!messageText.trim() && !selectedFile)}
-                className="px-6 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="flex-shrink-0 p-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {sendingMessage ? (
                   <Loader2 className="animate-spin" size={20} />
