@@ -1,4 +1,5 @@
-﻿import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import  { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
 
@@ -38,7 +39,7 @@ export const MusicSectionsProvider = ({ children }) => {
   const getToken = () => localStorage.getItem('token');
 
   // Fetch Top Charts
-  const fetchTopCharts = async () => {
+  const fetchTopCharts = useCallback(async () => {
     try {
       const token = getToken();
       if (!token) return;
@@ -54,10 +55,10 @@ export const MusicSectionsProvider = ({ children }) => {
     } finally {
       setLoading((prev) => ({ ...prev, topCharts: false }));
     }
-  };
+  }, []);
 
   // Fetch Most Liked
-  const fetchMostLiked = async () => {
+  const fetchMostLiked = useCallback(async () => {
     try {
       const token = getToken();
       if (!token) return;
@@ -73,10 +74,10 @@ export const MusicSectionsProvider = ({ children }) => {
     } finally {
       setLoading((prev) => ({ ...prev, mostLiked: false }));
     }
-  };
+  }, []);
 
   // Fetch Most Saved
-  const fetchMostSaved = async () => {
+  const fetchMostSaved = useCallback(async () => {
     try {
       const token = getToken();
       if (!token) return;
@@ -92,10 +93,10 @@ export const MusicSectionsProvider = ({ children }) => {
     } finally {
       setLoading((prev) => ({ ...prev, mostSaved: false }));
     }
-  };
+  }, []);
 
   // Fetch Hindi Songs
-  const fetchHindiSongs = async () => {
+  const fetchHindiSongs = useCallback(async () => {
     try {
       const token = getToken();
       if (!token) return;
@@ -111,10 +112,10 @@ export const MusicSectionsProvider = ({ children }) => {
     } finally {
       setLoading((prev) => ({ ...prev, hindiSongs: false }));
     }
-  };
+  }, []);
 
   // Fetch Punjabi Songs
-  const fetchPunjabiSongs = async () => {
+  const fetchPunjabiSongs = useCallback(async () => {
     try {
       const token = getToken();
       if (!token) return;
@@ -130,10 +131,10 @@ export const MusicSectionsProvider = ({ children }) => {
     } finally {
       setLoading((prev) => ({ ...prev, punjabiSongs: false }));
     }
-  };
+  }, []);
 
   // Fetch Latest Released
-  const fetchLatestReleased = async () => {
+  const fetchLatestReleased = useCallback(async () => {
     try {
       const token = getToken();
       if (!token) return;
@@ -149,10 +150,10 @@ export const MusicSectionsProvider = ({ children }) => {
     } finally {
       setLoading((prev) => ({ ...prev, latestReleased: false }));
     }
-  };
+  }, []);
 
   // Fetch Community Playlists (Public Playlists)
-  const fetchCommunityPlaylists = async () => {
+  const fetchCommunityPlaylists = useCallback(async () => {
     try {
       const token = getToken();
       if (!token) return;
@@ -168,10 +169,10 @@ export const MusicSectionsProvider = ({ children }) => {
     } finally {
       setLoading((prev) => ({ ...prev, communityPlaylists: false }));
     }
-  };
+  }, []);
 
   // Fetch Trending Songs
-  const fetchTrendingSongs = async () => {
+  const fetchTrendingSongs = useCallback(async () => {
     try {
       const token = getToken();
       if (!token) return;
@@ -187,7 +188,7 @@ export const MusicSectionsProvider = ({ children }) => {
     } finally {
       setLoading((prev) => ({ ...prev, trendingSongs: false }));
     }
-  };
+  }, []);
 
   // Fetch all on mount
   useEffect(() => {
@@ -202,7 +203,7 @@ export const MusicSectionsProvider = ({ children }) => {
       fetchCommunityPlaylists();
       fetchTrendingSongs();
     }
-  }, []);
+  }, [fetchTopCharts, fetchMostLiked, fetchMostSaved, fetchHindiSongs, fetchPunjabiSongs, fetchLatestReleased, fetchCommunityPlaylists, fetchTrendingSongs]);
 
   return (
     <MusicSectionsContext.Provider
@@ -222,4 +223,8 @@ export const MusicSectionsProvider = ({ children }) => {
       {children}
     </MusicSectionsContext.Provider>
   );
+};
+
+MusicSectionsProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
