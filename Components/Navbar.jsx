@@ -7,6 +7,7 @@ import { CiViewTimeline } from "react-icons/ci";
 import { PiChatsTeardropThin } from "react-icons/pi";
 import { CgProfile } from "react-icons/cg";
 import { IoMdSearch } from "react-icons/io";
+import API_BASE_URL from '../src/config/api';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const Navbar = () => {
     const delayTimer = setTimeout(async () => {
       try {
         const response = await fetch(
-          `http://localhost:9000/music/autocomplete?q=${encodeURIComponent(searchQuery)}`
+          `${API_BASE_URL}/music/autocomplete?q=${encodeURIComponent(searchQuery)}`
         );
         const data = await response.json();
         setSuggestions(data.suggestions || []);
@@ -191,7 +192,7 @@ const Navbar = () => {
               ))
             ) : (
               <div className="p-4 text-center text-gray-400">
-                No songs found for "{searchQuery}"
+                No songs found for {searchQuery}
               </div>
             )}
           </div>

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Music, Edit2, Play, Mail, Phone, Fingerprint, Lock, Settings,Book,User  } from "lucide-react";
+import API_BASE_URL from '../config/api';
 
 
 
@@ -27,7 +28,7 @@ export default function MyProfile() {
         const userId = getUidFromToken();
         if (!userId) return setLoading(false);
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:9000/auth/myprofile/${userId}`, {
+        const res = await axios.get(`${API_BASE_URL}/auth/myprofile/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data.user);

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaMusic } from "react-icons/fa";
+import API_BASE_URL from '../config/api';
 
 const Loginpage = () => {
   const [Email, setEmail] = useState("");
@@ -16,7 +17,7 @@ const Loginpage = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:9000/login", {
+      const response = await axios.post(`${API_BASE_URL}/login`, {
         email: Email,
         password: Password,
       });
@@ -164,7 +165,7 @@ const Loginpage = () => {
 
           {/* Music quote */}
           <div className="text-center text-base text-indigo-100/80 font-medium italic px-4 z-10 mb-2">
-            "Where words fail, music speaks."
+            &ldquo;Where words fail, music speaks.&rdquo;
           </div>
 
           <div className="text-center text-sm text-indigo-200/70 z-10">

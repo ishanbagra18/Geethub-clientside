@@ -4,6 +4,7 @@ import axios from "axios";
 import Navbar from "../../Components/Navbar";
 import SongPlayer from "../../Components/SongPlayer";
 import { useMusicPlayer } from "../context/MusicPlayerContext";
+import API_BASE_URL from '../config/api';
 
 const PlaySong = () => {
   const { id } = useParams();
@@ -29,13 +30,13 @@ const PlaySong = () => {
         const config = { headers: { Authorization: `Bearer ${token}` } };
         
         // Fetch the playlist
-        const res = await axios.get(`http://localhost:9000/playlist/${playlistId}`, config);
+        const res = await axios.get(`${API_BASE_URL}/playlist/${playlistId}`, config);
         const playlist = res.data.playlist;
 
         if (playlist?.song_ids?.length) {
           // Fetch all songs in the playlist
           const songResponses = await Promise.all(
-            playlist.song_ids.map((sid) => axios.get(`http://localhost:9000/song/${sid}`, config))
+            playlist.song_ids.map((sid) => axios.get(`${API_BASE_URL}/song/${sid}`, config))
           );
           const playlistSongs = songResponses.map((r) => r.data.song);
           

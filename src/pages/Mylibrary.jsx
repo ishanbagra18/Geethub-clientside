@@ -8,6 +8,7 @@ import {
 import { useHistory } from '../context/historyContext';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
+import API_BASE_URL from '../config/api';
 
 Modal.setAppElement('#root'); 
 
@@ -45,9 +46,9 @@ const Mylibrary = () => {
             const headers = { Authorization: `Bearer ${token}` };
             try {
                 const [likedRes, savedRes, allRes] = await Promise.all([
-                    axios.get('http://localhost:9000/music/mylikedsongs', { headers }),
-                    axios.get('http://localhost:9000/music/mysavedsongs', { headers }),
-                    axios.get('http://localhost:9000/music/allsongs')
+                    axios.get(`${API_BASE_URL}/music/mylikedsongs`, { headers }),
+                    axios.get(`${API_BASE_URL}/music/mysavedsongs`, { headers }),
+                    axios.get(`${API_BASE_URL}/music/allsongs`)
                 ]);
                 setLikedSongs(likedRes.data.songs || []);
                 setSavedSongs(savedRes.data.songs || []);
@@ -87,7 +88,7 @@ const Mylibrary = () => {
 
         try {
             const token = localStorage.getItem("token");
-            await axios.delete('http://localhost:9000/history/clear', {
+            await axios.delete(`${API_BASE_URL}/history/clear`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             // Refresh to update UI (or you can call a refresh function from context if available)
@@ -104,7 +105,7 @@ const Mylibrary = () => {
         setSongSearch("");
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:9000/music/allsongs", {
+            const res = await axios.get(`${API_BASE_URL}/music/allsongs`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRecommendedSongs(res.data.songs || []);
@@ -160,7 +161,7 @@ const Mylibrary = () => {
                 formData.append("cover_image", playlistForm.cover_image);
             }
 
-            await axios.post("http://localhost:9000/playlist/create", formData, {
+            await axios.post(`${API_BASE_URL}/playlist/create`, formData, {
                 headers: { 
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from '../config/api';
 
 const UserContext = createContext();
 
@@ -37,7 +38,7 @@ export const UserProvider = ({ children }) => {
         }
 
         const res = await axios.get(
-          `http://localhost:9000/auth/myprofile/${userId}`,
+          `${API_BASE_URL}/auth/myprofile/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

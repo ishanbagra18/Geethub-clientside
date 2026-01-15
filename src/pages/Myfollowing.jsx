@@ -1,11 +1,12 @@
 //my following list
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
-import { Users, Music2, Verified, UserMinus, Heart, TrendingUp, ArrowRight } from 'lucide-react';
+import { Users, Verified, UserMinus, Heart, TrendingUp, ArrowRight } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import API_BASE_URL from '../config/api';
 
 const Myfollowing = () => {
     const [following, setFollowing] = useState([]);
@@ -28,7 +29,7 @@ const Myfollowing = () => {
                     }
                 };
 
-                const response = await axios.get("http://localhost:9000/artists/followed/me", config);
+                const response = await axios.get(`${API_BASE_URL}/artists/followed/me`, config);
                 console.log("Following data:", response.data);
                 setFollowing(response.data.artists || []);
             } catch (error) {
@@ -53,7 +54,7 @@ const Myfollowing = () => {
                 }
             };
 
-            await axios.post(`http://localhost:9000/artists/unfollow/${artistId}`, {}, config);
+            await axios.post(`${API_BASE_URL}/artists/unfollow/${artistId}`, {}, config);
             
             // Remove artist from the list
             setFollowing(prev => prev.filter(artist => artist.artist_id !== artistId));

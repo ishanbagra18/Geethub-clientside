@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { MessageCircle, Send, X, User, Image as ImageIcon, Loader2, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import API_BASE_URL from '../src/config/api';
 
-const API_BASE = 'http://localhost:9000';
+const API_BASE = API_BASE_URL;
 
 const getToken = () => localStorage.getItem('token');
 
@@ -34,6 +35,7 @@ const Messages = () => {
   // Fetch all users
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch messages when a user is selected
@@ -427,7 +429,7 @@ const Messages = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }

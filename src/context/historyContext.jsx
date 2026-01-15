@@ -1,6 +1,7 @@
-import {createContext, useContext, useState} from 'react';
+﻿import {createContext, useContext, useState} from 'react';
 import axios from 'axios';
 import { useEffect } from  'react';
+import API_BASE_URL from '../config/api';
 
 
 const HistoryContext = createContext();
@@ -45,7 +46,7 @@ export const HistoryContextProvider = ({children}) => {
 
 
                 const res = await axios.get(
-                    `http://localhost:9000/history/my`,
+                    `${API_BASE_URL}/history/my`,
                     {   
                         headers: {
                             Authorization: `Bearer ${token}`,

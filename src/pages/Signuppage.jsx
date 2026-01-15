@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
+import API_BASE_URL from '../config/api';
 
 const Signuppage = () => {
   const [firstname, setFirstname] = useState("");
@@ -136,7 +137,7 @@ const Signuppage = () => {
 
     try {
       const cleanedPhone = phone.replace(/\D/g, '');
-      const response = await axios.post("http://localhost:9000/register", {
+      const response = await axios.post(`${API_BASE_URL}/register`, {
         first_name: firstname,
         last_name: lastname,
         email: email,

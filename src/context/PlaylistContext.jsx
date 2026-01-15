@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import API_BASE_URL from '../config/api';
 
 // ================= CONTEXT =================
 const PlaylistContext = createContext(null);
@@ -27,7 +28,7 @@ export const PlaylistProvider = ({ children }) => {
     setErrorPublic(null);
 
     try {
-      const res = await axios.get("http://localhost:9000/playlists");
+      const res = await axios.get(`${API_BASE_URL}/playlists`);
 
       // Supports: { playlists: [] } OR []
       setPublicPlaylists(res.data.playlists || res.data || []);
@@ -54,7 +55,7 @@ export const PlaylistProvider = ({ children }) => {
         }
 
         const res = await axios.get(
-          "http://localhost:9000/playlist/playlists",
+          `${API_BASE_URL}/playlist/playlists`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

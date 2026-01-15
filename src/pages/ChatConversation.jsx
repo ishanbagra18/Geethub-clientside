@@ -4,8 +4,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
 import { Send, ArrowLeft, Image as ImageIcon, Loader2, MessageCircle, X, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import API_BASE_URL from '../config/api';
 
-const API_BASE = 'http://localhost:9000';
+const API_BASE = API_BASE_URL;
 
 const getToken = () => localStorage.getItem('token');
 
@@ -40,6 +41,7 @@ const ChatConversation = () => {
       fetchUserDetails();
       fetchMessages();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   useEffect(() => {
@@ -373,7 +375,7 @@ const ChatConversation = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }

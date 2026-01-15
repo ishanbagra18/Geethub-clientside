@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useMusicPlayer } from "../context/MusicPlayerContext";
 import { Play, ListPlus, Trophy, TrendingUp, Music2, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
+import API_BASE_URL from '../config/api';
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
-const Mymostplayed = ({ limitToHome = false }) => {
+const Mymostplayed = () => {
   const [mostPlayed, setMostPlayed] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const rowRef = useRef(null);
   const { addToQueue, playSong } = useMusicPlayer();
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const Mymostplayed = ({ limitToHome = false }) => {
         return;
       }
 
-      const res = await axios.get("http://localhost:9000/music/mymostplayed", {
+      const res = await axios.get(`${API_BASE_URL}/music/mymostplayed`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -42,16 +42,6 @@ const Mymostplayed = ({ limitToHome = false }) => {
       setError(err.response?.data?.error || "Failed to load most played songs");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const scroll = (direction) => {
-    if (rowRef.current) {
-      const amount = 300;
-      rowRef.current.scrollBy({
-        left: direction === "left" ? -amount : amount,
-        behavior: "smooth",
-      });
     }
   };
 
@@ -154,7 +144,7 @@ const Mymostplayed = ({ limitToHome = false }) => {
           <div className="flex items-center gap-3">
             <Trophy size={24} className="text-yellow-400" />
             <span>
-              You've played <span className="text-white font-bold text-lg">{mostPlayed.length}</span> different songs
+              You&apos;ve played <span className="text-white font-bold text-lg">{mostPlayed.length}</span> different songs
             </span>
           </div>
           <div className="flex items-center gap-3">

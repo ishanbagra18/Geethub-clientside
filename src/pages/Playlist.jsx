@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Modal from "react-modal";
 import { useParams, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
+import API_BASE_URL from '../config/api';
 
 const PLACEHOLDER = "https://via.placeholder.com/300?text=No+Cover";
 
@@ -32,13 +33,13 @@ const Playlist = () => {
       }
       try {
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const res = await axios.get(`http://localhost:9000/playlist/${id}`, config);
+        const res = await axios.get(`${API_BASE_URL}/playlist/${id}`, config);
         const pl = res.data.playlist;
         setPlaylist(pl);
 
         if (pl?.song_ids?.length) {
           const songResponses = await Promise.all(
-            pl.song_ids.map((sid) => axios.get(`http://localhost:9000/song/${sid}`, config))
+            pl.song_ids.map((sid) => axios.get(`${API_BASE_URL}/song/${sid}`, config))
           );
           setSongs(songResponses.map((r) => r.data.song));
         }
@@ -55,13 +56,13 @@ const Playlist = () => {
     setRecLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:9000/music/allsongs", {
+      const res = await axios.get(`${API_BASE_URL}/music/allsongs`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const playlistSongIds = new Set((songs || []).map((s) => String(s.song_id)));
       const filtered = (res.data.songs || []).filter((s) => !playlistSongIds.has(String(s.song_id)));
       setRecommendedSongs(filtered);
-    } catch (err) {
+    } catch {
       toast.error("Failed to load music library");
     } finally {
       setRecLoading(false);
@@ -73,14 +74,14 @@ const Playlist = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        `http://localhost:9000/playlist/${id}/addsong`,
+        `${API_BASE_URL}/playlist/${id}/addsong`,
         { song_id: song.song_id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSongs((prev) => [...prev, song]);
       setRecommendedSongs((prev) => prev.filter((s) => s.song_id !== song.song_id));
       toast.success(`Added ${song.title}`);
-    } catch (err) {
+    } catch {
       toast.error("Failed to add song");
     } finally {
       setAddSongLoading(false);
@@ -90,13 +91,13 @@ const Playlist = () => {
   const removeSong = async (songId) => {
     const token = localStorage.getItem("token");
     try {
-      await axios.delete(`http://localhost:9000/playlist/${id}/remove-song`, {
+      await axios.delete(`${API_BASE_URL}/playlist/${id}/remove-song`, {
         headers: { Authorization: `Bearer ${token}` },
         data: { song_id: songId },
       });
       setSongs((prev) => prev.filter((s) => s.song_id !== songId));
       toast.success("Song removed");
-    } catch (err) {
+    } catch {
       toast.error("Could not remove song");
     }
   };
@@ -105,12 +106,12 @@ const Playlist = () => {
     if (!window.confirm("Delete this playlist permanently?")) return;
     const token = localStorage.getItem("token");
     try {
-      await axios.delete(`http://localhost:9000/playlist/delete/${id}`, {
+      await axios.delete(`${API_BASE_URL}/playlist/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Playlist deleted");
       navigate("/");
-    } catch (err) {
+    } catch {
       toast.error("Delete failed");
     }
   };

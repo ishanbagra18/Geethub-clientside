@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '../src/config/api';
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
@@ -24,7 +25,7 @@ const Dashboard = () => {
       }
 
       const response = await axios.get(
-        `http://localhost:9000/stats/my?range=${range}`,
+        `${API_BASE_URL}/stats/my?range=${range}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

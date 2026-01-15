@@ -3,6 +3,7 @@ import { Eye, EyeOff, Lock, CheckCircle, Key, ArrowLeft, ShieldAlert, LifeBuoy, 
 import axios from "axios";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
+import API_BASE_URL from '../config/api';
 
 export default function ChangePassword() {
   const [newPassword, setNewPassword] = useState("");
@@ -39,7 +40,7 @@ export default function ChangePassword() {
       setLoading(true);
 
       await axios.put(
-        "http://localhost:9000/auth/changepassword",
+        `${API_BASE_URL}/auth/changepassword`,
         { new_password: newPassword },
         {
           headers: {

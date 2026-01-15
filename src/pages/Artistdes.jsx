@@ -1,13 +1,11 @@
 // des about the artist 
-
-
-import React from 'react'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Music2, Users, Verified, Instagram, Twitter, Facebook, Globe, Play } from 'lucide-react'
 import Navbar from '../../Components/Navbar'
 import toast, { Toaster } from 'react-hot-toast'
+import API_BASE_URL from '../config/api';
 
 const Artistdes = () => {
     const { id: artistId } = useParams();
@@ -31,16 +29,16 @@ const Artistdes = () => {
                 };
 
                 // Fetch artist details
-                const artistResponse = await axios.get(`http://localhost:9000/artists/${artistId}`, config);
+                const artistResponse = await axios.get(`${API_BASE_URL}/artists/${artistId}`, config);
                 setArtist(artistResponse.data);
 
                 // Fetch artist songs
-                const songsResponse = await axios.get(`http://localhost:9000/artists/${artistId}/songs`, config);
+                const songsResponse = await axios.get(`${API_BASE_URL}/artists/${artistId}/songs`, config);
                 setSongs(songsResponse.data.songs || []);
 
                 // Check if following
                 try {
-                    const followResponse = await axios.get(`http://localhost:9000/artists/check-following/${artistId}`, config);
+                    const followResponse = await axios.get(`${API_BASE_URL}/artists/check-following/${artistId}`, config);
                     setIsFollowing(followResponse.data.is_following);
                 } catch (err) {
                     console.log("Follow check failed:", err);
@@ -70,8 +68,8 @@ const Artistdes = () => {
             };
 
             const endpoint = isFollowing 
-                ? `http://localhost:9000/artists/unfollow/${artistId}`
-                : `http://localhost:9000/artists/follow/${artistId}`;
+                ? `${API_BASE_URL}/artists/unfollow/${artistId}`
+                : `${API_BASE_URL}/artists/follow/${artistId}`;
 
             await axios.post(endpoint, {}, config);
             setIsFollowing(!isFollowing);

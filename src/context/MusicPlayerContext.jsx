@@ -1,8 +1,9 @@
-/* eslint-disable react/prop-types */
+﻿/* eslint-disable react/prop-types */
 import { createContext, useContext, useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import API_BASE_URL from '../config/api';
 
 const MusicPlayerContext = createContext();
 
@@ -92,7 +93,7 @@ export const MusicPlayerProvider = ({ children }) => {
   const playSong = async (songId, queueData = null, mode = "random", contextId = null) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:9000/song/${songId}`, {
+      const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
@@ -105,7 +106,7 @@ export const MusicPlayerProvider = ({ children }) => {
         newQueue = queueData;
       } else {
         // Fetch all songs and create queue
-        const allSongsRes = await axios.get("http://localhost:9000/music/allsongs", {
+        const allSongsRes = await axios.get("${API_BASE_URL}/music/allsongs", {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         let songs = allSongsRes.data.songs || [];
@@ -236,7 +237,7 @@ export const MusicPlayerProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:9000/music/like/${currentSong.song_id}`,
+        `${API_BASE_URL}/music/like/${currentSong.song_id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -260,7 +261,7 @@ export const MusicPlayerProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `http://localhost:9000/music/save/${currentSong.song_id}`,
+        `${API_BASE_URL}/music/save/${currentSong.song_id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -282,7 +283,7 @@ export const MusicPlayerProvider = ({ children }) => {
   const addToQueue = async (songId) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:9000/song/${songId}`, {
+      const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
@@ -314,7 +315,7 @@ export const MusicPlayerProvider = ({ children }) => {
   const addToQueueEnd = async (songId) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:9000/song/${songId}`, {
+      const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 

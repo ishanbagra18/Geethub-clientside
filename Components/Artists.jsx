@@ -1,10 +1,11 @@
 //all artist fetched here
 
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { Music2, Verified } from 'lucide-react'
+import API_BASE_URL from '../src/config/api'
 
 const Artists = () => {
   const [artists, setArtists] = useState([])
@@ -23,7 +24,7 @@ const Artists = () => {
           },
         }
 
-        const response = await axios.get("http://localhost:9000/artists", config)
+        const response = await axios.get(`${API_BASE_URL}/artists`, config)
 
         const shuffled = response.data.artists.sort(() => 0.5 - Math.random())
         setArtists(shuffled.slice(0, 10))

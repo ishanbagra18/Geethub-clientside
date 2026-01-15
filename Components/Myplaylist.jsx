@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ListMusic, Globe, Lock, Clock, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useMusicSections } from '../src/context/MusicSectionsContext';
+import API_BASE_URL from '../src/config/api';
 
 const formatDate = (dateString) => {
   if (!dateString) return "N/A";
@@ -30,7 +31,7 @@ const Myplaylist = ({ showCommunity = false, limitToHome = false }) => {
           return;
         }
         try {
-          const response = await axios.get('http://localhost:9000/playlist/myplaylists', {
+          const response = await axios.get('${API_BASE_URL}/playlist/myplaylists', {
             headers: { Authorization: `Bearer ${token}` },
           });
           setPlaylists(response.data?.playlists || []);

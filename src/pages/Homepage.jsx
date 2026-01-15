@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useCallback, lazy, Suspense } from "react";
+import { useEffect, useState, useCallback, lazy, Suspense } from "react";
 import { useNavigate, Link } from "react-router-dom"; 
+import PropTypes from "prop-types";
 import Navbar from "../../Components/Navbar.jsx";
 import { useUser } from "../context/UserContext.jsx";
 import { usePlaylist } from "../context/PlaylistContext.jsx"; 
@@ -41,6 +42,12 @@ const SectionHeading = ({ emoji, title, subtitle }) => (
   </div>
 );
 
+SectionHeading.propTypes = {
+  emoji: PropTypes.string,
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string
+};
+
 /**
  * PlaylistCard Component - Used for Public Playlists
  */
@@ -70,26 +77,29 @@ const PlaylistCard = ({ playlist }) => (
   </Link>
 );
 
+PlaylistCard.propTypes = {
+  playlist: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    name: PropTypes.string,
+    cover_image: PropTypes.string,
+    song_ids: PropTypes.array,
+    play_count: PropTypes.number
+  }).isRequired
+};
 
 /**
  * PublicPlaylistsSection Component (Inline Logic)
+ * @description Displays public playlists section - currently not used but kept for future implementation
  */
+// eslint-disable-next-line no-unused-vars
 const PublicPlaylistsSection = () => {
   const playlistContext = usePlaylist(); 
-
-  // 1. Context Null Check
-  if (!playlistContext) {
-    return (
-        <p className="text-center text-red-400 p-8 text-lg border border-red-500/20 rounded-xl bg-black/30">
-          Error: Playlist data provider is missing. Please ensure Homepage is wrapped in PlaylistProvider.
-        </p>
-    );
-  }
-
-  // Destructure safely now using the new state names from the updated context
-  const { publicPlaylists, fetchPublicPlaylists, isLoadingPublic } = playlistContext;
-  
   const [dataFetched, setDataFetched] = useState(false);
+
+  // Safely destructure with defaults
+  const publicPlaylists = playlistContext?.publicPlaylists || [];
+  const fetchPublicPlaylists = playlistContext?.fetchPublicPlaylists;
+  const isLoadingPublic = playlistContext?.isLoadingPublic || false;
 
   useEffect(() => {
     // Only fetch if data hasn't been fetched and we have the function
@@ -98,6 +108,15 @@ const PublicPlaylistsSection = () => {
       setDataFetched(true);
     }
   }, [fetchPublicPlaylists, dataFetched]);
+
+  // Context Null Check
+  if (!playlistContext) {
+    return (
+        <p className="text-center text-red-400 p-8 text-lg border border-red-500/20 rounded-xl bg-black/30">
+          Error: Playlist data provider is missing. Please ensure Homepage is wrapped in PlaylistProvider.
+        </p>
+    );
+  }
 
   // Loading state
   if (isLoadingPublic || !dataFetched) {

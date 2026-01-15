@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
 import { User, Loader2, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import API_BASE_URL from '../config/api';
 
-const API_BASE = 'http://localhost:9000';
+const API_BASE = API_BASE_URL;
 
 const getToken = () => localStorage.getItem('token');
 
@@ -30,6 +31,7 @@ const UsersList = () => {
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUsers = async () => {
