@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../Components/Navbar";
@@ -59,7 +59,7 @@ const PlaySong = () => {
     };
 
     loadPlaylistQueue();
-  }, [id, playlistId]);
+  }, [id, playlistId, currentSong, playSong]);
 
   return (
     <div className="min-h-screen bg-black text-white pb-32">

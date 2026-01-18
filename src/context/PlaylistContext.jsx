@@ -55,7 +55,7 @@ export const PlaylistProvider = ({ children }) => {
         }
 
         const res = await axios.get(
-          `${API_BASE_URL}/playlist/playlists`,
+          `${API_BASE_URL}/playlist/myplaylists`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

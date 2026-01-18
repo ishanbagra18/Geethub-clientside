@@ -60,6 +60,35 @@ export const MusicPlayerProvider = ({ children }) => {
     }
   }, [currentSong, currentUser]);
 
+  // Play next song - defined early so it can be used in useEffect
+  const playNext = () => {
+    if (!queue || queue.length === 0) return;
+    const nextIdx = (currentIndex + 1) % queue.length;
+    const nextSong = queue[nextIdx];
+    if (!nextSong) return;
+    
+    setCurrentIndex(nextIdx);
+    setCurrentSong(nextSong);
+
+    // Update URL if on playsong page
+    if (location.pathname.startsWith('/playsong/')) {
+      navigate(`/playsong/${nextSong.song_id}`, { replace: true });
+    }
+
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.pause();
+    audio.src = nextSong.file_url;
+    audio.currentTime = 0;
+    audio.play().then(() => {
+      setIsPlaying(true);
+    }).catch((err) => {
+      console.warn("Autoplay blocked or failed:", err);
+      setIsPlaying(false);
+    });
+  };
+
   // Audio element event listeners
   useEffect(() => {
     const audio = audioRef.current;
@@ -69,7 +98,28 @@ export const MusicPlayerProvider = ({ children }) => {
     const handleLoadedMetadata = () => setDuration(audio.duration);
     const handleEnded = () => {
       setIsPlaying(false);
-      playNext();
+      // Auto-play next song when current ends
+      if (queue && queue.length > 0) {
+        const nextIdx = (currentIndex + 1) % queue.length;
+        const nextSong = queue[nextIdx];
+        if (nextSong) {
+          setCurrentIndex(nextIdx);
+          setCurrentSong(nextSong);
+          
+          if (location.pathname.startsWith('/playsong/')) {
+            navigate(`/playsong/${nextSong.song_id}`, { replace: true });
+          }
+          
+          audio.src = nextSong.file_url;
+          audio.currentTime = 0;
+          audio.play().then(() => {
+            setIsPlaying(true);
+          }).catch((err) => {
+            console.warn("Autoplay blocked:", err);
+            setIsPlaying(false);
+          });
+        }
+      }
     };
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
@@ -87,7 +137,7 @@ export const MusicPlayerProvider = ({ children }) => {
       audio.removeEventListener("play", handlePlay);
       audio.removeEventListener("pause", handlePause);
     };
-  }, [queue, currentIndex]);
+  }, [queue, currentIndex, location.pathname, navigate]);
 
   // Play a specific song
   const playSong = async (songId, queueData = null, mode = "random", contextId = null) => {
@@ -106,7 +156,7 @@ export const MusicPlayerProvider = ({ children }) => {
         newQueue = queueData;
       } else {
         // Fetch all songs and create queue
-        const allSongsRes = await axios.get("${API_BASE_URL}/music/allsongs", {
+        const allSongsRes = await axios.get(`${API_BASE_URL}/music/allsongs`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         let songs = allSongsRes.data.songs || [];
@@ -167,13 +217,6 @@ export const MusicPlayerProvider = ({ children }) => {
     } else {
       audio.play().catch((err) => console.warn("Play failed:", err));
     }
-  };
-
-  // Play next song
-  const playNext = () => {
-    if (!queue || queue.length === 0) return;
-    const nextIdx = (currentIndex + 1) % queue.length;
-    playIndex(nextIdx);
   };
 
   // Play previous song
