@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../Components/Navbar";
@@ -13,9 +13,14 @@ const PlaySong = () => {
   const { playSong, currentSong } = useMusicPlayer();
   const [playlistQueue, setPlaylistQueue] = useState(null);
   const [loading, setLoading] = useState(false);
+  const loadedSongIdRef = useRef(null);
 
   useEffect(() => {
     const loadPlaylistQueue = async () => {
+      // Prevent loading the same song multiple times
+      if (loadedSongIdRef.current === id) return;
+      loadedSongIdRef.current = id;
+
       if (!playlistId) {
         // Not from a playlist, play normally
         if (!currentSong || currentSong.song_id !== id) {
@@ -59,7 +64,8 @@ const PlaySong = () => {
     };
 
     loadPlaylistQueue();
-  }, [id, playlistId, currentSong, playSong]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, playlistId]);
 
   return (
     <div className="min-h-screen bg-black text-white pb-32">

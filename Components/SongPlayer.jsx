@@ -13,6 +13,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
   const [addSuccess, setAddSuccess] = useState(null);
   const [addError, setAddError] = useState(null);
   const dropdownRef = useRef(null);
+  const loadedSongIdRef = useRef(null);
   
   // Use global music player context
   const {
@@ -38,12 +39,20 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
 
   // Initialize or sync with the song from URL
   useEffect(() => {
+    // Prevent loading the same song multiple times
+    if (loadedSongIdRef.current === songId && currentSong?.song_id === songId) {
+      return;
+    }
+
     if (currentSong && currentSong.song_id === songId) {
       setSong(currentSong);
-    } else {
+      loadedSongIdRef.current = songId;
+    } else if (loadedSongIdRef.current !== songId) {
+      loadedSongIdRef.current = songId;
       playSong(songId, initialQueue, mode, contextId);
     }
-  }, [songId, currentSong, initialQueue, mode, contextId, playSong]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [songId]);
 
   // Update local song state when global current song changes
   useEffect(() => {

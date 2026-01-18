@@ -17,6 +17,8 @@ export const useMusicPlayer = () => {
 
 export const MusicPlayerProvider = ({ children }) => {
   const audioRef = useRef(null);
+  const isLoadingRef = useRef(false);
+  const currentSongIdRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -141,6 +143,14 @@ export const MusicPlayerProvider = ({ children }) => {
 
   // Play a specific song
   const playSong = async (songId, queueData = null, mode = "random", contextId = null) => {
+    // Prevent loading the same song if already loading or loaded
+    if (isLoadingRef.current || currentSongIdRef.current === songId) {
+      return;
+    }
+    
+    isLoadingRef.current = true;
+    currentSongIdRef.current = songId;
+
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
@@ -204,6 +214,9 @@ export const MusicPlayerProvider = ({ children }) => {
       }
     } catch (err) {
       console.error("Error playing song:", err);
+      currentSongIdRef.current = null; // Reset on error
+    } finally {
+      isLoadingRef.current = false;
     }
   };
 
@@ -214,8 +227,16 @@ export const MusicPlayerProvider = ({ children }) => {
 
     if (isPlaying) {
       audio.pause();
+      setIsPlaying(false); // Immediately set state for responsive UI
     } else {
-      audio.play().catch((err) => console.warn("Play failed:", err));
+      audio.play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((err) => {
+          console.warn("Play failed:", err);
+          setIsPlaying(false);
+        });
     }
   };
 
