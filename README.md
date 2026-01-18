@@ -1,6 +1,8 @@
 # 🎵 GeetHub - Music Streaming Application
 
 A full-stack music streaming platform built with Go (Gin) and React (Vite).
+
+for backend just go to  - https://github.com/ishanbagra18/Geethub-serversise
  
 ## 🚀 Quick Start
 
