@@ -1,196 +1,257 @@
-# 🎵 GeetHub - Music Streaming Application
+<div align="center">
 
-A full-stack music streaming platform built with Go (Gin) and React (Vite).
+# 🎵 GeetHub
 
-for backend just go to  - https://github.com/ishanbagra18/Geethub-serversise
- 
+**A modern, full-stack music streaming platform**
+
+[![Go](https://img.shields.io/badge/Go-1.19+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+
+[Features](#-features) · [Quick Start](#-quick-start) · [Architecture](#-architecture) · [API Docs](#-api-documentation) · [Deployment](#-deployment)
+
+</div>
+
+---
+
+## ✨ Features
+
+| Category | Features |
+|----------|----------|
+| 🔐 **Auth** | JWT-based authentication, password hashing, protected routes |
+| 🎵 **Music** | Streaming, likes, saves, search |
+| 📋 **Library** | Playlist creation & management |
+| 👤 **Social** | User profiles, artist pages, messaging |
+| 📊 **Insights** | Statistics dashboard |
+| 📱 **UX** | Responsive design, real-time updates via WebSocket |
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Go** 1.19 or higher
-- **Node.js** 16 or higher  
-- **MongoDB** (local or Atlas)
-- **Cloudinary** account (for image uploads)
 
-### 1. Clone & Install
+Make sure you have the following installed:
+
+- **[Go](https://go.dev/dl/)** 1.19+
+- **[Node.js](https://nodejs.org/)** 16+
+- **[MongoDB](https://www.mongodb.com/)** (local or [Atlas](https://www.mongodb.com/atlas))
+- **[Cloudinary](https://cloudinary.com/)** account (for media uploads)
+
+---
+
+### 1. Clone the Repository
 
 ```bash
-# Clone the repository
 git clone <your-repo-url>
 cd music
+```
 
-# Install backend dependencies
+---
+
+### 2. Set Up the Backend
+
+```bash
 cd backend/Geethub-serversise
+
+# Install Go dependencies
 go mod tidy
 
-# Install frontend dependencies
-cd ../../frontend/Geethub-clientside
-npm install
+# Create and configure your environment file
+cp .env.example .env
 ```
 
-### 2. Configure Environment
+Edit `.env` with your credentials:
 
-**Backend:**
-```bash
-cd backend/Geethub-serversise
-copy .env.example .env
-# Edit .env with your MongoDB URL, Cloudinary credentials, etc.
+```env
+PORT=9000
+MONGODB_URL=mongodb+srv://<user>:<password>@cluster.mongodb.net/geethub
+SECRET_KEY=your-super-secret-jwt-key
+CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
+CORS_ORIGINS=http://localhost:5173
 ```
 
-**Frontend:**
+---
+
+### 3. Set Up the Frontend
+
 ```bash
 cd frontend/Geethub-clientside
-copy .env.example .env
-# Default is fine for local development (http://localhost:9000)
+
+# Install Node dependencies
+npm install
+
+# Create and configure your environment file
+cp .env.example .env
 ```
 
-### 3. Run the Application
+Edit `.env`:
 
-**Terminal 1 - Backend:**
+```env
+VITE_API_URL=http://localhost:9000
+```
+
+---
+
+### 4. Run the Application
+
+Open **two terminals** and run the following:
+
+**Terminal 1 — Backend**
 ```bash
 cd backend/Geethub-serversise
 go run main.go
-# Server runs on http://localhost:9000
+# ✅ Running at http://localhost:9000
 ```
 
-**Terminal 2 - Frontend:**
+**Terminal 2 — Frontend**
 ```bash
 cd frontend/Geethub-clientside
 npm run dev
-# App runs on http://localhost:5173
+# ✅ Running at http://localhost:5173
 ```
 
-### 4. Access the App
+Open [http://localhost:5173](http://localhost:5173) in your browser and you're ready to go! 🎉
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+---
 
-## 📁 Project Structure
+## 🏗️ Architecture
 
 ```
 music/
 ├── backend/
 │   └── Geethub-serversise/
-│       ├── controllers/     # API controllers
-│       ├── database/        # MongoDB connection
-│       ├── helpers/         # Auth, token, cloudinary helpers
-│       ├── middleware/      # Authentication middleware
-│       ├── models/          # Data models
-│       ├── routes/          # API routes
-│       ├── main.go          # Entry point
-│       ├── .env             # Environment variables (create from .env.example)
-│       └── .env.example     # Environment template
+│       ├── controllers/        # Route handler logic
+│       ├── database/           # MongoDB connection setup
+│       ├── helpers/            # Auth, JWT, Cloudinary utilities
+│       ├── middleware/         # Authentication middleware
+│       ├── models/             # Data models / schemas
+│       ├── routes/             # API route definitions
+│       ├── main.go             # Application entry point
+│       ├── .env.example        # Environment variable template
+│       └── .env                # ⚠️ Your local config (do not commit)
 │
 ├── frontend/
 │   └── Geethub-clientside/
-│       ├── src/
-│       │   ├── config/      # API configuration
-│       │   ├── pages/       # Page components
-│       │   ├── context/     # React contexts
-│       │   └── Components/  # Reusable components
-│       ├── .env             # Environment variables (create from .env.example)
-│       └── .env.example     # Environment template
+│       └── src/
+│           ├── config/         # API base URL & Axios setup
+│           ├── context/        # React global state (auth, player, etc.)
+│           ├── pages/          # Top-level page components
+│           └── Components/     # Shared/reusable UI components
 │
 ├── docs/
-│   └── api_docs.md          # API documentation
+│   └── api_docs.md             # Full API endpoint reference
 │
-├── SETUP.md                 # Detailed setup guide
-├── DEPLOYMENT.md            # Deployment instructions
-└── README.md                # This file
+├── SETUP.md                    # Detailed setup guide
+├── DEPLOYMENT.md               # Production deployment guide
+└── README.md                   # You are here
 ```
 
-## 🔑 Environment Variables
-
-### Backend (.env)
-```env
-PORT=9000
-MONGODB_URL=mongodb+srv://user:pass@cluster.mongodb.net/geethub
-SECRET_KEY=your-jwt-secret-key
-CLOUDINARY_URL=cloudinary://key:secret@cloudname
-CORS_ORIGINS=http://localhost:5173
-```
-
-### Frontend (.env)
-```env
-VITE_API_URL=http://localhost:9000
-```
-
-## 🎯 Features
-
-- 🔐 User authentication (JWT)
-- 🎵 Music streaming
-- 📝 Playlist management
-- 👤 User profiles
-- 🎨 Artist pages
-- 💬 Messaging system
-- 📊 Statistics dashboard
-- ❤️ Like & save songs
-- 🔍 Search functionality
-- 📱 Responsive design
+---
 
 ## 🛠️ Tech Stack
 
 ### Backend
-- **Framework:** Go (Gin)
-- **Database:** MongoDB
-- **Authentication:** JWT
-- **File Storage:** Cloudinary
-- **WebSocket:** Gorilla WebSocket
+| Technology | Purpose |
+|------------|---------|
+| [Go (Gin)](https://gin-gonic.com/) | HTTP framework |
+| [MongoDB](https://www.mongodb.com/) | Primary database |
+| [JWT](https://jwt.io/) | Stateless authentication |
+| [Cloudinary](https://cloudinary.com/) | Media storage & delivery |
+| [Gorilla WebSocket](https://github.com/gorilla/websocket) | Real-time messaging |
 
 ### Frontend
-- **Framework:** React 18
-- **Build Tool:** Vite
-- **Styling:** Tailwind CSS
-- **Routing:** React Router v7
-- **HTTP Client:** Axios
-- **Icons:** Lucide React
-- **Notifications:** React Hot Toast
-
-## 📚 Documentation
-
-- **[SETUP.md](SETUP.md)** - Detailed setup instructions
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment guide
-- **[docs/api_docs.md](docs/api_docs.md)** - API endpoints documentation
-
-## 🚢 Deployment
-
-### Backend (Render/Railway)
-1. Connect GitHub repository
-2. Set environment variables
-3. Deploy `backend/Geethub-serversise`
-
-### Frontend (Vercel/Netlify)
-1. Connect GitHub repository
-2. Set `VITE_API_URL` to backend URL
-3. Deploy `frontend/Geethub-clientside`
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
-
-## 🔒 Security
-
-- ✅ Environment variables for sensitive data
-- ✅ JWT-based authentication
-- ✅ CORS configuration
-- ✅ Password hashing
-- ✅ Input validation
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📝 License
-
-This project is licensed under the MIT License.
-
-## 📧 Support
-
-For issues and questions:
-- Check [SETUP.md](SETUP.md) for setup help
-- Check [DEPLOYMENT.md](DEPLOYMENT.md) for deployment help
-- Create an issue on GitHub
+| Technology | Purpose |
+|------------|---------|
+| [React 18](https://react.dev/) | UI framework |
+| [Vite](https://vitejs.dev/) | Build tool & dev server |
+| [Tailwind CSS](https://tailwindcss.com/) | Utility-first styling |
+| [React Router v7](https://reactrouter.com/) | Client-side routing |
+| [Axios](https://axios-http.com/) | HTTP client |
+| [Lucide React](https://lucide.dev/) | Icon library |
+| [React Hot Toast](https://react-hot-toast.com/) | Notifications |
 
 ---
 
-**Built with ❤️ using Go and React**
+## 📚 API Documentation
+
+Full API docs are available in [`docs/api_docs.md`](docs/api_docs.md).
+
+The backend server (for this project) is hosted separately:
+👉 [Geethub Server Repository](https://github.com/ishanbagra18/Geethub-serversise)
+
+---
+
+## 🚢 Deployment
+
+### Backend — Render / Railway
+
+1. Connect your GitHub repository
+2. Set the root directory to `backend/Geethub-serversise`
+3. Add all environment variables from `.env.example`
+4. Deploy
+
+### Frontend — Vercel / Netlify
+
+1. Connect your GitHub repository
+2. Set the root directory to `frontend/Geethub-clientside`
+3. Set `VITE_API_URL` to your deployed backend URL
+4. Deploy
+
+> 📖 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed step-by-step deployment instructions.
+
+---
+
+## 🔒 Security
+
+- 🔑 All secrets stored in environment variables — never hardcoded
+- 🛡️ JWT-based stateless authentication
+- 🔐 Bcrypt password hashing
+- 🌐 CORS configured per environment
+- ✅ Input validation on all endpoints
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how to get started:
+
+```bash
+# 1. Fork the repository on GitHub
+
+# 2. Create your feature branch
+git checkout -b feature/your-feature-name
+
+# 3. Commit your changes
+git commit -m "feat: add your feature"
+
+# 4. Push to your fork
+git push origin feature/your-feature-name
+
+# 5. Open a Pull Request
+```
+
+Please follow [conventional commits](https://www.conventionalcommits.org/) for commit messages.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙋 Support
+
+- 📖 Setup issues? Check [SETUP.md](SETUP.md)
+- 🚀 Deployment issues? Check [DEPLOYMENT.md](DEPLOYMENT.md)
+- 🐛 Found a bug? [Open an issue](../../issues/new)
+
+---
+
+<div align="center">
+
+Built with ❤️ using **Go** and **React**
+
+</div>
