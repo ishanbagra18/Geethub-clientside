@@ -6,6 +6,7 @@ import { Heart, Star, SkipBack, SkipForward, Play, Pause, Volume2, ListPlus, X, 
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import API_BASE_URL from "../src/config/api";
+import SongComments from "./SongComments";
 
 const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = null }) => {
   const [song, setSong] = useState(null);
@@ -157,13 +158,12 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-[350px_1fr] gap-6 items-center">
           {/* Album Art */}
           <div className="flex items-center justify-center">
-            <div className="w-full max-w-[280px] sm:max-w-[350px] aspect-square p-1 shadow-xl flex items-center justify-center rounded-lg bg-white/5">
-              <img
-                src={song.image_url}
-                alt="cover"
-                className="w-full h-full object-cover rounded-lg block animate-pulse-slow"
-              />
-            </div>
+            <img
+              src={song.image_url}
+              alt="cover"
+              className="w-[350px] h-[350px] object-cover rounded-sm block"
+              style={{ width: 350, height: 350, objectFit: "cover" }}
+            />
           </div>
 
           {/* Song Info */}
@@ -488,6 +488,9 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
             )}
           </div>
         </div>
+
+        {/* 💬 Full Width Comments Section */}
+        {song?.song_id && <SongComments songId={song.song_id} />}
       </div>
     </div>
   );

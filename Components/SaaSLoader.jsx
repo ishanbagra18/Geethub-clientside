@@ -88,7 +88,7 @@ const SaaSLoader = ({ onComplete }) => {
 
         {/* Subtitle / Tagline */}
         <p className="text-xs text-blue-300 font-extrabold tracking-widest uppercase mb-8 bg-blue-500/10 py-1.5 px-4 rounded-full border border-blue-400/30">
-          GeetHub: Stream the beat, share the vibe.
+          GeetHub: Your localhost for global hits.
         </p>
 
         {/* Equalizer Waveform Bars Animation */}

@@ -1,4 +1,5 @@
-import { LogOut, MessageCircle, Menu, X } from "lucide-react";
+import { LogOut, MessageCircle, Menu, X, Mic, MicOff, Users } from "lucide-react";
+import { useVoiceSearch } from "../src/hooks/useVoiceSearch";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { FaMusic, FaFire } from "react-icons/fa";
@@ -30,6 +31,7 @@ const saveSeenMessageIds = (setObj) => {
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { isListening, startListening, stopListening } = useVoiceSearch();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -219,7 +221,7 @@ const Navbar = () => {
       <div
         className="flex flex-col cursor-pointer group"
         onClick={() => navigate("/")}
-        title="GeetHub: Stream the beat, share the vibe."
+        title="GeetHub: Your localhost for global hits."
       >
         <div className="flex items-center gap-1">
           <FaMusic className="text-blue-400 dark:text-blue-600 group-hover:scale-110 transition" />
@@ -228,8 +230,8 @@ const Navbar = () => {
             Hub
           </span>
         </div>
-        <span className="text-[10px] font-semibold text-gray-400 dark:text-gray-600 tracking-tight hidden sm:block">
-          Stream the beat, share the vibe.
+        <span className="text-[11px] font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent tracking-tight">
+          Your localhost for global hits.
         </span>
       </div>
 
@@ -280,6 +282,16 @@ const Navbar = () => {
             </span>
           )}
         </div>
+
+        {/* Live Sync Party Link */}
+        <div
+          className="flex items-center cursor-pointer hover:opacity-80 hover:text-cyan-400 transition-colors text-400 font-bold"
+          onClick={() => navigate('/party')}
+          title="Live Sync Listening Party"
+        >
+          <Users className="mr-1.5" size={18} />
+          <button>Party</button>
+        </div>
       </div>
 
       <div className="relative" ref={searchRef}>
@@ -316,8 +328,20 @@ const Navbar = () => {
                 navigate(searchQuery.trim() ? `/search?q=${encodeURIComponent(searchQuery.trim())}` : "/search");
               }
             }}
-            className="pl-10 pr-4 py-2 rounded-lg bg-[#222] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all w-28 focus:w-36 sm:w-60 md:w-80 sm:focus:w-72"
+            className="pl-10 pr-10 py-2 rounded-lg bg-[#222] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all w-28 focus:w-36 sm:w-60 md:w-80 sm:focus:w-72"
           />
+          <button
+            type="button"
+            onClick={isListening ? stopListening : startListening}
+            className="absolute right-3 text-gray-400 hover:text-cyan-400 transition"
+            title="Search with your voice"
+          >
+            {isListening ? (
+              <Mic className="text-red-500 animate-pulse" size={18} />
+            ) : (
+              <MicOff size={18} />
+            )}
+          </button>
         </form>
 
         {/* Suggestions Dropdown */}
@@ -412,11 +436,16 @@ const Navbar = () => {
         >
           {/* Header inside drawer */}
           <div className="flex items-center justify-between pb-6 border-b border-gray-800 mb-6">
-            <div className="flex items-center gap-1">
-              <FaMusic className="text-blue-400" />
-              <span className="text-2xl font-black">Geet</span>
-              <span className="text-blue-400 font-black text-2xl">
-                Hub
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1">
+                <FaMusic className="text-blue-400" />
+                <span className="text-2xl font-black">Geet</span>
+                <span className="text-blue-400 font-black text-2xl">
+                  Hub
+                </span>
+              </div>
+              <span className="text-[10px] font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                Your localhost for global hits.
               </span>
             </div>
             <button
@@ -474,6 +503,14 @@ const Navbar = () => {
                   {unreadCount}
                 </span>
               )}
+            </div>
+
+            <div
+              className="flex items-center gap-4 p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors w-full"
+              onClick={() => { setMenuOpen(false); navigate('/party'); }}
+            >
+              <Users className="text-blue-400 w-6 h-6" />
+              <span className="font-bold text-lg">Sync Party</span>
             </div>
           </div>
 

@@ -6,7 +6,7 @@ const InstagramFeed = () => {
     {
       id: 1,
       image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80",
-      caption: "Stream the beat, share the vibe. 🎧 Create & publish your custom playlists on GeetHub today!",
+      caption: "GeetHub: Your localhost for global hits. 🎧 Create & publish your custom playlists on GeetHub today!",
       likes: "1.4k",
       comments: "184",
       tag: "#GeetHub #MusicStreaming #Playlists",
@@ -60,7 +60,7 @@ const InstagramFeed = () => {
             <CheckCircle2 size={22} className="text-blue-400 fill-blue-400/20" />
           </h2>
           <p className="text-xs md:text-sm text-gray-400 mt-1 max-w-xl">
-            "Stream the beat, share the vibe." Stay connected for daily curated playlists, artist spotlights & exclusive releases.
+            "GeetHub: Your localhost for global hits." Stay connected for daily curated playlists, artist spotlights & exclusive releases.
           </p>
         </div>
 

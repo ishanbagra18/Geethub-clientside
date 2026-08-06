@@ -238,7 +238,7 @@ const Homepage = () => {
                 : "Guest"} 👋
             </h1>
             <p className="text-xs lg:text-sm tracking-[0.2em] font-heading2 font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent uppercase pt-1">
-              GeetHub: Stream the beat, share the vibe.
+              GeetHub: Your localhost for global hits.
             </p>
           </header>
 

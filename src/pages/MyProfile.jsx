@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Music, Edit2, Play, Mail, Phone, Fingerprint, Lock, Settings, Book, User } from "lucide-react";
 import API_BASE_URL from '../config/api';
+import UserBadges from '../../Components/UserBadges';
 
 
 
@@ -142,6 +143,9 @@ export default function MyProfile() {
             </div>
           </div>
         </div>
+
+        {/* 🏆 Badges / Achievements */}
+        <UserBadges />
 
         {/* Info Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

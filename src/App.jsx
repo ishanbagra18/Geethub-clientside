@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import Loginpage from "./pages/Loginpage";
@@ -32,14 +32,19 @@ import PremiumPage from "./pages/PremiumPage";
 import MyPlaylists from "./pages/MyPlaylists";
 import SaaSLoader from "../Components/SaaSLoader";
 import Footer from "../Components/Footer";
+import PartyLobby from "./pages/PartyLobby";
+import PartyRoom from "./pages/PartyRoom";
+import { PartyProvider } from "./context/PartyContext";
 
 function App() {
   const [showIntroLoader, setShowIntroLoader] = useState(true);
+  const location = useLocation();
 
   return (
     <MusicPlayerProvider>
       <MusicSectionsProvider>
-        {/* 🚀 SaaS Music Intro Splash Animation */}
+        <PartyProvider>
+          {/* 🚀 SaaS Music Intro Splash Animation */}
         {showIntroLoader ? (
           <SaaSLoader onComplete={() => setShowIntroLoader(false)} />
         ) : (
@@ -79,15 +84,18 @@ function App() {
               <Route path="/messages/:userId" element={<ChatConversation />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/premium" element={<PremiumPage />} />
+              <Route path="/party" element={<PartyLobby />} />
+              <Route path="/party/:roomId" element={<PartyRoom />} />
             </Routes>
 
-            {/* Global Footer */}
-            <Footer />
+            {/* Global Footer (Only on Homepage) */}
+            {location.pathname === "/" && <Footer />}
 
             {/* Global Music Player Bar */}
             <GlobalMusicPlayer />
           </>
         )}
+        </PartyProvider>
       </MusicSectionsProvider>
     </MusicPlayerProvider>
   );

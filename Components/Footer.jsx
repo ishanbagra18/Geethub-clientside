@@ -1,152 +1,143 @@
 import { Link, useNavigate } from "react-router-dom";
-import { 
-  FaMusic, FaInstagram, FaTwitter, 
-  FaYoutube, FaGithub, FaDiscord 
+import {
+  FaMusic,
+  FaInstagram,
+  FaTwitter,
+  FaYoutube,
+  FaGithub,
+  FaDiscord,
 } from "react-icons/fa";
-import { Sparkles, ListMusic, Shield, Heart } from "lucide-react";
+import { Sparkles, Send, ShieldCheck, Heart, Radio, Headphones } from "lucide-react";
 
 const Footer = () => {
   const navigate = useNavigate();
 
-  const columns = [
-    {
-      title: "Discover",
-      icon: Sparkles,
-      iconColor: "text-blue-400",
-      links: [
-        { label: "Trending Hits", to: "/trending" },
-        { label: "Most Liked", to: "/mostliked" },
-        { label: "Hindi Bollywood", to: "/hindisongs" },
-        { label: "Punjabi Beat Tracks", to: "/punjabisongs" },
-        { label: "Industry Top Charts", to: "/topcharts" },
-      ],
-    },
-    {
-      title: "Community",
-      icon: ListMusic,
-      iconColor: "text-cyan-400",
-      links: [
-        { label: "My Playlists Hub", to: "/myplaylists" },
-        { label: "Community Mixes", to: "/communityplaylists" },
-        { label: "Messages & Chat", to: "/messages" },
-        { label: "GeetHub VIP Premium", to: "/premium" },
-        { label: "Your Library", to: "/mylibrary" },
-      ],
-    },
-    {
-      title: "Account & Legal",
-      icon: Shield,
-      iconColor: "text-indigo-400",
-      links: [
-        { label: "My Profile", to: "/myprofile" },
-        { label: "Update Settings", to: "/updateprofile" },
-        { label: "Create Free Account", to: "/signup" },
-        { label: "Privacy Policy", to: "/privacy" },
-      ],
-    },
-  ];
-
-  const socials = [
-    { icon: FaInstagram, href: "https://www.instagram.com/geethub.music/", label: "Instagram", color: "hover:bg-pink-600" },
-    { icon: FaTwitter, href: "https://twitter.com", label: "Twitter", color: "hover:bg-cyan-500" },
-    { icon: FaGithub, href: "https://github.com", label: "GitHub", color: "hover:bg-gray-700" },
-    { icon: FaYoutube, href: "https://youtube.com", label: "YouTube", color: "hover:bg-red-600" },
-    { icon: FaDiscord, href: "https://discord.com", label: "Discord", color: "hover:bg-indigo-600" },
-  ];
-
   return (
-    <footer className="w-full bg-[#050811] text-white border-t border-blue-500/20 pt-16 pb-36 px-6 md:px-12 lg:px-20 relative overflow-hidden">
-      {/* Background ambient glow */}
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+    <footer className="w-full bg-black text-white border-t border-white/10 pt-16 pb-28 px-6 md:px-12 lg:px-20 relative overflow-hidden">
+      {/* Glow Effects */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+      <div className="absolute -top-40 left-1/3 w-80 h-80 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Spread Flex Layout: Brand on Left, Link Columns Spread out on Right */}
-        <div className="flex flex-col lg:flex-row justify-between items-start gap-12 lg:gap-16 xl:gap-24 pb-14 border-b border-white/10">
+      <div className="max-w-7xl mx-auto relative z-10 space-y-16">
 
-          {/* Left Section: Brand & Bio */}
-          <div className="lg:w-5/12 space-y-4">
+        {/* Main Footer Links & Branding Area */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-4">
+          {/* Brand Info */}
+          <div className="lg:col-span-5 space-y-4">
             <div
               className="flex items-center gap-3 cursor-pointer group w-fit"
               onClick={() => navigate("/")}
             >
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-cyan-400 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-105 transition">
-                <FaMusic className="text-white text-lg" />
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition">
+                <FaMusic className="text-white text-xl" />
               </div>
               <span className="text-3xl font-black tracking-tight text-white">
-                Geet<span className="text-blue-400">Hub</span>
+                Geet<span className="text-cyan-400">Hub</span>
               </span>
             </div>
 
-            {/* Official Tagline */}
-            <p className="text-base font-extrabold bg-gradient-to-r from-blue-300 via-cyan-300 to-indigo-300 bg-clip-text text-transparent">
-              "Stream the beat, share the vibe."
+            <p className="text-xs font-black uppercase tracking-[0.1em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">
+              Your localhost for global hits.
             </p>
 
-            <p className="text-xs text-gray-400 max-w-md leading-relaxed">
-              GeetHub is a next-generation HD music streaming platform. Discover curated playlists, stream high-fidelity tracks, and connect with music creators worldwide.
+            <p className="text-sm text-gray-400 leading-relaxed max-w-sm">
+              An immersive HD music streaming experience built for audiophiles and creators worldwide. Discover, stream, and share without limits.
             </p>
 
-            {/* Social Icons */}
-            <div className="flex items-center gap-3 pt-2">
-              {socials.map(({ icon: Icon, href, label, color }) => (
+            {/* Platform Stats Badges */}
+            <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-gray-300">
+              <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5">
+                <Headphones size={14} className="text-cyan-400" />
+                <span>Lossless Audio</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5">
+                <Radio size={14} className="text-purple-400" />
+                <span>24/7 Live Radio</span>
+              </div>
+            </div>
+
+            {/* Social Links */}
+            <div className="flex items-center gap-2 pt-2">
+              {[
+                { icon: FaInstagram, href: "https://www.instagram.com/geethub.music/", label: "Instagram" },
+                { icon: FaTwitter, href: "https://twitter.com", label: "Twitter" },
+                { icon: FaGithub, href: "https://github.com", label: "GitHub" },
+                { icon: FaYoutube, href: "https://youtube.com", label: "YouTube" },
+                { icon: FaDiscord, href: "https://discord.com", label: "Discord" },
+              ].map(({ icon: Icon, href, label }) => (
                 <a
                   key={label}
                   href={href}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={label}
-                  className={`w-9 h-9 rounded-full bg-white/5 ${color} flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200 shadow-md`}
+                  className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center text-gray-400 hover:text-cyan-400 hover:border-cyan-500/30 transition-all duration-200"
                 >
-                  <Icon size={15} />
+                  <Icon size={16} />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Right Section: 3 Link Columns Spread Across Width */}
-          <div className="lg:w-7/12 w-full grid grid-cols-2 sm:grid-cols-3 gap-8 md:gap-12 lg:gap-16">
-            {columns.map((col) => {
-              const ColumnIcon = col.icon;
-              return (
-                <div key={col.title} className="space-y-4">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-gray-200 flex items-center gap-2 border-b border-white/10 pb-2.5">
-                    <ColumnIcon size={15} className={col.iconColor} />
-                    <span>{col.title}</span>
-                  </h4>
-                  <ul className="space-y-3">
-                    {col.links.map((link) => (
-                      <li key={link.label}>
-                        <Link
-                          to={link.to}
-                          className="text-xs text-gray-400 hover:text-cyan-300 transition-colors duration-200 font-medium block hover:translate-x-1 transform"
-                        >
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
+          {/* Quick Navigation Columns */}
+          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+            {/* Column 1 */}
+            <div className="space-y-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-cyan-400">
+                Explore
+              </p>
+              <ul className="space-y-2.5 text-xs font-medium text-gray-400">
+                <li><Link to="/trending" className="hover:text-white transition">Trending Hits</Link></li>
+                <li><Link to="/mostliked" className="hover:text-white transition">Most Liked</Link></li>
+                <li><Link to="/hindisongs" className="hover:text-white transition">Hindi Bollywood</Link></li>
+                <li><Link to="/punjabisongs" className="hover:text-white transition">Punjabi Beats</Link></li>
+                <li><Link to="/topcharts" className="hover:text-white transition">Global Top Charts</Link></li>
+              </ul>
+            </div>
 
+            {/* Column 2 */}
+            <div className="space-y-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-purple-400">
+                Library
+              </p>
+              <ul className="space-y-2.5 text-xs font-medium text-gray-400">
+                <li><Link to="/myplaylists" className="hover:text-white transition">Playlists Hub</Link></li>
+                <li><Link to="/communityplaylists" className="hover:text-white transition">Community Mixes</Link></li>
+                <li><Link to="/messages" className="hover:text-white transition">Chat & Messages</Link></li>
+                <li><Link to="/premium" className="hover:text-white transition">GeetHub VIP</Link></li>
+                <li><Link to="/mylibrary" className="hover:text-white transition">Your Collection</Link></li>
+              </ul>
+            </div>
+
+            {/* Column 3 */}
+            <div className="space-y-4 col-span-2 sm:col-span-1">
+              <p className="text-xs font-bold uppercase tracking-wider text-blue-400">
+                Account
+              </p>
+              <ul className="space-y-2.5 text-xs font-medium text-gray-400">
+                <li><Link to="/myprofile" className="hover:text-white transition">My Profile</Link></li>
+                <li><Link to="/updateprofile" className="hover:text-white transition">Account Settings</Link></li>
+                <li><Link to="/signup" className="hover:text-white transition">Create Free Account</Link></li>
+                <li><Link to="/privacy" className="hover:text-white transition">Privacy & Terms</Link></li>
+              </ul>
+            </div>
+          </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 font-medium">
-          <div>
-            © {new Date().getFullYear()} GeetHub Inc. All rights reserved.
-          </div>
+        {/* Bottom Copyright Bar */}
+        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 font-medium">
+          <p>© {new Date().getFullYear()} GeetHub Music Inc. All rights reserved.</p>
 
-          <div className="flex items-center gap-1.5 text-gray-400 font-semibold">
+          <div className="flex items-center gap-1.5 text-gray-400">
             <span>Crafted with</span>
-            <Heart size={14} className="text-red-500 fill-red-500" />
-            <span>for music lovers worldwide.</span>
+            <Heart size={13} className="text-red-500 fill-red-500 animate-pulse" />
+            <span>for music lovers worldwide</span>
           </div>
 
-          <div className="text-blue-400 font-extrabold tracking-wide">
-            Stream the beat, share the vibe.
+          <div className="flex items-center gap-2 text-cyan-400/80 font-medium">
+            <ShieldCheck size={14} />
+            <span>Secure Audio Streaming</span>
           </div>
         </div>
       </div>
