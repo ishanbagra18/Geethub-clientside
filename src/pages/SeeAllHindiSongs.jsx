@@ -27,7 +27,7 @@ const SeeAllHindiSongs = () => {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900">
       <Navbar />
       
-      <div className="pt-24 px-8 pb-20">
+      <div className="pt-24 px-4 md:px-8 pb-20">
         {/* Header */}
         <div className="mb-8">
           <button

@@ -82,15 +82,14 @@ const GlobalMusicPlayer = () => {
           </div>
 
           {/* Playback Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Like Button */}
             <button
               onClick={toggleLike}
-              className={`p-2 rounded-full transition-all ${
-                isLiked
+              className={`p-2 rounded-full transition-all hidden md:flex ${isLiked
                   ? "text-red-500 bg-red-500/20 hover:bg-red-500/30"
                   : "text-gray-300 hover:text-red-500 hover:bg-blue-700/30"
-              }`}
+                }`}
               title={isLiked ? "Unlike" : "Like"}
             >
               <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
@@ -99,38 +98,37 @@ const GlobalMusicPlayer = () => {
             {/* Previous Button */}
             <button
               onClick={playPrevious}
-              className="p-2 rounded-full bg-blue-700/50 text-white hover:bg-blue-600/70 transition-all"
+              className="p-1.5 sm:p-2 rounded-full bg-blue-700/50 text-white hover:bg-blue-600/70 transition-all"
               title="Previous"
             >
-              <SkipBack size={20} />
+              <SkipBack size={18} />
             </button>
 
             {/* Play/Pause Button */}
             <button
               onClick={togglePlayPause}
-              className="p-3 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 text-white hover:from-blue-500 hover:to-blue-400 transition-all shadow-lg shadow-blue-500/30"
+              className="p-2.5 sm:p-3 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 text-white hover:from-blue-500 hover:to-blue-400 transition-all shadow-lg shadow-blue-500/30"
               title={isPlaying ? "Pause" : "Play"}
             >
-              {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
             </button>
 
             {/* Next Button */}
             <button
               onClick={playNext}
-              className="p-2 rounded-full bg-blue-700/50 text-white hover:bg-blue-600/70 transition-all"
+              className="p-1.5 sm:p-2 rounded-full bg-blue-700/50 text-white hover:bg-blue-600/70 transition-all"
               title="Next"
             >
-              <SkipForward size={20} />
+              <SkipForward size={18} />
             </button>
 
             {/* Save Button */}
             <button
               onClick={toggleSave}
-              className={`p-2 rounded-full transition-all ${
-                isSaved
+              className={`p-2 rounded-full transition-all hidden md:flex ${isSaved
                   ? "text-yellow-500 bg-yellow-500/20 hover:bg-yellow-500/30"
                   : "text-gray-300 hover:text-yellow-500 hover:bg-blue-700/30"
-              }`}
+                }`}
               title={isSaved ? "Unsave" : "Save"}
             >
               <Star size={18} fill={isSaved ? "currentColor" : "none"} />
@@ -138,7 +136,7 @@ const GlobalMusicPlayer = () => {
           </div>
 
           {/* Volume Control */}
-          <div className="flex items-center gap-2 min-w-[120px]">
+          <div className="hidden sm:flex items-center gap-2 min-w-[120px]">
             <Volume2 size={18} className="text-blue-400" />
             <input
               type="range"

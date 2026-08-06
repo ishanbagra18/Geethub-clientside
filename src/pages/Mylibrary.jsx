@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Modal from "react-modal";
 import axios from 'axios';
-import { 
-    PlayCircle, Heart, Clock, Bookmark, Music, 
-    X, Upload, Tag, Globe, Lock, Trash2 
+import {
+    PlayCircle, Heart, Clock, Bookmark, Music,
+    X, Upload, Tag, Globe, Lock, Trash2
 } from 'lucide-react';
 import { useHistory } from '../context/historyContext';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
 import API_BASE_URL from '../config/api';
 
-Modal.setAppElement('#root'); 
+Modal.setAppElement('#root');
 
 const Mylibrary = () => {
     const { history, loading: historyLoading } = useHistory();
@@ -29,12 +29,12 @@ const Mylibrary = () => {
         name: "",
         description: "",
         type: "user",
-        tags: "", 
+        tags: "",
         is_public: true,
-        cover_image: null, 
+        cover_image: null,
         song_ids: [],
     });
-    
+
     const [recommendedSongs, setRecommendedSongs] = useState([]);
     const [modalLoading, setModalLoading] = useState(false);
     const [modalError, setModalError] = useState("");
@@ -135,7 +135,7 @@ const Mylibrary = () => {
                 ? prev.song_ids.filter(id => id !== songId)
                 : [...prev.song_ids, songId],
         }));
-    }; 
+    };
 
     // model for creating the playlist 
 
@@ -143,7 +143,7 @@ const Mylibrary = () => {
         e.preventDefault();
         setModalLoading(true);
         setModalError("");
-        
+
         try {
             const token = localStorage.getItem("token");
             const formData = new FormData();
@@ -151,10 +151,10 @@ const Mylibrary = () => {
             formData.append("description", playlistForm.description);
             formData.append("type", playlistForm.type);
             formData.append("is_public", playlistForm.is_public);
-            
+
             const tagsArray = playlistForm.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== "");
             formData.append("tags", JSON.stringify(tagsArray));
-            
+
             playlistForm.song_ids.forEach(id => formData.append("song_ids", id));
 
             if (playlistForm.cover_image) {
@@ -162,7 +162,7 @@ const Mylibrary = () => {
             }
 
             await axios.post(`${API_BASE_URL}/playlist/create`, formData, {
-                headers: { 
+                headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
                 },
@@ -206,14 +206,14 @@ const Mylibrary = () => {
 
         const displayList = getDisplayList();
         return (
-            
+
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <h2 className="text-2xl font-bold text-white tracking-tight">{activeTab.toUpperCase()}</h2>
                         {/* Clear History Button UI */}
                         {activeTab === 'history' && displayList.length > 0 && (
-                            <button 
+                            <button
                                 onClick={handleClearHistory}
                                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-all text-xs font-bold"
                             >
@@ -225,6 +225,27 @@ const Mylibrary = () => {
                     <span className="text-sm text-gray-400 px-3 py-1 bg-gray-900/50 rounded-full">{displayList.length} songs</span>
                 </div>
 
+                {/* Saved Playlists Quick Access Banner */}
+                {activeTab === 'saved' && (
+                    <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-transparent border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40">
+                                <Bookmark size={24} />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white">Looking for your Saved Playlists?</h3>
+                                <p className="text-xs text-gray-400">View and play all bookmarked custom mixes in your Playlist Hub</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => navigate('/myplaylists')}
+                            className="px-5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition shadow-lg shadow-amber-500/20 flex-shrink-0"
+                        >
+                            Open Saved Playlists Vault →
+                        </button>
+                    </div>
+                )}
+
                 {displayList.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 bg-[#121212] rounded-3xl border border-dashed border-gray-800">
                         <p className="text-gray-500">No songs found in your {activeTab}.</p>
@@ -232,7 +253,7 @@ const Mylibrary = () => {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {displayList.map((song, index) => (
-                            <SongCard 
+                            <SongCard
                                 key={song.id || song.song_id || index}
                                 song={activeTab === 'history' ? songLookup[song.song_id] || song : song}
                                 isHovered={hoveredSong === (song.id || song.song_id)}
@@ -260,9 +281,9 @@ const Mylibrary = () => {
                     <div>
                         <h1 className="text-5xl lg:text-6xl font-black mb-6">Your Library</h1>
                         <nav className="flex flex-wrap gap-3">
-                            <Tab active={activeTab === 'history'} label="Recent" count={currentCounts.history} icon={<Clock size={18}/>} onClick={() => setActiveTab('history')} />
-                            <Tab active={activeTab === 'liked'} label="Liked" count={currentCounts.liked} icon={<Heart size={18}/>} onClick={() => setActiveTab('liked')} />
-                            <Tab active={activeTab === 'saved'} label="Saved" count={currentCounts.saved} icon={<Bookmark size={18}/>} onClick={() => setActiveTab('saved')} />
+                            <Tab active={activeTab === 'history'} label="Recent" count={currentCounts.history} icon={<Clock size={18} />} onClick={() => setActiveTab('history')} />
+                            <Tab active={activeTab === 'liked'} label="Liked" count={currentCounts.liked} icon={<Heart size={18} />} onClick={() => setActiveTab('liked')} />
+                            <Tab active={activeTab === 'saved'} label="Saved" count={currentCounts.saved} icon={<Bookmark size={18} />} onClick={() => setActiveTab('saved')} />
                         </nav>
                     </div>
                     <button onClick={openAddPlaylistModal} className="px-8 py-4 rounded-full bg-blue-600 hover:bg-blue-500 font-bold transition-all shadow-xl shadow-blue-600/20">
@@ -291,14 +312,14 @@ const Mylibrary = () => {
                         <div className="space-y-4">
                             <div>
                                 <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">Name</label>
-                                <input name="name" value={playlistForm.name} onChange={handleFormChange} placeholder="My Awesome Mix" required 
-                                       className="w-full bg-[#1e1e1e] border border-gray-700 rounded-xl px-4 py-3 focus:border-blue-500 outline-none transition" />
+                                <input name="name" value={playlistForm.name} onChange={handleFormChange} placeholder="My Awesome Mix" required
+                                    className="w-full bg-[#1e1e1e] border border-gray-700 rounded-xl px-4 py-3 focus:border-blue-500 outline-none transition" />
                             </div>
 
                             <div>
                                 <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">Description</label>
                                 <textarea name="description" value={playlistForm.description} onChange={handleFormChange} placeholder="What's this vibe about?" required
-                                          className="w-full bg-[#1e1e1e] border border-gray-700 rounded-xl px-4 py-3 h-28 resize-none outline-none focus:border-blue-500" />
+                                    className="w-full bg-[#1e1e1e] border border-gray-700 rounded-xl px-4 py-3 h-28 resize-none outline-none focus:border-blue-500" />
                             </div>
 
                             <div className="flex gap-4">
@@ -306,8 +327,8 @@ const Mylibrary = () => {
                                     <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">Tags (comma separated)</label>
                                     <div className="relative">
                                         <Tag className="absolute left-3 top-3.5 text-gray-500" size={16} />
-                                        <input name="tags" value={playlistForm.tags} onChange={handleFormChange} placeholder="Rock, 80s, Chill" 
-                                               className="w-full bg-[#1e1e1e] border border-gray-700 rounded-xl pl-10 pr-4 py-3 focus:border-blue-500 outline-none transition text-sm" />
+                                        <input name="tags" value={playlistForm.tags} onChange={handleFormChange} placeholder="Rock, 80s, Chill"
+                                            className="w-full bg-[#1e1e1e] border border-gray-700 rounded-xl pl-10 pr-4 py-3 focus:border-blue-500 outline-none transition text-sm" />
                                     </div>
                                 </div>
                             </div>
@@ -355,8 +376,8 @@ const Mylibrary = () => {
                                         song.artist.toLowerCase().includes(songSearch.toLowerCase())
                                     ).map(song => (
                                         <label key={song.song_id} className="flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer group">
-                                            <input type="checkbox" checked={playlistForm.song_ids.includes(song.song_id)} onChange={() => handleSongToggle(song.song_id)} 
-                                                   className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-0" />
+                                            <input type="checkbox" checked={playlistForm.song_ids.includes(song.song_id)} onChange={() => handleSongToggle(song.song_id)}
+                                                className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-0" />
                                             <img src={song.image_url || "/api/placeholder/40/40"} alt={song.title} className="w-10 h-10 object-cover rounded-lg border border-gray-800" />
                                             <div className="flex flex-col min-w-0">
                                                 <span className="text-sm font-medium truncate group-hover:text-blue-400 transition">{song.title}</span>
@@ -411,7 +432,7 @@ const SongCard = React.forwardRef(({ song, isHovered, onHover, onLeave, onClick,
             <span className="absolute top-2 right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-full shadow">Last Played</span>
         )}
     </div>
-    
+
 ));
 
 export default Mylibrary;

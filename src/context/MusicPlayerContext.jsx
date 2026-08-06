@@ -1,4 +1,4 @@
-﻿/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types */
 import { createContext, useContext, useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -36,6 +36,13 @@ export const MusicPlayerProvider = ({ children }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
+  // ⚡ Playback Speed State
+  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
+
+  // ⏰ Sleep Timer State
+  const [sleepTimerMinutes, setSleepTimerMinutes] = useState(null);
+  const sleepTimerTimeoutRef = useRef(null);
+
   // Get user ID from token
   const getUserIdFromToken = () => {
     try {
@@ -61,6 +68,85 @@ export const MusicPlayerProvider = ({ children }) => {
       setIsSaved(Boolean(currentSong.saves?.includes(currentUser)));
     }
   }, [currentSong, currentUser]);
+
+  // Calculate similarity/relatedness score between current song and candidate song
+  const calculateSongRelatedness = (currentSong, candidateSong) => {
+    if (!currentSong || !candidateSong) return 0;
+    if (currentSong.song_id === candidateSong.song_id) return -1;
+
+    let score = 0;
+
+    const currentGenre = (currentSong.genre || "").toLowerCase().trim();
+    const candidateGenre = (candidateSong.genre || "").toLowerCase().trim();
+
+    // 1. Genre matching (highest priority - Party songs match Party songs)
+    if (currentGenre && candidateGenre) {
+      if (currentGenre === candidateGenre) {
+        score += 100;
+      } else {
+        const currentWords = currentGenre.split(/[\s/,-]+/);
+        const candidateWords = candidateGenre.split(/[\s/,-]+/);
+        const hasGenreOverlap = currentWords.some((w) => w.length > 2 && candidateWords.includes(w));
+        if (hasGenreOverlap) {
+          score += 75;
+        }
+      }
+    }
+
+    // 2. Language matching
+    const currentLang = (currentSong.language || "").toLowerCase().trim();
+    const candidateLang = (candidateSong.language || "").toLowerCase().trim();
+    if (currentLang && candidateLang && currentLang === candidateLang) {
+      score += 30;
+    }
+
+    // 3. Artist matching
+    const currentArtist = (currentSong.artist || "").toLowerCase().trim();
+    const candidateArtist = (candidateSong.artist || "").toLowerCase().trim();
+    if (currentArtist && candidateArtist && (currentArtist.includes(candidateArtist) || candidateArtist.includes(currentArtist))) {
+      score += 40;
+    }
+
+    return score;
+  };
+
+  // Sort queue by relatedness to active song (Genre -> Language -> Artist)
+  const sortQueueByRelatedness = (activeSong, songList) => {
+    if (!activeSong || !songList || songList.length === 0) return songList || [];
+
+    const otherSongs = songList.filter((s) => s.song_id !== activeSong.song_id);
+
+    const scored = otherSongs.map((s) => ({
+      song: s,
+      score: calculateSongRelatedness(activeSong, s),
+    }));
+
+    // Group songs by score bucket
+    const buckets = {};
+    scored.forEach((item) => {
+      if (!buckets[item.score]) buckets[item.score] = [];
+      buckets[item.score].push(item.song);
+    });
+
+    const shuffle = (arr) => {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+
+    const sortedQueue = [activeSong];
+    Object.keys(buckets)
+      .map(Number)
+      .sort((a, b) => b - a)
+      .forEach((score) => {
+        sortedQueue.push(...shuffle(buckets[score]));
+      });
+
+    return sortedQueue;
+  };
 
   // Play next song - defined early so it can be used in useEffect
   const playNext = () => {
@@ -100,7 +186,14 @@ export const MusicPlayerProvider = ({ children }) => {
     const handleLoadedMetadata = () => setDuration(audio.duration);
     const handleEnded = () => {
       setIsPlaying(false);
-      // Auto-play next song when current ends
+
+      if (sleepTimerMinutes === "end") {
+        setSleepTimerMinutes(null);
+        toast("Sleep Timer: Paused at end of track", { icon: "🌙", duration: 4000 });
+        return;
+      }
+
+      // Auto-play related next song when current ends
       if (queue && queue.length > 0) {
         const nextIdx = (currentIndex + 1) % queue.length;
         const nextSong = queue[nextIdx];
@@ -116,6 +209,11 @@ export const MusicPlayerProvider = ({ children }) => {
           audio.currentTime = 0;
           audio.play().then(() => {
             setIsPlaying(true);
+            const genreLabel = nextSong.genre || "related";
+            toast(`Autoplay: Playing related ${genreLabel} track "${nextSong.title}"`, {
+              icon: "🎧",
+              duration: 3500,
+            });
           }).catch((err) => {
             console.warn("Autoplay blocked:", err);
             setIsPlaying(false);
@@ -160,12 +258,12 @@ export const MusicPlayerProvider = ({ children }) => {
       const song = res.data.song;
       setCurrentSong(song);
 
-      // Build queue
+      // Build queue automatically sorted by relatedness (Same Genre / Party / Language / Artist)
       let newQueue = [];
-      if (queueData && queueData.length) {
-        newQueue = queueData;
+      if (queueData && queueData.length > 1) {
+        newQueue = sortQueueByRelatedness(song, queueData);
       } else {
-        // Fetch all songs and create queue
+        // Fetch all songs and create related queue
         const allSongsRes = await axios.get(`${API_BASE_URL}/music/allsongs`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
@@ -175,28 +273,10 @@ export const MusicPlayerProvider = ({ children }) => {
           songs = songs.filter((s) => (s.artist || "").toLowerCase() === String(contextId).toLowerCase());
         }
 
-        // Shuffle songs
-        const shuffle = (arr) => {
-          const a = arr.slice();
-          for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-          }
-          return a;
-        };
-
-        newQueue = shuffle(songs);
+        newQueue = sortQueueByRelatedness(song, songs);
       }
 
-      // Ensure current song is in queue
-      const existingIndex = newQueue.findIndex((s) => s.song_id === songId);
-      if (existingIndex === -1) {
-        newQueue.unshift(song);
-        setCurrentIndex(0);
-      } else {
-        setCurrentIndex(existingIndex);
-      }
-
+      setCurrentIndex(0);
       setQueue(newQueue);
 
       // Play the audio
@@ -405,6 +485,66 @@ export const MusicPlayerProvider = ({ children }) => {
     }
   };
 
+  const playTrack = (track, queueData = null) => {
+    if (!track) return;
+    const songId = typeof track === "string" ? track : (track.song_id || track._id || track.id);
+    if (typeof track === "object" && track.file_url) {
+      setCurrentSong(track);
+      const audio = audioRef.current;
+      if (audio) {
+        audio.src = track.file_url;
+        audio.currentTime = 0;
+        audio.play().then(() => setIsPlaying(true)).catch((e) => console.warn(e));
+      }
+    }
+    if (songId) {
+      playSong(songId, queueData);
+    }
+  };
+
+  // Change playback speed
+  const changePlaybackSpeed = (speed) => {
+    setPlaybackSpeed(speed);
+    const audio = audioRef.current;
+    if (audio) {
+      audio.playbackRate = speed;
+    }
+    toast.success(`Playback Speed set to ${speed}x`);
+  };
+
+  // Set Sleep Timer
+  const setSleepTimer = (minutes) => {
+    if (sleepTimerTimeoutRef.current) {
+      clearTimeout(sleepTimerTimeoutRef.current);
+      sleepTimerTimeoutRef.current = null;
+    }
+
+    if (!minutes) {
+      setSleepTimerMinutes(null);
+      toast("Sleep Timer turned off", { icon: "⏰" });
+      return;
+    }
+
+    if (minutes === "end") {
+      setSleepTimerMinutes("end");
+      toast.success("Sleep Timer set to end of current track");
+      return;
+    }
+
+    setSleepTimerMinutes(minutes);
+    toast.success(`Sleep Timer set for ${minutes} minutes`);
+
+    sleepTimerTimeoutRef.current = setTimeout(() => {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.pause();
+        setIsPlaying(false);
+      }
+      setSleepTimerMinutes(null);
+      toast("Sleep Timer: Music paused", { icon: "🌙", duration: 4000 });
+    }, minutes * 60 * 1000);
+  };
+
   const value = {
     // State
     currentSong,
@@ -419,8 +559,13 @@ export const MusicPlayerProvider = ({ children }) => {
     currentUser,
     audioRef,
 
+    // Speed & Timer State
+    playbackSpeed,
+    sleepTimerMinutes,
+
     // Actions
     playSong,
+    playTrack,
     togglePlayPause,
     playNext,
     playPrevious,
@@ -431,6 +576,10 @@ export const MusicPlayerProvider = ({ children }) => {
     toggleSave,
     addToQueue,
     addToQueueEnd,
+
+    // Action Handlers
+    changePlaybackSpeed,
+    setSleepTimer,
   };
 
   return (

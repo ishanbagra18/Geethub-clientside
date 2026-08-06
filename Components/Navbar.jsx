@@ -1,4 +1,4 @@
-import { LogOut } from "lucide-react";
+import { LogOut, MessageCircle, Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { FaMusic, FaFire } from "react-icons/fa";
@@ -7,7 +7,26 @@ import { CiViewTimeline } from "react-icons/ci";
 import { PiChatsTeardropThin } from "react-icons/pi";
 import { CgProfile } from "react-icons/cg";
 import { IoMdSearch } from "react-icons/io";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 import API_BASE_URL from '../src/config/api';
+
+const getSeenMessageIds = () => {
+  try {
+    const data = localStorage.getItem("seen_message_ids");
+    return data ? new Set(JSON.parse(data)) : new Set();
+  } catch (e) {
+    return new Set();
+  }
+};
+
+const saveSeenMessageIds = (setObj) => {
+  try {
+    localStorage.setItem("seen_message_ids", JSON.stringify(Array.from(setObj)));
+  } catch (e) {
+    console.error(e);
+  }
+};
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -16,14 +35,121 @@ const Navbar = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
   const searchRef = useRef(null);
+  const isInitialCheckRef = useRef(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
 
-  // Close suggestions when clicking outside this is added but all songs are coming , no scroll bar
+  // Message notifications polling
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    let currentUserId = null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      currentUserId = payload.Uid;
+    } catch (e) {
+      console.error("Token decode error:", e);
+    }
+
+    const checkNotifications = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/auth/messagingusers`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const users = res.data || [];
+        const seenIds = getSeenMessageIds();
+
+        let totalUnread = 0;
+
+        for (const user of users) {
+          if (user.user_id === currentUserId) continue;
+          try {
+            const convRes = await axios.get(`${API_BASE_URL}/messages/conversation/${user.user_id}`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            const msgs = convRes.data?.messages || [];
+            const incoming = msgs.filter(m => m.sender_id !== currentUserId);
+
+            const lastReadTimeStr = localStorage.getItem(`last_read_${user.user_id}`);
+            const lastReadTime = lastReadTimeStr ? parseInt(lastReadTimeStr, 10) : 0;
+
+            // Calculate unread messages (received after lastReadTime)
+            const unreadMsgs = incoming.filter(m => {
+              const msgTime = m.timestamp ? new Date(m.timestamp).getTime() : 0;
+              return msgTime > lastReadTime;
+            });
+
+            totalUnread += unreadMsgs.length;
+
+            // Check if any message is new and hasn't been toasted/seen
+            for (const msg of incoming) {
+              if (msg.id && !seenIds.has(msg.id)) {
+                // If NOT initial load, toast for new message
+                if (!isInitialCheckRef.current) {
+                  const msgTime = msg.timestamp ? new Date(msg.timestamp).getTime() : 0;
+                  if (msgTime > lastReadTime) {
+                    toast((t) => (
+                      <div
+                        className="flex items-center gap-3 cursor-pointer"
+                        onClick={() => {
+                          toast.dismiss(t.id);
+                          navigate(`/messages/${user.user_id}`);
+                        }}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white">
+                          {user.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                        </div>
+                        <div>
+                          <p className="font-bold text-sm text-white">{user.first_name} sent a message</p>
+                          <p className="text-xs text-gray-300 truncate max-w-[200px]">
+                            {msg.message_text || "Sent an image"}
+                          </p>
+                        </div>
+                      </div>
+                    ), {
+                      duration: 4000,
+                      style: { background: '#121216', border: '1px solid #3b82f6', color: '#fff' }
+                    });
+                  }
+                }
+                seenIds.add(msg.id);
+              }
+            }
+          } catch (e) {
+            // Ignore individual conversation errors
+          }
+        }
+
+        saveSeenMessageIds(seenIds);
+        setUnreadCount(totalUnread);
+        isInitialCheckRef.current = false;
+      } catch (error) {
+        console.error("Error fetching message notifications:", error);
+      }
+    };
+
+    checkNotifications();
+    const interval = setInterval(checkNotifications, 5000);
+
+    const handleMessagesRead = () => {
+      checkNotifications();
+    };
+
+    window.addEventListener("messages_read", handleMessagesRead);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("messages_read", handleMessagesRead);
+    };
+  }, [navigate]);
+
+  // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -58,7 +184,7 @@ const Navbar = () => {
         setSuggestions([]);
         setLoading(false);
       }
-    }, 300); // 300ms debounce
+    }, 300);
 
     return () => clearTimeout(delayTimer);
   }, [searchQuery]);
@@ -80,28 +206,35 @@ const Navbar = () => {
   const highlightMatch = (text, query) => {
     if (!text || !query) return text;
     const parts = text.split(new RegExp(`(${query})`, 'gi'));
-    return parts.map((part, index) => 
-      part.toLowerCase() === query.toLowerCase() ? 
-        <span key={index} className="font-bold text-blue-400">{part}</span> : 
+    return parts.map((part, index) =>
+      part.toLowerCase() === query.toLowerCase() ?
+        <span key={index} className="font-bold text-blue-400">{part}</span> :
         part
     );
   };
 
   return (
-    <nav className="w-full bg-[#111] dark:bg-white pt-4 px-6 py-4 flex items-center justify-between shadow-lg text-white dark:text-black">
+    <nav className="w-full bg-[#111] dark:bg-white pt-4 px-6 py-4 flex items-center justify-between shadow-lg text-white dark:text-black relative">
+      <Toaster position="top-right" />
       <div
-        className="flex items-center gap-1 cursor-pointer"
+        className="flex flex-col cursor-pointer group"
         onClick={() => navigate("/")}
+        title="GeetHub: Stream the beat, share the vibe."
       >
-        <FaMusic className="text-white-500 dark:text-white-700" />
-        <span className="text-3xl font-bold">Geet</span>
-        <span className="text-blue-400 dark:text-blue-600 font-bold text-3xl">
-          Hub
+        <div className="flex items-center gap-1">
+          <FaMusic className="text-blue-400 dark:text-blue-600 group-hover:scale-110 transition" />
+          <span className="text-3xl font-black">Geet</span>
+          <span className="text-blue-400 dark:text-blue-600 font-black text-3xl">
+            Hub
+          </span>
+        </div>
+        <span className="text-[10px] font-semibold text-gray-400 dark:text-gray-600 tracking-tight hidden sm:block">
+          Stream the beat, share the vibe.
         </span>
       </div>
 
       <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-        <div 
+        <div
           className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors"
           onClick={() => navigate('/trending')}
         >
@@ -109,7 +242,7 @@ const Navbar = () => {
           <button>Trending</button>
         </div>
 
-        <div 
+        <div
           className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors"
           onClick={() => navigate('/mostliked')}
         >
@@ -117,44 +250,77 @@ const Navbar = () => {
           <button>Most Liked</button>
         </div>
 
-        <div 
-          className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors" 
+        <div
+          className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors"
           onClick={() => navigate('/mylibrary', { state: { scrollToRecent: true } })}
         >
           <CiViewTimeline className="mr-2" />
           <button>Recently</button>
         </div>
 
-        <div 
+        <div
           className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors"
           onClick={() => navigate('/mymostplayed')}
         >
           <PiChatsTeardropThin className="mr-2" />
           <button>Most Played</button>
         </div>
+
+        {/* Message Notifications Link */}
+        <div
+          className="relative flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors text-400 font-bold"
+          onClick={() => navigate('/messages')}
+          title="Messages & Notifications"
+        >
+          <MessageCircle className="mr-1.5" size={18} />
+          <button>Messages</button>
+          {unreadCount > 0 && (
+            <span className="ml-1.5 px-2 py-0.5 text-[10px] font-black bg-blue-500 text-white rounded-full animate-pulse shadow-md">
+              {unreadCount}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="relative" ref={searchRef}>
-        <div className="flex items-center">
-          <IoMdSearch className="absolute left-3 text-gray-400 dark:text-gray-600 w-5 h-5" />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setShowSuggestions(false);
+            navigate(searchQuery.trim() ? `/search?q=${encodeURIComponent(searchQuery.trim())}` : "/search");
+          }}
+          className="flex items-center"
+        >
+          <IoMdSearch
+            onClick={() => {
+              setShowSuggestions(false);
+              navigate(searchQuery.trim() ? `/search?q=${encodeURIComponent(searchQuery.trim())}` : "/search");
+            }}
+            className="absolute left-3 text-gray-400 w-5 h-5 cursor-pointer hover:text-blue-400 transition"
+          />
           <input
             type="text"
-            placeholder="Search for songs, artists, albums..."
+            placeholder="Search songs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => searchQuery && setShowSuggestions(true)}
-            className="pl-10 pr-4 py-2 rounded-lg bg-[#222] dark:bg-gray-200 
-                       text-black dark:text-black placeholder-gray-400 
-                       dark:placeholder-gray-600 focus:outline-none 
-                       focus:ring-2 focus:ring-purple-500 transition w-80"
+            onFocus={() => {
+              if (!searchQuery.trim()) {
+                navigate("/search");
+              } else {
+                setShowSuggestions(true);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setShowSuggestions(false);
+                navigate(searchQuery.trim() ? `/search?q=${encodeURIComponent(searchQuery.trim())}` : "/search");
+              }
+            }}
+            className="pl-10 pr-4 py-2 rounded-lg bg-[#222] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all w-28 focus:w-36 sm:w-60 md:w-80 sm:focus:w-72"
           />
-        </div>
+        </form>
 
         {/* Suggestions Dropdown */}
-
-        
-
-        
         {showSuggestions && (
           <div className="absolute top-full left-0 w-full mt-2 bg-[#1a1a1a] dark:bg-white 
                           rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-gray-700 dark:border-gray-300">
@@ -199,10 +365,7 @@ const Navbar = () => {
         )}
       </div>
 
-
-      
-
-      <div className="flex items-center ml-6 gap-3">
+      <div className="flex items-center ml-2 sm:ml-6 gap-3">
         <button
           onClick={handleMyProfile}
           className="relative flex items-center justify-center p-1 rounded-full 
@@ -216,18 +379,118 @@ const Navbar = () => {
                               shadow-[0_0_20px_rgba(168,85,247,0.6)] animate-pulse"></div>
             </>
           )}
-          <CgProfile className="w-7 h-7 relative z-10 drop-shadow-sm" />
+          {isLoggedIn && localStorage.getItem("user_emoji") ? (
+            <span className="text-2xl relative z-10 p-1">{localStorage.getItem("user_emoji")}</span>
+          ) : (
+            <CgProfile className="w-7 h-7 relative z-10 drop-shadow-sm" />
+          )}
         </button>
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 bg-purple-600 dark:bg-purple-500 
-                     hover:bg-purple-500 dark:hover:bg-purple-400 
+          className="hidden md:flex items-center gap-2 bg-blue-600 dark:bg-blue-500 
+                     hover:bg-blue-500 dark:hover:bg-blue-400 
                      px-4 py-2 rounded-full text-sm font-semibold transition text-white"
         >
-          <LogOut size={18} /> Logout
+          Logout
+          <LogOut size={18} />
+        </button>
+
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden p-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition text-white dark:text-black focus:outline-none"
+        >
+          {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
+
+      {/* Mobile Menu Drawer */}
+      {menuOpen && (
+        <div 
+          className="fixed inset-0 text-white flex flex-col p-6 z-[9999] md:hidden overflow-y-auto"
+          style={{ backgroundColor: '#111111' }}
+        >
+          {/* Header inside drawer */}
+          <div className="flex items-center justify-between pb-6 border-b border-gray-800 mb-6">
+            <div className="flex items-center gap-1">
+              <FaMusic className="text-blue-400" />
+              <span className="text-2xl font-black">Geet</span>
+              <span className="text-blue-400 font-black text-2xl">
+                Hub
+              </span>
+            </div>
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="p-2 rounded-lg hover:bg-gray-800 transition text-white"
+            >
+              <X size={28} />
+            </button>
+          </div>
+
+          {/* Links */}
+          <div className="flex flex-col gap-5 flex-1">
+            <div
+              className="flex items-center gap-4 p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
+              onClick={() => { setMenuOpen(false); navigate('/trending'); }}
+            >
+              <FaFire className="text-blue-400 w-6 h-6" />
+              <span className="font-bold text-lg">Trending</span>
+            </div>
+
+            <div
+              className="flex items-center gap-4 p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
+              onClick={() => { setMenuOpen(false); navigate('/mostliked'); }}
+            >
+              <BiSolidLike className="text-blue-400 w-6 h-6" />
+              <span className="font-bold text-lg">Most Liked</span>
+            </div>
+
+            <div
+              className="flex items-center gap-4 p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
+              onClick={() => { setMenuOpen(false); navigate('/mylibrary', { state: { scrollToRecent: true } }); }}
+            >
+              <CiViewTimeline className="text-blue-400 w-6 h-6" />
+              <span className="font-bold text-lg">Recently</span>
+            </div>
+
+            <div
+              className="flex items-center gap-4 p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
+              onClick={() => { setMenuOpen(false); navigate('/mymostplayed'); }}
+            >
+              <PiChatsTeardropThin className="text-blue-400 w-6 h-6" />
+              <span className="font-bold text-lg">Most Played</span>
+            </div>
+
+            <div
+              className="flex items-center justify-between p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors w-full"
+              onClick={() => { setMenuOpen(false); navigate('/messages'); }}
+            >
+              <div className="flex items-center gap-4">
+                <MessageCircle className="text-blue-400 w-6 h-6" />
+                <span className="font-bold text-lg">Messages</span>
+              </div>
+              {unreadCount > 0 && (
+                <span className="px-2.5 py-0.5 text-xs font-black bg-blue-500 text-white rounded-full animate-pulse">
+                  {unreadCount}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Footer inside drawer */}
+          {isLoggedIn && (
+            <div className="pt-6 border-t border-gray-800 mt-auto">
+              <button
+                onClick={() => { setMenuOpen(false); handleLogout(); }}
+                className="flex items-center gap-4 p-3 text-red-500 hover:bg-red-500/10 rounded-xl w-full text-left font-bold text-lg transition-colors"
+              >
+                <LogOut size={22} />
+                <span className="font-sans">Logout</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </nav>
   );
 };

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Play } from "lucide-react";
@@ -53,7 +53,7 @@ const RandomSongs = () => {
   }, []);
 
   return (
-    <div className="px-6 md:px-20 mt-40 mb-24 ">
+    <div className="px-4 md:px-8 mt-12 md:mt-24 mb-12 md:mb-24">
       <h2 className="text-3xl  font-extrabold mb-4 bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent tracking-wide">
         Fresh Picks For You
       </h2>
@@ -97,9 +97,9 @@ const RandomSongs = () => {
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
 
-                <span className="absolute top-3 right-3 bg-yellow-400/90 text-black px-3 py-1 text-xs font-semibold rounded-full shadow">
+                {/* <span className="absolute top-3 right-3 bg-yellow-400/90 text-black px-3 py-1 text-xs font-semibold rounded-full shadow">
                   {s.lang}
-                </span>
+                </span> */}
 
                 <div
                   className="
@@ -108,8 +108,8 @@ const RandomSongs = () => {
                   transition-all duration-500
                 "
                 >
-                  <div className="w-14 h-14 flex items-center justify-center rounded-full bg-white/90 shadow-lg">
-                    <Play size={28} className="text-black ml-1" />
+                  <div className="w-14 h-14 flex items-center justify-center rounded-full bg--500 hover:bg-400 shadow-lg shadow-blue-500/40 text-black">
+                    <Play size={28} className="text-black fill-black ml-1" />
                   </div>
                 </div>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
-import { Send, ArrowLeft, Image as ImageIcon, Loader2, MessageCircle, X, Trash2 } from 'lucide-react';
+import { Send, ArrowLeft, Image as ImageIcon, Loader2, MessageCircle, X, Trash2, Music, ListMusic, Play, Bookmark } from 'lucide-react';
 import toast from 'react-hot-toast';
 import API_BASE_URL from '../config/api';
 
@@ -22,6 +22,239 @@ const getUserIdFromToken = () => {
   }
 };
 
+const SongPreviewCard = ({ songId, navigate, isCurrentUser }) => {
+  const [song, setSong] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchSong = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+        const res = await axios.get(`${API_BASE}/song/${songId}`, config);
+        if (isMounted && res.data?.song) {
+          setSong(res.data.song);
+        }
+      } catch (err) {
+        console.error("Error fetching preview song:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    if (songId) fetchSong();
+    return () => { isMounted = false; };
+  }, [songId]);
+
+  return (
+    <div
+      onClick={() => navigate(`/playsong/${songId}`)}
+      className={`my-2 p-3 rounded-xl border transition-all cursor-pointer flex items-center gap-3 shadow-lg group ${isCurrentUser
+          ? 'bg-blue-950/60 border-blue-300/40 hover:border-blue-200'
+          : 'bg-gray-900/90 border-blue-500/40 hover:border-blue-400'
+        }`}
+    >
+      <div className="w-12 h-12 rounded-lg overflow-hidden bg-blue-500/20 flex-shrink-0 flex items-center justify-center border border-blue-500/30">
+        {loading ? (
+          <Loader2 className="animate-spin text-blue-400" size={20} />
+        ) : song?.image_url ? (
+          <img src={song.image_url} alt={song.title} className="w-full h-full object-cover group-hover:scale-110 transition" />
+        ) : (
+          <Music className="w-6 h-6 text-blue-400" />
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1 text-[10px] uppercase font-bold text-blue-400 tracking-wider">
+          <Music size={11} /> Shared Track
+        </div>
+        <h4 className="text-sm font-bold text-white truncate">{song?.title || "Listen to Song"}</h4>
+        <p className="text-xs text-gray-300 truncate">{song?.artist || `Track ID: ${songId}`}</p>
+      </div>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/playsong/${songId}`);
+        }}
+        className="px-3 py-1.5 rounded-full bg-blue-500 hover:bg-blue-400 text-white font-bold text-xs flex items-center gap-1 shadow group-hover:scale-105 transition flex-shrink-0"
+      >
+        <Play size={12} fill="white" />
+        Play
+      </button>
+    </div>
+  );
+};
+
+const PlaylistPreviewCard = ({ playlistId, navigate, isCurrentUser }) => {
+  const [playlist, setPlaylist] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
+  const currentUserId = getUserIdFromToken();
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchPlaylist = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+        const res = await axios.get(`${API_BASE}/playlist/${playlistId}`, config);
+        if (isMounted && res.data?.playlist) {
+          const pl = res.data.playlist;
+          setPlaylist(pl);
+          if (currentUserId && pl.saved_by?.includes(currentUserId)) {
+            setIsSaved(true);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching preview playlist:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    if (playlistId) fetchPlaylist();
+    return () => { isMounted = false; };
+  }, [playlistId, currentUserId]);
+
+  const handleSavePlaylist = async (e) => {
+    e.stopPropagation();
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(`${API_BASE}/playlist/${playlistId}/save`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setIsSaved(res.data?.is_saved);
+      toast.success(res.data?.message || "Playlist updated");
+    } catch (err) {
+      toast.error("Failed to save playlist");
+    }
+  };
+
+  return (
+    <div
+      onClick={() => navigate(`/playlist/${playlistId}`)}
+      className={`my-2 p-3 rounded-xl border transition-all cursor-pointer flex items-center gap-3 shadow-lg group ${isCurrentUser
+          ? 'bg-purple-950/60 border-purple-300/40 hover:border-purple-200'
+          : 'bg-gray-900/90 border-purple-500/40 hover:border-purple-400'
+        }`}
+    >
+      <div className="w-12 h-12 rounded-lg overflow-hidden bg-purple-500/20 flex-shrink-0 flex items-center justify-center border border-purple-500/30">
+        {loading ? (
+          <Loader2 className="animate-spin text-purple-400" size={20} />
+        ) : playlist?.cover_image ? (
+          <img src={playlist.cover_image} alt={playlist.name} className="w-full h-full object-cover group-hover:scale-110 transition" />
+        ) : (
+          <ListMusic className="w-6 h-6 text-purple-400" />
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1 text-[10px] uppercase font-bold text-purple-400 tracking-wider">
+          <ListMusic size={11} /> Shared Playlist {playlist?.is_public === false && "(Private)"}
+        </div>
+        <h4 className="text-sm font-bold text-white truncate">{playlist?.name || "View Playlist"}</h4>
+        <p className="text-xs text-gray-300 truncate">{playlist?.description || `${playlist?.song_ids?.length || 0} songs`}</p>
+      </div>
+
+      <div className="flex items-center gap-1.5 flex-shrink-0">
+        <button
+          onClick={handleSavePlaylist}
+          className={`p-1.5 rounded-full border transition flex items-center gap-1 text-xs font-bold ${isSaved
+              ? 'bg-amber-500 text-black border-amber-400'
+              : 'bg-white/10 hover:bg-white/20 text-white border-white/20'
+            }`}
+          title={isSaved ? "Saved to Library" : "Save Playlist"}
+        >
+          <Bookmark size={13} fill={isSaved ? "black" : "transparent"} />
+        </button>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/playlist/${playlistId}`);
+          }}
+          className="px-3 py-1.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-1 shadow group-hover:scale-105 transition"
+        >
+          <ListMusic size={12} />
+          Open
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const renderFormattedMessage = (text, navigate, isCurrentUser) => {
+  if (!text) return null;
+
+  const songRegex = /(?:https?:\/\/[^\s]+)?\/playsong\/([a-zA-Z0-9_-]+)/gi;
+  const playlistRegex = /(?:https?:\/\/[^\s]+)?\/playlist\/([a-zA-Z0-9_-]+)/gi;
+
+  const songMatches = [...text.matchAll(songRegex)];
+  const playlistMatches = [...text.matchAll(playlistRegex)];
+
+  if (songMatches.length > 0 || playlistMatches.length > 0) {
+    const cards = [];
+    const songIdsFound = new Set();
+    const playlistIdsFound = new Set();
+
+    songMatches.forEach(m => {
+      const songId = m[1];
+      if (songId && !songIdsFound.has(songId)) {
+        songIdsFound.add(songId);
+        cards.push(<SongPreviewCard key={`song-${songId}`} songId={songId} navigate={navigate} isCurrentUser={isCurrentUser} />);
+      }
+    });
+
+    playlistMatches.forEach(m => {
+      const playlistId = m[1];
+      if (playlistId && !playlistIdsFound.has(playlistId)) {
+        playlistIdsFound.add(playlistId);
+        cards.push(<PlaylistPreviewCard key={`pl-${playlistId}`} playlistId={playlistId} navigate={navigate} isCurrentUser={isCurrentUser} />);
+      }
+    });
+
+    const cleanText = text
+      .replace(songRegex, '')
+      .replace(playlistRegex, '')
+      .trim();
+
+    return (
+      <div className="space-y-1">
+        {cleanText && <p className="break-words whitespace-pre-wrap">{cleanText}</p>}
+        {cards}
+      </div>
+    );
+  }
+
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+
+  return (
+    <p className="break-words whitespace-pre-wrap">
+      {parts.map((part, i) => {
+        if (part.match(urlRegex)) {
+          return (
+            <a
+              key={i}
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`underline ${isCurrentUser ? 'text-blue-200 hover:text-white' : 'text-blue-400 hover:text-blue-300'}`}
+              onClick={(e) => {
+                if (part.includes(window.location.origin)) {
+                  e.preventDefault();
+                  const path = part.replace(window.location.origin, '');
+                  navigate(path);
+                }
+              }}
+            >
+              {part}
+            </a>
+          );
+        }
+        return part;
+      })}
+    </p>
+  );
+};
+
 const ChatConversation = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
@@ -36,10 +269,28 @@ const ChatConversation = () => {
   const fileInputRef = useRef(null);
   const currentUserId = getUserIdFromToken();
 
+  const markAsRead = (msgs) => {
+    if (!userId) return;
+    localStorage.setItem(`last_read_${userId}`, Date.now().toString());
+    try {
+      const seenData = localStorage.getItem("seen_message_ids");
+      const seenSet = seenData ? new Set(JSON.parse(seenData)) : new Set();
+      if (msgs && msgs.length > 0) {
+        msgs.forEach(m => { if (m.id) seenSet.add(m.id); });
+        localStorage.setItem("seen_message_ids", JSON.stringify(Array.from(seenSet)));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    window.dispatchEvent(new Event("messages_read"));
+  };
+
   useEffect(() => {
     if (userId) {
       fetchUserDetails();
       fetchMessages();
+      const interval = setInterval(fetchMessages, 3000);
+      return () => clearInterval(interval);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
@@ -70,7 +321,6 @@ const ChatConversation = () => {
   };
 
   const fetchMessages = async () => {
-    setLoading(true);
     try {
       const token = getToken();
       if (!token) return;
@@ -82,10 +332,11 @@ const ChatConversation = () => {
         }
       );
 
-      setMessages(response.data.messages || []);
+      const fetchedMsgs = response.data.messages || [];
+      setMessages(fetchedMsgs);
+      markAsRead(fetchedMsgs);
     } catch (error) {
       console.error('Error fetching messages:', error);
-      setMessages([]);
     } finally {
       setLoading(false);
     }
@@ -206,11 +457,11 @@ const ChatConversation = () => {
             >
               <ArrowLeft className="text-white" size={24} />
             </button>
-            
+
             {selectedUser ? (
               <div className="flex items-center gap-3 flex-1">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold text-lg">
-                  {selectedUser.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                  {selectedUser.emoji || selectedUser.first_name?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
                 <div>
                   <h3 className="text-white font-semibold text-lg">
@@ -249,7 +500,7 @@ const ChatConversation = () => {
                   const showDate =
                     index === 0 ||
                     formatDate(msg.timestamp) !==
-                      formatDate(messages[index - 1]?.timestamp);
+                    formatDate(messages[index - 1]?.timestamp);
 
                   return (
                     <React.Fragment key={msg.id || index}>
@@ -261,9 +512,8 @@ const ChatConversation = () => {
                         </div>
                       )}
                       <div
-                        className={`flex group ${
-                          isCurrentUser ? 'justify-end' : 'justify-start'
-                        }`}
+                        className={`flex group ${isCurrentUser ? 'justify-end' : 'justify-start'
+                          }`}
                       >
                         <div className="flex items-end gap-2">
                           {isCurrentUser && (
@@ -276,32 +526,28 @@ const ChatConversation = () => {
                             </button>
                           )}
                           <div
-                            className={`max-w-[80%] min-w-[100px] rounded-2xl px-4 py-2 ${
-                              isCurrentUser
+                            className={`max-w-[80%] min-w-[100px] rounded-2xl px-4 py-2 ${isCurrentUser
                                 ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
                                 : 'bg-gray-800 text-gray-100'
-                            }`}
+                              }`}
                           >
-                          {msg.photo_url && (
-                            <img
-                              src={msg.photo_url}
-                              alt="Shared"
-                              className="rounded-lg mb-2 max-w-full h-auto"
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                              }}
-                            />
-                          )}
-                          {msg.message_text && (
-                            <p className="break-words whitespace-pre-wrap">{msg.message_text}</p>
-                          )}
-                          <span
-                            className={`text-xs mt-1 block ${
-                              isCurrentUser ? 'text-blue-100' : 'text-gray-500'
-                            }`}
-                          >
-                            {formatTime(msg.timestamp)}
-                          </span>
+                            {msg.photo_url && (
+                              <img
+                                src={msg.photo_url}
+                                alt="Shared"
+                                className="rounded-lg mb-2 max-w-full h-auto"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            )}
+                            {msg.message_text && renderFormattedMessage(msg.message_text, navigate, isCurrentUser)}
+                            <span
+                              className={`text-xs mt-1 block ${isCurrentUser ? 'text-blue-100' : 'text-gray-500'
+                                }`}
+                            >
+                              {formatTime(msg.timestamp)}
+                            </span>
                           </div>
                         </div>
                       </div>

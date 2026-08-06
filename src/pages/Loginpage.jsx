@@ -25,6 +25,9 @@ const Loginpage = () => {
       console.log("✅ Login Success:", response.data);
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
+        if (response.data.user?.emoji) {
+          localStorage.setItem("user_emoji", response.data.user.emoji);
+        }
         console.log("Token saved to localStorage");
       }
 
@@ -127,11 +130,11 @@ const Loginpage = () => {
 
           {/* Animated music visualizer */}
           <div className="absolute top-6 left-1/2 -translate-x-1/2 flex gap-1 z-10" aria-hidden="true">
-            <span className="block w-1.5 h-6 bg-indigo-400 rounded animate-bounce [animation-delay:0.1s]" style={{animationDuration:'1.1s'}}></span>
-            <span className="block w-1.5 h-4 bg-violet-400 rounded animate-bounce [animation-delay:0.2s]" style={{animationDuration:'0.9s'}}></span>
-            <span className="block w-1.5 h-8 bg-indigo-300 rounded animate-bounce [animation-delay:0.3s]" style={{animationDuration:'1.3s'}}></span>
-            <span className="block w-1.5 h-5 bg-violet-300 rounded animate-bounce [animation-delay:0.4s]" style={{animationDuration:'1.05s'}}></span>
-            <span className="block w-1.5 h-7 bg-indigo-400 rounded animate-bounce [animation-delay:0.5s]" style={{animationDuration:'1.2s'}}></span>
+            <span className="block w-1.5 h-6 bg-indigo-400 rounded animate-bounce [animation-delay:0.1s]" style={{ animationDuration: '1.1s' }}></span>
+            <span className="block w-1.5 h-4 bg-violet-400 rounded animate-bounce [animation-delay:0.2s]" style={{ animationDuration: '0.9s' }}></span>
+            <span className="block w-1.5 h-8 bg-indigo-300 rounded animate-bounce [animation-delay:0.3s]" style={{ animationDuration: '1.3s' }}></span>
+            <span className="block w-1.5 h-5 bg-violet-300 rounded animate-bounce [animation-delay:0.4s]" style={{ animationDuration: '1.05s' }}></span>
+            <span className="block w-1.5 h-7 bg-indigo-400 rounded animate-bounce [animation-delay:0.5s]" style={{ animationDuration: '1.2s' }}></span>
           </div>
 
           {/* Logo and branding */}

@@ -229,11 +229,10 @@ const Messages = () => {
                   <div
                     key={user.user_id}
                     onClick={() => setSelectedUser(user)}
-                    className={`p-4 cursor-pointer transition-all border-b border-gray-800 hover:bg-blue-500/10 ${
-                      selectedUser?.user_id === user.user_id
+                    className={`p-4 cursor-pointer transition-all border-b border-gray-800 hover:bg-blue-500/10 ${selectedUser?.user_id === user.user_id
                         ? 'bg-blue-500/20 border-l-4 border-l-blue-500'
                         : ''
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold text-lg">
@@ -298,7 +297,7 @@ const Messages = () => {
                         const showDate =
                           index === 0 ||
                           formatDate(msg.timestamp) !==
-                            formatDate(messages[index - 1]?.timestamp);
+                          formatDate(messages[index - 1]?.timestamp);
 
                         return (
                           <React.Fragment key={msg.id || index}>
@@ -310,9 +309,8 @@ const Messages = () => {
                               </div>
                             )}
                             <div
-                              className={`flex group ${
-                                isCurrentUser ? 'justify-end' : 'justify-start'
-                              }`}
+                              className={`flex group ${isCurrentUser ? 'justify-end' : 'justify-start'
+                                }`}
                             >
                               <div className="flex items-end gap-2">
                                 {isCurrentUser && (
@@ -325,34 +323,32 @@ const Messages = () => {
                                   </button>
                                 )}
                                 <div
-                                  className={`max-w-[70%] rounded-2xl px-4 py-2 ${
-                                    isCurrentUser
+                                  className={`max-w-[70%] rounded-2xl px-4 py-2 ${isCurrentUser
                                       ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
                                       : 'bg-gray-800 text-gray-100'
-                                  }`}
+                                    }`}
                                 >
-                                {msg.photo_url && (
-                                  <img
-                                    src={msg.photo_url}
-                                    alt="Shared"
-                                    className="rounded-lg mb-2 max-w-full h-auto"
-                                    onError={(e) => {
-                                      e.target.style.display = 'none';
-                                    }}
-                                  />
-                                )}
-                                {msg.message_text && (
-                                  <p className="break-words">{msg.message_text}</p>
-                                )}
-                                <span
-                                  className={`text-xs mt-1 block ${
-                                    isCurrentUser
-                                      ? 'text-blue-100'
-                                      : 'text-gray-500'
-                                  }`}
-                                >
-                                  {formatTime(msg.timestamp)}
-                                </span>
+                                  {msg.photo_url && (
+                                    <img
+                                      src={msg.photo_url}
+                                      alt="Shared"
+                                      className="rounded-lg mb-2 max-w-full h-auto"
+                                      onError={(e) => {
+                                        e.target.style.display = 'none';
+                                      }}
+                                    />
+                                  )}
+                                  {msg.message_text && (
+                                    <p className="break-words">{msg.message_text}</p>
+                                  )}
+                                  <span
+                                    className={`text-xs mt-1 block ${isCurrentUser
+                                        ? 'text-blue-100'
+                                        : 'text-gray-500'
+                                      }`}
+                                  >
+                                    {formatTime(msg.timestamp)}
+                                  </span>
                                 </div>
                               </div>
                             </div>

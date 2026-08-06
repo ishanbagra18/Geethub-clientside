@@ -44,7 +44,7 @@ const Topcharts = ({ limitToHome = false }) => {
   };
 
   return (
-    <div style={{ marginTop: 80, paddingLeft: 40, paddingRight: 40 }}>
+    <div className="mt-10 md:mt-20 px-4 md:px-8">
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: 0.6 }}>Top Charts</h2>
@@ -52,9 +52,9 @@ const Topcharts = ({ limitToHome = false }) => {
         {limitToHome && (
           <button
             onClick={() => navigate("/topcharts")}
-            style={{ color: "#f87171", fontSize: 14, fontWeight: 600, background: "transparent", border: "none", cursor: "pointer" }}
+            style={{ color: "#2216cdff", fontSize: 14, fontWeight: 600, background: "transparent", border: "none", cursor: "pointer" }}
           >
-            See All
+            View more in Top Charts
           </button>
         )}
       </div>

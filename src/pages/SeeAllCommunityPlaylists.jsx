@@ -20,7 +20,7 @@ const SeeAllCommunityPlaylists = () => {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900">
       <Navbar />
       
-      <div className="pt-24 px-8 pb-20">
+      <div className="pt-24 px-4 md:px-8 pb-20">
         {/* Header */}
         <div className="mb-8">
           <button
@@ -62,7 +62,7 @@ const SeeAllCommunityPlaylists = () => {
                     }}
                   />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                    <div className="p-3 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all">
+                    <div className="p-3 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all">
                       <Play size={24} fill="white" stroke="white" />
                     </div>
                   </div>
@@ -71,7 +71,7 @@ const SeeAllCommunityPlaylists = () => {
                 {/* Content Area with Improved Padding */}
                 <div className="p-5 flex flex-col gap-3">
                   <div>
-                    <h3 className="text-lg font-bold leading-tight truncate mb-1">{playlist.name}</h3>
+                    <h3 className="text-lg text-white font-bold leading-tight truncate mb-1">{playlist.name}</h3>
                     <p className="text-sm text-gray-400 line-clamp-1 italic">
                       {playlist.description || 'No description provided.'}
                     </p>
@@ -80,7 +80,7 @@ const SeeAllCommunityPlaylists = () => {
                   {/* Stats Row */}
                   <div className="flex items-center gap-4 text-xs text-gray-400">
                     <span className="flex items-center gap-1.5 font-medium">
-                      <ListMusic size={15} className="text-purple-500" />
+                      <ListMusic size={15} className="text-blue-500" />
                       {playlist.song_ids?.length || 0} Songs
                     </span>
                     <span className="flex items-center gap-1.5">

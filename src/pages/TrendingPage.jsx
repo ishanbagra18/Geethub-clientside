@@ -28,7 +28,7 @@ const TrendingPage = () => {
     <div className="min-h-screen bg-black">
       <Navbar />
       
-      <div className="pt-24 px-8 pb-20">
+      <div className="pt-24 px-4 md:px-8 pb-20">
         {/* Hero Header */}
         <div className="mb-12">
           <button

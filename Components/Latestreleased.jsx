@@ -60,11 +60,11 @@ const Latestreleased = () => {
   };
 
   const seeAllButtonStyle = {
-    color: "#f97373",
+    color: "#2216cdff",
     fontSize: 14,
     fontWeight: 600,
     background: "transparent",
-    border: "1px solid rgba(248, 113, 113, 0.4)",
+    border: "1px solid rgba(5, 0, 157, 0.4)",
     borderRadius: 999,
     padding: "6px 14px",
     cursor: "pointer",
@@ -172,14 +172,14 @@ const Latestreleased = () => {
     width: 50,
     height: 50,
     borderRadius: "999px",
-    border: "1px solid rgba(248, 250, 252, 0.4)",
+    border: "1px solid rgba(255, 255, 255, 0.4)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     background:
-      "radial-gradient(circle at 10% 20%, #22c55e, #22d3ee)",
-    color: "#0f172a",
-    boxShadow: "0 12px 35px rgba(0,0,0,0.6)",
+      "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)",
+    color: "#ffffff",
+    boxShadow: "0 8px 25px rgba(59, 130, 246, 0.5)",
     fontSize: 18,
     fontWeight: 700,
   };
@@ -247,7 +247,7 @@ const Latestreleased = () => {
   };
 
   return (
-    <section style={containerStyle}>
+    <section className="mt-10 md:mt-20 px-4 md:px-8">
       {/* HEADER */}
       <div style={headerRowStyle}>
         <div style={titleStyle}>

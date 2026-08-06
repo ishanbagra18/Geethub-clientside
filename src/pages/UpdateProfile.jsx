@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Toaster } from "react-hot-toast";
-import toast from "react-hot-toast";
-import UpdateProfileCard from "../../Components/UpdateProfileCard";
-
+import { Toaster, toast } from "react-hot-toast";
+import { User, Mail, Phone, Smile, Check, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import API_BASE_URL from '../config/api';
 
 const API_BASE = API_BASE_URL;
+
+const PROFILE_EMOJIS = [
+  "", "🎧", "🎸", "⚡", "🔥", "🎵", "🚀", "👑", "👽",
+  "🦊", "💎", "🌊", "🎹", "🎙️", "🌟", "🦄", "👾"
+];
 
 const getUidFromToken = () => {
   try {
@@ -21,15 +25,16 @@ const getUidFromToken = () => {
 };
 
 const UpdateProfile = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
   });
-
+  const [selectedEmoji, setSelectedEmoji] = useState("");
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState({ type: "", text: "" });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -51,11 +56,11 @@ const UpdateProfile = () => {
           email: user.email || "",
           phone: user.phone || "",
         });
+        const currentEmoji = user.emoji !== undefined ? user.emoji : (localStorage.getItem("user_emoji") || "");
+        setSelectedEmoji(currentEmoji);
       } catch (err) {
         console.error(err);
-        const text = err.response?.data?.message || err.message;
-        setMessage({ type: "error", text });
-        toast.error(text);
+        toast.error("Failed to load profile details");
       } finally {
         setLoading(false);
       }
@@ -70,8 +75,7 @@ const UpdateProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setMessage({ type: "", text: "" });
+    setSaving(true);
 
     try {
       const token = localStorage.getItem("token");
@@ -85,190 +89,185 @@ const UpdateProfile = () => {
           last_name: formData.lastName,
           email: formData.email,
           phone: formData.phone,
+          emoji: selectedEmoji,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      toast.success("Profile updated!");
-      const updated = data.user || data;
-      setFormData({
-        firstName: updated.first_name || "",
-        lastName: updated.last_name || "",
-        email: updated.email || "",
-        phone: updated.phone || "",
-      });
-      setMessage({ type: "success", text: "Profile updated successfully!" });
+      localStorage.setItem("user_emoji", selectedEmoji);
+      toast.success("Profile & Avatar updated successfully!");
+      setTimeout(() => navigate("/myprofile"), 1000);
     } catch (err) {
       const text = err.response?.data?.message || err.message;
-      setMessage({ type: "error", text });
       toast.error(text);
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
+  const initials = `${formData.firstName?.[0] || ""}${formData.lastName?.[0] || ""}`.toUpperCase();
+
   return (
-    <div
-      className="min-h-screen flex justify-center items-center px-6 py-12"
-      style={{
-        background: "#000000",              // pure black page
-        color: "#f9fafb",
-        fontFamily: "'Inter', sans-serif",
-      }}
-    >
+    <div className="min-h-screen bg-[#050509] text-white flex justify-center items-center px-4 py-8 md:py-12 font-sans relative overflow-hidden">
       <Toaster position="top-right" />
 
-      {/* Main Glass Container */}
-      <div
-        className="flex flex-col md:flex-row rounded-3xl shadow-[0_0_40px_rgba(0,0,0,0.8)] max-w-5xl w-full overflow-hidden border border-[#18181b]"
-        style={{
-          background: "#050509",
-        }}
-      >
-        {/* LEFT SIDE PROFILE SUMMARY CARD */}
-        <div className="md:w-1/3 bg-gradient-to-b from-[#18181b] to-[#050509] p-10 flex flex-col items-center justify-center border-r border-[#18181b] relative min-h-[520px] md:min-h-[600px]">
-          {/* Decorative background circle */}
-          <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-56 h-56 bg-blue-900/30 blur-2xl rounded-full z-0" />
-          {/* Avatar */}
-          <div className="relative z-10 flex flex-col items-center">
-            <div className="w-36 h-36 rounded-full bg-gradient-to-tr from-blue-700 via-blue-400 to-blue-900 border-4 border-[#18181b] shadow-lg flex items-center justify-center mb-6">
-              <span className="text-5xl text-white font-bold select-none">
-                {(formData.firstName?formData.firstName.charAt(0).toUpperCase() : "U") + (formData.lastName?formData.lastName.charAt(0).toUpperCase() : "?")}
-              </span>
+      {/* Subtle Glow backdrop */}
+      <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
+
+      {/* Main Glass Card */}
+      <div className="flex flex-col md:flex-row rounded-3xl shadow-2xl max-w-5xl w-full overflow-hidden border border-white/10 bg-[#0d0e17]/90 backdrop-blur-2xl z-10">
+
+        {/* LEFT SIDE PROFILE SUMMARY */}
+        <div className="md:w-1/3 bg-gradient-to-b from-[#161826] to-[#0d0e17] p-8 flex flex-col items-center justify-between border-b md:border-b-0 md:border-r border-white/10 relative">
+          <div className="w-full">
+            <button
+              onClick={() => navigate("/myprofile")}
+              className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition mb-6"
+            >
+              <ArrowLeft size={16} /> Back to Profile
+            </button>
+          </div>
+
+          <div className="flex flex-col items-center text-center my-6">
+            <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-blue-600 to-purple-600 p-1 shadow-2xl mb-4 relative group">
+              <div className="w-full h-full rounded-[22px] bg-[#0d0e17] flex items-center justify-center text-5xl font-black text-blue-400 relative overflow-hidden">
+                {selectedEmoji ? (
+                  <span>{selectedEmoji}</span>
+                ) : (
+                  <span>{initials || "👤"}</span>
+                )}
+              </div>
             </div>
-            <div className="text-2xl font-semibold text-white mb-2 text-center">
+
+            <h3 className="text-xl font-bold text-white mb-1">
               {formData.firstName || "User"} {formData.lastName}
-            </div>
-            <div className="text-sm text-blue-300 mb-6 text-center">
-              {formData.email || "No email"}
-            </div>
-            <div className="flex flex-col gap-3 w-full items-center">
-              <div className="flex items-center gap-2 text-sm text-blue-200">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75v10.5A2.25 2.25 0 004.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75M2.25 6.75A2.25 2.25 0 014.5 4.5h15a2.25 2.25 0 012.25 2.25M2.25 6.75l9.72 7.29a2.25 2.25 0 002.58 0l9.72-7.29" />
-                </svg>
-                <span>{formData.email || "-"}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-blue-200">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75v10.5A2.25 2.25 0 004.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75M2.25 6.75A2.25 2.25 0 014.5 4.5h15a2.25 2.25 0 012.25 2.25M2.25 6.75l9.72 7.29a2.25 2.25 0 002.58 0l9.72-7.29" />
-                </svg>
-                <span>{formData.phone || "-"}</span>
-              </div>
-            </div>
-            <div className="mt-8 text-sm text-gray-400 text-center max-w-[220px]">
-              You can update your profile details on the right. Changes will reflect instantly.
-            </div>
+            </h3>
+            <p className="text-xs text-blue-400 font-medium mb-4">{formData.email || "No email"}</p>
+
+            <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-bold">
+              {selectedEmoji ? `Avatar: ${selectedEmoji}` : "No Emoji (Default Initials)"}
+            </span>
+          </div>
+
+          <div className="text-center text-xs text-slate-500 pt-4 border-t border-white/5 w-full">
+            Updates will reflect across all playlists and active chat conversations.
           </div>
         </div>
 
         {/* RIGHT SIDE FORM */}
-        <div className="md:w-2/3 p-8 md:p-12 relative">
-          {/* Subtle decor (no glow, just dark) */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-black/40 blur-[80px] rounded-full pointer-events-none" />
+        <div className="md:w-2/3 p-6 sm:p-10 flex flex-col justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Update Account</h1>
+            <p className="text-xs sm:text-sm text-slate-400 mb-6">Modify your profile info and avatar emoji below</p>
 
-          <h1
-            className="text-3xl font-bold mb-8 tracking-tight"
-            style={{
-              color: "#f9fafb",
-            }}
-          >
-            Account Settings
-          </h1>
+            <form onSubmit={handleSubmit} className="space-y-5">
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                { key: "firstName", label: "First Name" },
-                { key: "lastName", label: "Last Name" },
-                { key: "email", label: "Email Address" },
-                { key: "phone", label: "Phone Number" },
-              ].map((field) => (
-                <div key={field.key} className="group">
-                  <label
-                    className="block mb-2 text-xs font-semibold uppercase tracking-widest"
-                    style={{ color: "#a3a3a3" }}
+              {/* EMOJI SELECTOR WITH NONE OPTION */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
+                  <span>Profile Emoji Avatar</span>
+                  <span className="text-[11px] text-blue-400 font-normal">
+                    {selectedEmoji ? `Selected: ${selectedEmoji}` : "No Emoji Selected"}
+                  </span>
+                </label>
+
+                <div className="p-3 rounded-2xl bg-[#131522] border border-white/10 grid grid-cols-6 sm:grid-cols-9 gap-2">
+                  {/* None Option */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectedEmoji("")}
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-xs font-bold flex flex-col items-center justify-center transition-all ${selectedEmoji === ""
+                        ? 'bg-blue-600 text-white border-2 border-blue-400 scale-105 shadow-lg shadow-blue-500/40'
+                        : 'bg-white/5 hover:bg-white/15 text-slate-400 border border-transparent'
+                      }`}
+                    title="No Emoji Avatar (Use Default Initials)"
                   >
-                    {field.label}
-                  </label>
+                    <span>🚫</span>
+                    <span className="text-[8px] uppercase">None</span>
+                  </button>
 
+                  {/* Emoji List */}
+                  {PROFILE_EMOJIS.filter(e => e !== "").map((emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      onClick={() => setSelectedEmoji(emoji)}
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-xl flex items-center justify-center transition-all ${selectedEmoji === emoji
+                          ? 'bg-blue-600 border-2 border-blue-400 scale-110 shadow-lg shadow-blue-500/40'
+                          : 'bg-white/5 hover:bg-white/15 border border-transparent hover:scale-105'
+                        }`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* FIRST & LAST NAME */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">First Name</label>
                   <input
-                    type={field.key === "email" ? "email" : "text"}
-                    name={field.key}
-                    value={formData[field.key]}
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
                     onChange={handleChange}
-                    disabled={loading}
-                    placeholder={`Enter ${field.label.toLowerCase()}`}
-                    className="w-full rounded-xl px-4 py-3 text-sm"
-                    style={{
-                      background: "#050509",
-                      border: "1px solid #27272f",
-                      color: "#f9fafb",
-                      outline: "none",
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = "#3b82f6"; // blue focus
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = "#27272f";
-                    }}
+                    required
+                    className="w-full pl-4 pr-4 py-2.5 rounded-xl bg-[#131522] border border-white/10 text-sm text-white focus:outline-none focus:border-blue-500 transition-all"
                   />
                 </div>
-              ))}
-            </div>
 
-            <div className="pt-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Last Name</label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    className="w-full pl-4 pr-4 py-2.5 rounded-xl bg-[#131522] border border-white/10 text-sm text-white focus:outline-none focus:border-blue-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* EMAIL */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-4 pr-4 py-2.5 rounded-xl bg-[#131522] border border-white/10 text-sm text-white focus:outline-none focus:border-blue-500 transition-all"
+                />
+              </div>
+
+              {/* PHONE */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Phone Number</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-4 pr-4 py-2.5 rounded-xl bg-[#131522] border border-white/10 text-sm text-white focus:outline-none focus:border-blue-500 transition-all"
+                />
+              </div>
+
+              {/* SUBMIT BUTTON */}
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full py-4 rounded-xl font-bold text-white transition-all duration-200 transform hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d4ed8 100%)", // blue button
-                  boxShadow: "0 4px 18px rgba(0,0,0,0.8)",
-                }}
+                disabled={saving}
+                className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-white shadow-lg shadow-blue-600/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Updating...
-                  </span>
-                ) : (
-                  "Save Changes"
-                )}
+                {saving ? "Saving Changes..." : "Save Profile Changes"}
               </button>
-            </div>
-
-            {message.text && (
-              <div
-                className={`p-4 rounded-xl text-sm text-center border ${
-                  message.type === "error"
-                    ? "bg-red-900/40 border-red-500/50 text-red-200"
-                    : "bg-emerald-900/40 border-emerald-500/50 text-emerald-200"
-                }`}
-              >
-                {message.type === "error" ? "✕" : "✓"} {message.text}
-              </div>
-            )}
-          </form>
+            </form>
+          </div>
         </div>
+
       </div>
     </div>
   );

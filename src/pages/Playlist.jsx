@@ -3,6 +3,7 @@ import axios from "axios";
 import Modal from "react-modal";
 import { useParams, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
+import { Share2, Bookmark } from "lucide-react";
 import API_BASE_URL from '../config/api';
 
 const PLACEHOLDER = "https://via.placeholder.com/300?text=No+Cover";
@@ -102,6 +103,46 @@ const Playlist = () => {
     }
   };
 
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    if (playlist) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const currentUid = payload.Uid;
+          if (playlist.saved_by?.includes(currentUid)) {
+            setIsSaved(true);
+          }
+        } catch (e) { console.error(e); }
+      }
+    }
+  }, [playlist]);
+
+  const handleSavePlaylistToggle = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(`${API_BASE_URL}/playlist/${id}/save`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setIsSaved(res.data?.is_saved);
+      toast.success(res.data?.message || "Playlist save updated");
+    } catch (err) {
+      toast.error("Failed to save playlist");
+    }
+  };
+
+  const handleSharePlaylist = () => {
+    const shareUrl = `${window.location.origin}/playlist/${id}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Playlist link copied to clipboard!");
+    } else {
+      toast.error("Clipboard access not supported");
+    }
+  };
+
   const deletePlaylist = async () => {
     if (!window.confirm("Delete this playlist permanently?")) return;
     const token = localStorage.getItem("token");
@@ -134,7 +175,7 @@ const Playlist = () => {
       <Toaster position="bottom-right" />
 
       {/* --- DYNAMIC HEADER --- */}
-      <div className="relative h-[40vh] md:h-[50vh] flex items-end px-6 md:px-12 pb-8 overflow-hidden">
+      <div className="relative min-h-[40vh] md:h-[50vh] flex items-end pt-24 pb-8 px-4 md:px-12 overflow-hidden">
         {/* Background Blur Effect */}
         <div 
           className="absolute inset-0 bg-cover bg-center scale-110 blur-3xl opacity-30"
@@ -149,7 +190,7 @@ const Playlist = () => {
             className="w-48 h-48 md:w-64 md:h-64 object-cover rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
           />
           <div className="flex-1 text-center md:text-left">
-            <p className="text-xs font-bold uppercase tracking-widest text-blue-400 mb-2">Playlist</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-400 mb-2">Playlist {playlist.is_public === false && "(Private)"}</p>
             <h1 className="text-5xl md:text-7xl font-black mb-4 tracking-tighter">{playlist.name}</h1>
             <p className="text-gray-400 font-medium max-w-xl line-clamp-2">{playlist.description}</p>
             
@@ -159,6 +200,26 @@ const Playlist = () => {
                 className="bg-blue-500 hover:bg-blue-400 text-black px-8 py-3 rounded-full font-bold transition-transform hover:scale-105 active:scale-95"
               >
                 Add Songs
+              </button>
+              <button 
+                onClick={handleSavePlaylistToggle}
+                className={`px-6 py-3 rounded-full font-bold transition-all flex items-center gap-2 border ${
+                  isSaved 
+                    ? 'bg-amber-500 hover:bg-amber-400 text-black border-amber-400 shadow-lg shadow-amber-500/20' 
+                    : 'bg-white/5 hover:bg-white/10 text-white border-white/10'
+                }`}
+                title={isSaved ? "Saved to your Library" : "Save Playlist to Library"}
+              >
+                <Bookmark size={18} fill={isSaved ? "black" : "transparent"} />
+                <span>{isSaved ? "Saved" : "Save Playlist"}</span>
+              </button>
+              <button 
+                onClick={handleSharePlaylist}
+                className="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-400 px-6 py-3 rounded-full font-bold transition-all flex items-center gap-2"
+                title="Copy Playlist Link"
+              >
+                <Share2 size={18} />
+                <span>Share Playlist</span>
               </button>
               <button 
                 onClick={deletePlaylist}

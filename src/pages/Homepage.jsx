@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback, lazy, Suspense } from "react";
-import { useNavigate, Link } from "react-router-dom"; 
+import { useNavigate, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import Navbar from "../../Components/Navbar.jsx";
 import { useUser } from "../context/UserContext.jsx";
-import { usePlaylist } from "../context/PlaylistContext.jsx"; 
+import { usePlaylist } from "../context/PlaylistContext.jsx";
 import { useHistory } from "../context/historyContext.jsx";
 // Import the Myplaylist component
 import Myplaylist from "../../Components/Myplaylist.jsx";
@@ -12,6 +12,8 @@ import Punjabisongs from "../../Components/Punjabisongs.jsx";
 import Latestreleased from "../../Components/Latestreleased.jsx";
 import Dashboard from "../../Components/Dashboard.jsx";
 import Artists from "../../Components/Artists.jsx";
+import PremiumBanner from "../../Components/PremiumBanner.jsx";
+import InstagramFeed from "../../Components/InstagramFeed.jsx";
 
 // Lazy load components for better performance
 const Mostliked = lazy(() => import("../../Components/Mostliked.jsx"));
@@ -26,13 +28,13 @@ const RandomSongs = lazy(() => import("../../Components/RandomSongs.jsx"));
  */
 const SectionHeading = ({ emoji, title, subtitle }) => (
   <div className="group mb-8 border-b-2 border-transparent bg-gradient-to-r from-blue-400/20 to-cyan-500/20 bg-[length:0%_2px] pb-3 pl-1 pr-3 backdrop-blur-sm border-b-blue-400/50 hover:bg-[length:100%_2px] transition-all duration-500 inline-block rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-    <h2 
+    <h2
       className="text-sm font-heading3 tracking-[.25em] text-blue-400/80 uppercase font-semibold opacity-90 group-hover:opacity-100 transition-all"
       role="subtitle"
     >
       {subtitle}
     </h2>
-    <h1 
+    <h1
       className="text-3xl md:text-4xl lg:text-5xl font-heading3 leading-[0.9] bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mt-1 drop-shadow-xl"
       role="heading"
       aria-level="2"
@@ -52,15 +54,15 @@ SectionHeading.propTypes = {
  * PlaylistCard Component - Used for Public Playlists
  */
 const PlaylistCard = ({ playlist }) => (
-  <Link 
-    to={`/playlist/${playlist.id}`} 
+  <Link
+    to={`/playlist/${playlist.id}`}
     className="block group relative overflow-hidden rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1 bg-black/30 border border-white/10"
     aria-label={`Go to playlist: ${playlist.name}`}
   >
     {/* Use coverImage from model */}
-    <img 
-      src={playlist.cover_image || "https://via.placeholder.com/400x225/1f2937/9ca3af?text=Public+Playlist"} 
-      alt={playlist.name || "Unnamed Playlist"} 
+    <img
+      src={playlist.cover_image || "https://via.placeholder.com/400x225/1f2937/9ca3af?text=Public+Playlist"}
+      alt={playlist.name || "Unnamed Playlist"}
       className="w-full h-56 object-cover brightness-75 group-hover:brightness-90 transition-all duration-500"
       loading="lazy"
     />
@@ -93,7 +95,7 @@ PlaylistCard.propTypes = {
  */
 // eslint-disable-next-line no-unused-vars
 const PublicPlaylistsSection = () => {
-  const playlistContext = usePlaylist(); 
+  const playlistContext = usePlaylist();
   const [dataFetched, setDataFetched] = useState(false);
 
   // Safely destructure with defaults
@@ -112,9 +114,9 @@ const PublicPlaylistsSection = () => {
   // Context Null Check
   if (!playlistContext) {
     return (
-        <p className="text-center text-red-400 p-8 text-lg border border-red-500/20 rounded-xl bg-black/30">
-          Error: Playlist data provider is missing. Please ensure Homepage is wrapped in PlaylistProvider.
-        </p>
+      <p className="text-center text-red-400 p-8 text-lg border border-red-500/20 rounded-xl bg-black/30">
+        Error: Playlist data provider is missing. Please ensure Homepage is wrapped in PlaylistProvider.
+      </p>
     );
   }
 
@@ -135,14 +137,14 @@ const PublicPlaylistsSection = () => {
   }
 
   // Display a limited number of public playlists
-  const playlistsToShow = publicPlaylists.slice(0, 6); 
+  const playlistsToShow = publicPlaylists.slice(0, 6);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {playlistsToShow.map((playlist) => (
-        <PlaylistCard 
-          key={playlist.id} 
-          playlist={playlist} 
+        <PlaylistCard
+          key={playlist.id}
+          playlist={playlist}
         />
       ))}
     </div>
@@ -206,11 +208,11 @@ const Homepage = () => {
       <section className="relative h-[80vh] md:h-[85vh] flex flex-col lg:flex-row px-4 md:px-10 lg:px-20 xl:px-28 items-center justify-center gap-6 lg:gap-12 pt-12 pb-16">
         {/* Enhanced Background Elements with Intersection Observer ready */}
         <div className="absolute inset-0 pointer-events-none">
-          <div 
+          <div
             className="absolute top-16 left-8 w-32 h-32 md:w-48 md:h-48 bg-blue-400/5 rounded-full blur-xl animate-pulse"
             style={{ animationDelay: '0s' }}
           />
-          <div 
+          <div
             className="absolute bottom-16 right-16 w-48 h-48 md:w-64 md:h-64 bg-indigo-500/5 rounded-full blur-xl animate-pulse"
             style={{ animationDelay: '1s' }}
           />
@@ -221,22 +223,22 @@ const Homepage = () => {
         {/* LEFT CONTENT - Better mobile stacking, improved focus states */}
         <article className="relative z-10 w-full lg:w-3/5 space-y-4 backdrop-blur-xl bg-black/20 border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.01] focus-within:ring-4 ring-blue-400/30">
           {/* Enhanced glow effect */}
-          <div 
+          <div
             className="absolute -inset-1 bg-gradient-to-r from-blue-400/15 via-transparent to-cyan-500/15 rounded-2xl blur opacity-75 animate-pulse-slow"
             style={{ animationDuration: '4s' }}
           />
-          
+
           <header>
-            <h1 
+            <h1
               className="text-xl md:text-3xl lg:text-4xl font-heading font-black bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent tracking-wide drop-shadow-lg"
               role="banner"
             >
-Welcome {user?.first_name
-  ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}`
-  : "Guest"} 👋
+              Welcome {user?.first_name
+                ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}`
+                : "Guest"} 👋
             </h1>
-            <p className="text-xs lg:text-sm tracking-[0.3em] font-heading2 font-semibold bg-gradient-to-r from-blue-400/90 to-cyan-400/90 bg-clip-text text-transparent uppercase pt-1">
-              MUSIC LICENSING FOR FILM
+            <p className="text-xs lg:text-sm tracking-[0.2em] font-heading2 font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent uppercase pt-1">
+              GeetHub: Stream the beat, share the vibe.
             </p>
           </header>
 
@@ -300,7 +302,7 @@ Welcome {user?.first_name
             poster="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
           >
             <source src="video.mp4" type="video/mp4" />
-            <img 
+            <img
               src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMjIyIi8+PHRleHQgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDQ0IiB4PSI1MCUiIHk9IjUwJSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkxvYWRpbmcgVmlkZW88L3RleHQ+PC9zdmc+"
               alt="Music licensing video preview"
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isVideoLoaded ? 'opacity-0' : 'opacity-100'}`}
@@ -355,24 +357,25 @@ Welcome {user?.first_name
 
       {/* CONTENT SECTIONS - Better loading states */}
       <main className="px-4 md:px-10 lg:px-20 xl:px-28 max-w-7xl mx-auto mb-20 space-y-24 lg:space-y-32">
-        
 
-              {/* <Myplaylist /> */}
+
+        {/* <Myplaylist /> */}
 
 
 
         {/* 🚀 NEW SECTION: User's Private Playlists */}
         {user && (
           <section aria-labelledby="my-playlists">
-            <SectionHeading  emoji="🎧" title={`${user?.first_name ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}` : "User"}'s Playlists`} subtitle="Your Library" />
+            <SectionHeading emoji="🎧" title={`${user?.first_name ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}` : "User"}'s Playlists`} subtitle="Your Library" />
             {/* Myplaylist handles its own fetching and rendering logic, but we want to show only 4 playlists */}
             <Myplaylist maxToShow={4} />
             <div className="mt-8 text-center">
               <Link 
-                to="/my-library/playlists" 
-                className="text-blue-400 hover:text-cyan-400 transition-colors font-semibold"
+                to="/myplaylists" 
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-600/30 to-cyan-500/30 border border-blue-400/40 text-blue-300 font-bold hover:bg-blue-600 hover:text-white hover:border-blue-400 transition-all shadow-lg shadow-blue-500/20 hover:scale-105"
               >
-                View All Your Playlists →
+                <span>View All Your Playlists</span>
+                <span>→</span>
               </Link>
             </div>
           </section>
@@ -419,13 +422,16 @@ Welcome {user?.first_name
           <Myplaylist showCommunity={true} limitToHome={true} />
         </section>
 
-       
 
+        <Latestreleased />
         <Hindisongs limitToHome={true} />
         <Punjabisongs limitToHome={true} />
-        <Latestreleased/>
-        <Artists/>
-        
+        {/* <Latestreleased/> */}
+        <Artists />
+
+        {/* 👑 GEETHUB VIP PREMIUM BANNER */}
+        <PremiumBanner />
+
         {/* Messages Section */}
         <section aria-labelledby="messages" className="mt-12">
           <SectionHeading emoji="💬" title="Messages" subtitle="Connect with Users" />
@@ -435,19 +441,19 @@ Welcome {user?.first_name
               className="group relative px-12 py-6 bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500 text-white text-xl font-bold rounded-2xl shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 overflow-hidden"
             >
               <span className="relative z-10 flex items-center gap-3">
-                <svg 
-                  className="w-8 h-8 group-hover:rotate-12 transition-transform duration-300" 
-                  fill="none" 
-                  stroke="currentColor" 
+                <svg
+                  className="w-8 h-8 group-hover:rotate-12 transition-transform duration-300"
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 Chat Now
-                <svg 
-                  className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" 
-                  fill="none" 
-                  stroke="currentColor" 
+                <svg
+                  className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300"
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -461,8 +467,11 @@ Welcome {user?.first_name
           </p>
         </section>
 
-        <Dashboard/>
-        
+        {/* 📸 Official Instagram Feed Posts */}
+        <InstagramFeed />
+
+        <Dashboard />
+
       </main>
 
 

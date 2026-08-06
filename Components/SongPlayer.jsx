@@ -2,8 +2,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
 import { usePlaylist } from "../src/context/PlaylistContext";
-import { Heart, Star, SkipBack, SkipForward, Play, Pause, Volume2, ListPlus, X, Check } from "lucide-react";
+import { Heart, Star, SkipBack, SkipForward, Play, Pause, Volume2, ListPlus, X, Check, Share2, Gauge, Timer } from "lucide-react";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 import API_BASE_URL from "../src/config/api";
 
 const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = null }) => {
@@ -32,6 +33,13 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
     toggleLike,
     toggleSave,
     playSong,
+    queue,
+    currentIndex,
+    playIndex,
+    playbackSpeed,
+    changePlaybackSpeed,
+    sleepTimerMinutes,
+    setSleepTimer,
   } = useMusicPlayer();
 
   // Use playlist context
@@ -107,6 +115,17 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
     }
   };
 
+  const handleShareSong = () => {
+    if (!song?.song_id) return;
+    const shareUrl = `${window.location.origin}/playsong/${song.song_id}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Song link copied to clipboard!");
+    } else {
+      toast.error("Clipboard access not supported");
+    }
+  };
+
   const formatTime = (t = 0) => {
     if (!t || isNaN(t)) return "0:00";
     const m = Math.floor(t / 60);
@@ -126,6 +145,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
 
   return (
     <div className="max-w-full mx-auto p-6 mt-3">
+      <Toaster position="bottom-right" />
       <div className="relative rounded-3xl p-6 shadow-2xl overflow-hidden">
         {/* GIF Background filler for empty space */}
         <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
@@ -134,15 +154,14 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
 
         <div className="absolute -inset-1 bg-gradient-to-br from-blue-600/30 to-blue-800/20 blur-3xl opacity-40 pointer-events-none" />
 
-        <div className="relative z-10 grid grid-cols-1 md:grid-cols-[160px_1fr] gap-6 items-center">
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-[350px_1fr] gap-6 items-center">
           {/* Album Art */}
           <div className="flex items-center justify-center">
-            <div className="h-[350px] w-[350px] p-1 shadow-xl flex items-center justify-center rounded-lg bg-white/5">
+            <div className="w-full max-w-[280px] sm:max-w-[350px] aspect-square p-1 shadow-xl flex items-center justify-center rounded-lg bg-white/5">
               <img
                 src={song.image_url}
                 alt="cover"
-                className="w-[350px] h-[350px] object-cover rounded-sm block"
-                style={{ width: 350, height: 350, objectFit: "cover" }}
+                className="w-full h-full object-cover rounded-lg block animate-pulse-slow"
               />
             </div>
           </div>
@@ -168,7 +187,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
               )}
             </div>
 
-            {/* Like + Save + Add to Playlist */}
+            {/* Like + Save + Add to Playlist + Share */}
             <div className="flex items-center gap-4 flex-wrap">
               <button
                 onClick={toggleLike}
@@ -194,11 +213,21 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                 <span>{isSaved ? "Saved" : "Save"}</span>
               </button>
 
+              {/* Share Song Link */}
+              <button
+                onClick={handleShareSong}
+                className="flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 font-medium"
+                title="Copy Song Link"
+              >
+                <Share2 size={18} />
+                <span>Share Link</span>
+              </button>
+
               {/* Add to Playlist */}
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setShowPlaylistDropdown(!showPlaylistDropdown)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition bg-white/10 hover:bg-white/20"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition bg-white/10 hover:bg-white/20 text-white font-medium"
                 >
                   <ListPlus size={18} />
                   <span>Add to Playlist</span>
@@ -270,6 +299,47 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                     </div>
                   </div>
                 )}
+              </div>
+
+              {/* ⚡ Playback Speed Selector */}
+              <div className="flex flex-wrap items-center gap-1 bg-white/10 p-1 rounded-2xl text-xs font-bold text-gray-200 border border-white/10">
+                <Gauge size={16} className="ml-2 text-cyan-400" />
+                {[0.75, 1.0, 1.25, 1.5, 2.0].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => changePlaybackSpeed(s)}
+                    className={`px-2.5 py-1 rounded-full transition ${
+                      playbackSpeed === s
+                        ? "bg-cyan-500 text-black font-extrabold shadow"
+                        : "hover:bg-white/10 text-gray-300"
+                    }`}
+                  >
+                    {s}x
+                  </button>
+                ))}
+              </div>
+
+              {/* ⏰ Sleep Timer Selector */}
+              <div className="flex items-center gap-1 bg-white/10 p-1 rounded-full text-xs font-bold text-gray-200 border border-white/10">
+                <Timer size={16} className="ml-2 text-amber-400" />
+                {[
+                  { label: "Off", val: null },
+                  { label: "15m", val: 15 },
+                  { label: "30m", val: 30 },
+                  { label: "End", val: "end" },
+                ].map((item) => (
+                  <button
+                    key={item.label}
+                    onClick={() => setSleepTimer(item.val)}
+                    className={`px-2.5 py-1 rounded-full transition ${
+                      sleepTimerMinutes === item.val
+                        ? "bg-amber-400 text-black font-extrabold shadow animate-pulse"
+                        : "hover:bg-white/10 text-gray-300"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -354,6 +424,68 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                 />
               </div>
             </div>
+
+            {/* Next Up — Smart Related Queue Section */}
+            {queue && queue.length > 1 && (
+              <div className="mt-8 pt-6 border-t border-white/10">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🎧</span>
+                    <h3 className="text-lg font-bold text-white">Next Up — Related Autoplay Queue</h3>
+                    {song?.genre && (
+                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 font-semibold">
+                        Genre: {song.genre}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Autoplay On
+                  </span>
+                </div>
+
+                <div className="space-y-2.5 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-700">
+                  {queue.slice(currentIndex + 1, currentIndex + 7).map((nextTrack, idx) => {
+                    const isSameGenre = song?.genre && nextTrack.genre && (
+                      song.genre.toLowerCase().includes(nextTrack.genre.toLowerCase()) ||
+                      nextTrack.genre.toLowerCase().includes(song.genre.toLowerCase())
+                    );
+                    return (
+                      <div
+                        key={nextTrack.song_id || idx}
+                        onClick={() => playIndex(currentIndex + 1 + idx)}
+                        className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer transition border border-white/5 group"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <img
+                            src={nextTrack.image_url || "https://via.placeholder.com/40"}
+                            alt=""
+                            className="w-10 h-10 rounded-lg object-cover flex-shrink-0 group-hover:scale-105 transition"
+                          />
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-white truncate group-hover:text-blue-400 transition">{nextTrack.title}</p>
+                            <p className="text-xs text-gray-400 truncate">{nextTrack.artist}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {isSameGenre ? (
+                            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40">
+                              Matching Genre
+                            </span>
+                          ) : nextTrack.genre ? (
+                            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-white/10 text-gray-300 font-medium">
+                              {nextTrack.genre}
+                            </span>
+                          ) : null}
+                          <span className="text-xs text-blue-400 font-semibold group-hover:translate-x-1 transition">Play ▶</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
