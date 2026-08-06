@@ -24,7 +24,10 @@
 | 📋 **Library** | Playlist creation & management |
 | 👤 **Social** | User profiles, artist pages, messaging |
 | 📊 **Insights** | Statistics dashboard |
-| 📱 **UX** | Responsive design, real-time updates via WebSocket |
+| 📱 **UX** | Full mobile responsiveness, fluid layouts, flexible dynamic headers, aspect-scaling cover art |
+| 📲 **Navigation** | Full-screen hamburger overlay drawer (`fixed inset-0`) with solid `#111111` background, blocking clicks on underlying pages |
+| 🎛️ **Player** | Smart global player hiding volume range controls and extra button slots on mobile formats |
+| 🎚️ **Swipe UI** | Native-app feel horizontal swipe carousels for Featured Artists & Playlists, utilizing clean scrollbar hiding |
 
 ---
 
