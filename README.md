@@ -6,11 +6,16 @@
 
 Stream, save, and share music with playlists, artist pages, real-time messaging, and a fully responsive player — inspired by the core experience of apps like Spotify.
 
-[![Go](https://img.shields.io/badge/Go-1.19+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Go](https://img.shields.io/badge/Go-1.19+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/ishanbagra18/Geethub-clientside?style=for-the-badge&color=yellow)](https://github.com/ishanbagra18/Geethub-clientside/stargazers)
+
+[![GitHub Stars](https://img.shields.io/github/stars/ishanbagra18/Geethub-clientside?style=for-the-badge&logo=github&color=gold)](https://github.com/ishanbagra18/Geethub-clientside/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/ishanbagra18/Geethub-clientside?style=for-the-badge&logo=github&color=blue)](https://github.com/ishanbagra18/Geethub-clientside/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/ishanbagra18/Geethub-clientside?style=for-the-badge&logo=github&color=brightgreen)](https://github.com/ishanbagra18/Geethub-clientside/issues)
+[![License: MIT](https://img.shields.io/github/license/ishanbagra18/Geethub-clientside?style=for-the-badge&color=orange)](LICENSE)
 
 [Live Demo](#) · [Features](#-features) · [Quick Start](#-quick-start) · [Architecture](#-architecture) · [API Docs](#-api-documentation) · [Deployment](#-deployment)
 
