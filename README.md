@@ -282,4 +282,6 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 Built with ❤️ using **Go** and **React**
 
+<!-- Earning GitHub Profile Badges: Pull Shark, Quickdraw, YOLO & Pair Extraordinaire -->
+
 </div>
