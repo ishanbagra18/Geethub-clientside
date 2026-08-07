@@ -2,15 +2,29 @@
 
 # 🎵 GeetHub
 
-**A modern, full-stack music streaming platform**
+**A modern, full-stack music streaming platform built with Go and React**
+
+Stream, save, and share music with playlists, artist pages, real-time messaging, and a fully responsive player — inspired by the core experience of apps like Spotify.
 
 [![Go](https://img.shields.io/badge/Go-1.19+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/ishanbagra18/Geethub-clientside?style=for-the-badge&color=yellow)](https://github.com/ishanbagra18/Geethub-clientside/stargazers)
 
-[Features](#-features) · [Quick Start](#-quick-start) · [Architecture](#-architecture) · [API Docs](#-api-documentation) · [Deployment](#-deployment)
+[Live Demo](#) · [Features](#-features) · [Quick Start](#-quick-start) · [Architecture](#-architecture) · [API Docs](#-api-documentation) · [Deployment](#-deployment)
 
+</div>
+
+---
+
+## 📸 Preview
+
+> Add a screenshot or short GIF of the app here — this is the single biggest thing that makes visitors stick around and star the repo. A 2–3 second clip of the player + swipe carousels in action works great.
+
+<div align="center">
+  <!-- <img src="docs/screenshots/home.png" width="800" alt="GeetHub home screen" /> -->
+  <!-- <img src="docs/screenshots/demo.gif" width="800" alt="GeetHub demo" /> -->
 </div>
 
 ---
@@ -24,10 +38,10 @@
 | 📋 **Library** | Playlist creation & management |
 | 👤 **Social** | User profiles, artist pages, messaging |
 | 📊 **Insights** | Statistics dashboard |
-| 📱 **UX** | Full mobile responsiveness, fluid layouts, flexible dynamic headers, aspect-scaling cover art |
-| 📲 **Navigation** | Full-screen hamburger overlay drawer (`fixed inset-0`) with solid `#111111` background, blocking clicks on underlying pages |
-| 🎛️ **Player** | Smart global player hiding volume range controls and extra button slots on mobile formats |
-| 🎚️ **Swipe UI** | Native-app feel horizontal swipe carousels for Featured Artists & Playlists, utilizing clean scrollbar hiding |
+| 📱 **UX** | Full mobile responsiveness, fluid layouts, dynamic headers, aspect-scaling cover art |
+| 📲 **Navigation** | Full-screen overlay drawer with solid background, blocking clicks on underlying pages |
+| 🎛️ **Player** | Smart global player that adapts controls for mobile formats |
+| 🎚️ **Swipe UI** | Native-app-feel horizontal swipe carousels for featured artists & playlists |
 
 ---
 
@@ -35,28 +49,25 @@
 
 ### Prerequisites
 
-Make sure you have the following installed:
-
 - **[Go](https://go.dev/dl/)** 1.19+
 - **[Node.js](https://nodejs.org/)** 16+
 - **[MongoDB](https://www.mongodb.com/)** (local or [Atlas](https://www.mongodb.com/atlas))
 - **[Cloudinary](https://cloudinary.com/)** account (for media uploads)
 
----
-
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
-cd music
+git clone https://github.com/ishanbagra18/Geethub-clientside.git
+cd Geethub-clientside
 ```
 
----
+> This repo contains the frontend only. The backend lives in a separate repo — see [Geethub-serversise](https://github.com/ishanbagra18/Geethub-serversise). Clone both if you want to run the full stack locally.
 
 ### 2. Set Up the Backend
 
 ```bash
-cd backend/Geethub-serversise
+git clone https://github.com/ishanbagra18/Geethub-serversise.git
+cd Geethub-serversise
 
 # Install Go dependencies
 go mod tidy
@@ -75,12 +86,10 @@ CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
 CORS_ORIGINS=http://localhost:5173
 ```
 
----
-
 ### 3. Set Up the Frontend
 
 ```bash
-cd frontend/Geethub-clientside
+cd Geethub-clientside
 
 # Install Node dependencies
 npm install
@@ -95,22 +104,20 @@ Edit `.env`:
 VITE_API_URL=http://localhost:9000
 ```
 
----
-
 ### 4. Run the Application
 
-Open **two terminals** and run the following:
+Open **two terminals**:
 
 **Terminal 1 — Backend**
 ```bash
-cd backend/Geethub-serversise
+cd Geethub-serversise
 go run main.go
 # ✅ Running at http://localhost:9000
 ```
 
 **Terminal 2 — Frontend**
 ```bash
-cd frontend/Geethub-clientside
+cd Geethub-clientside
 npm run dev
 # ✅ Running at http://localhost:5173
 ```
@@ -122,33 +129,31 @@ Open [http://localhost:5173](http://localhost:5173) in your browser and you're r
 ## 🏗️ Architecture
 
 ```
-music/
-├── backend/
-│   └── Geethub-serversise/
-│       ├── controllers/        # Route handler logic
-│       ├── database/           # MongoDB connection setup
-│       ├── helpers/            # Auth, JWT, Cloudinary utilities
-│       ├── middleware/         # Authentication middleware
-│       ├── models/             # Data models / schemas
-│       ├── routes/             # API route definitions
-│       ├── main.go             # Application entry point
-│       ├── .env.example        # Environment variable template
-│       └── .env                # ⚠️ Your local config (do not commit)
+Geethub/
+├── Geethub-serversise/         # Backend (separate repo)
+│   ├── controllers/            # Route handler logic
+│   ├── database/                # MongoDB connection setup
+│   ├── helpers/                 # Auth, JWT, Cloudinary utilities
+│   ├── middleware/               # Authentication middleware
+│   ├── models/                   # Data models / schemas
+│   ├── routes/                   # API route definitions
+│   ├── main.go                   # Application entry point
+│   ├── .env.example
+│   └── .env                      # ⚠️ Local config, not committed
 │
-├── frontend/
-│   └── Geethub-clientside/
-│       └── src/
-│           ├── config/         # API base URL & Axios setup
-│           ├── context/        # React global state (auth, player, etc.)
-│           ├── pages/          # Top-level page components
-│           └── Components/     # Shared/reusable UI components
+├── Geethub-clientside/          # Frontend (this repo)
+│   └── src/
+│       ├── config/                # API base URL & Axios setup
+│       ├── context/                # React global state (auth, player, etc.)
+│       ├── pages/                   # Top-level page components
+│       └── Components/               # Shared/reusable UI components
 │
 ├── docs/
-│   └── api_docs.md             # Full API endpoint reference
+│   └── api_docs.md               # Full API endpoint reference
 │
-├── SETUP.md                    # Detailed setup guide
-├── DEPLOYMENT.md               # Production deployment guide
-└── README.md                   # You are here
+├── SETUP.md                       # Detailed setup guide
+├── DEPLOYMENT.md                  # Production deployment guide
+└── README.md                      # You are here
 ```
 
 ---
@@ -181,7 +186,7 @@ music/
 
 Full API docs are available in [`docs/api_docs.md`](docs/api_docs.md).
 
-The backend server (for this project) is hosted separately:
+The backend server for this project is hosted separately:
 👉 [Geethub Server Repository](https://github.com/ishanbagra18/Geethub-serversise)
 
 ---
@@ -191,18 +196,28 @@ The backend server (for this project) is hosted separately:
 ### Backend — Render / Railway
 
 1. Connect your GitHub repository
-2. Set the root directory to `backend/Geethub-serversise`
+2. Set the root directory to the backend repo's root
 3. Add all environment variables from `.env.example`
 4. Deploy
 
 ### Frontend — Vercel / Netlify
 
 1. Connect your GitHub repository
-2. Set the root directory to `frontend/Geethub-clientside`
-3. Set `VITE_API_URL` to your deployed backend URL
-4. Deploy
+2. Set `VITE_API_URL` to your deployed backend URL
+3. Deploy
 
 > 📖 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed step-by-step deployment instructions.
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Offline / cached playback
+- [ ] Collaborative playlists
+- [ ] Lyrics sync
+- [ ] Recommendation engine
+
+> Feel free to open an issue if you'd like to suggest or pick up one of these.
 
 ---
 
@@ -218,7 +233,7 @@ The backend server (for this project) is hosted separately:
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here's how to get started:
+Contributions are welcome!
 
 ```bash
 # 1. Fork the repository on GitHub
@@ -236,6 +251,12 @@ git push origin feature/your-feature-name
 ```
 
 Please follow [conventional commits](https://www.conventionalcommits.org/) for commit messages.
+
+---
+
+## ⭐ Show Your Support
+
+If you found this project useful or interesting, consider giving it a star — it helps others discover it and means a lot as a solo-built project.
 
 ---
 
