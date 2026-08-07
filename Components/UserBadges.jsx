@@ -4,11 +4,20 @@ import { Award, Lock, Loader2, Sparkles, CheckCircle2, Headphones, Music, Folder
 import axios from "axios";
 import API_BASE_URL from "../src/config/api";
 
+const DEFAULT_BADGES = [
+  { id: "top_listener", name: "Top Listener", description: "Listened to 500+ minutes of music", icon: "🎧", color: "#6366f1", earned: false },
+  { id: "verified_artist", name: "Verified Artist", description: "Uploaded at least 1 song to the platform", icon: "✅", color: "#10b981", earned: false },
+  { id: "1000_minutes", name: "1000 Minutes", description: "Reached 1000 minutes of total listening time", icon: "⏱️", color: "#f59e0b", earned: false },
+  { id: "playlist_master", name: "Playlist Master", description: "Created 5 or more playlists", icon: "📋", color: "#8b5cf6", earned: false },
+  { id: "early_user", name: "Early User", description: "Account is older than 6 months", icon: "🌟", color: "#ec4899", earned: false },
+  { id: "music_explorer", name: "Music Explorer", description: "Listened to 50+ unique songs", icon: "🧭", color: "#06b6d4", earned: false },
+];
+
 const UserBadges = () => {
-  const [badges, setBadges] = useState([]);
+  const [badges, setBadges] = useState(DEFAULT_BADGES);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeBadge, setActiveBadge] = useState(null);
+  const [activeBadge, setActiveBadge] = useState(DEFAULT_BADGES[0]);
 
   useEffect(() => {
     const fetchBadges = async () => {
@@ -22,14 +31,15 @@ const UserBadges = () => {
         const res = await axios.get(`${API_BASE_URL}/badges/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const badgeList = res.data.badges || [];
+        const badgeList = res.data.badges && res.data.badges.length > 0 ? res.data.badges : DEFAULT_BADGES;
         setBadges(badgeList);
         setStats(res.data.stats || null);
-        // Default select the first unlocked badge or first badge
         const firstUnlocked = badgeList.find((b) => b.earned) || badgeList[0];
         if (firstUnlocked) setActiveBadge(firstUnlocked);
       } catch (err) {
         console.error("Failed to fetch badges:", err);
+        setBadges(DEFAULT_BADGES);
+        setActiveBadge(DEFAULT_BADGES[0]);
       } finally {
         setLoading(false);
       }

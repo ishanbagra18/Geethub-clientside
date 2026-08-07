@@ -12,10 +12,9 @@ Stream, save, and share music with playlists, artist pages, real-time messaging,
 [![Go](https://img.shields.io/badge/Go-1.19+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 
-[![GitHub Stars](https://img.shields.io/github/stars/ishanbagra18/Geethub-clientside?style=for-the-badge&logo=github&color=gold)](https://github.com/ishanbagra18/Geethub-clientside/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/ishanbagra18/Geethub-clientside?style=for-the-badge&logo=github&color=blue)](https://github.com/ishanbagra18/Geethub-clientside/network/members)
-[![GitHub Issues](https://img.shields.io/github/issues/ishanbagra18/Geethub-clientside?style=for-the-badge&logo=github&color=brightgreen)](https://github.com/ishanbagra18/Geethub-clientside/issues)
-[![License: MIT](https://img.shields.io/github/license/ishanbagra18/Geethub-clientside?style=for-the-badge&color=orange)](LICENSE)
+[![GitHub Stars](https://img.shields.io/badge/GitHub-Stars-gold?style=for-the-badge&logo=github)](https://github.com/ishanbagra18/Geethub-clientside/stargazers)
+[![GitHub Repo](https://img.shields.io/badge/Repo-Geethub--clientside-blue?style=for-the-badge&logo=github)](https://github.com/ishanbagra18/Geethub-clientside)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 [Live Demo](#) · [Features](#-features) · [Quick Start](#-quick-start) · [Architecture](#-architecture) · [API Docs](#-api-documentation) · [Deployment](#-deployment)
 
