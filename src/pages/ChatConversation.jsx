@@ -273,11 +273,19 @@ const ChatConversation = () => {
     if (!userId) return;
     localStorage.setItem(`last_read_${userId}`, Date.now().toString());
     try {
-      const seenData = localStorage.getItem("seen_message_ids");
+      const storageKey = currentUserId ? `seen_message_ids_${currentUserId}` : "seen_message_ids";
+      const seenData = localStorage.getItem(storageKey) || localStorage.getItem("seen_message_ids");
       const seenSet = seenData ? new Set(JSON.parse(seenData)) : new Set();
       if (msgs && msgs.length > 0) {
-        msgs.forEach(m => { if (m.id) seenSet.add(m.id); });
-        localStorage.setItem("seen_message_ids", JSON.stringify(Array.from(seenSet)));
+        msgs.forEach(m => {
+          if (m.id) seenSet.add(m.id);
+          if (m._id) seenSet.add(m._id);
+        });
+        const arr = Array.from(seenSet);
+        localStorage.setItem("seen_message_ids", JSON.stringify(arr));
+        if (currentUserId) {
+          localStorage.setItem(`seen_message_ids_${currentUserId}`, JSON.stringify(arr));
+        }
       }
     } catch (e) {
       console.error(e);

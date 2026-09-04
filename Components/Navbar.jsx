@@ -1,4 +1,4 @@
-import { LogOut, MessageCircle, Menu, X, Mic, MicOff, Users } from "lucide-react";
+import { LogOut, Menu, X, Mic, MicOff, Users } from "lucide-react";
 import { useVoiceSearch } from "../src/hooks/useVoiceSearch";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
@@ -12,18 +12,23 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import API_BASE_URL from '../src/config/api';
 
-const getSeenMessageIds = () => {
+const getSeenMessageIds = (userId) => {
   try {
-    const data = localStorage.getItem("seen_message_ids");
+    const storageKey = userId ? `seen_message_ids_${userId}` : "seen_message_ids";
+    const data = localStorage.getItem(storageKey) || localStorage.getItem("seen_message_ids");
     return data ? new Set(JSON.parse(data)) : new Set();
   } catch (e) {
     return new Set();
   }
 };
 
-const saveSeenMessageIds = (setObj) => {
+const saveSeenMessageIds = (userId, setObj) => {
   try {
-    localStorage.setItem("seen_message_ids", JSON.stringify(Array.from(setObj)));
+    const arr = Array.from(setObj);
+    localStorage.setItem("seen_message_ids", JSON.stringify(arr));
+    if (userId) {
+      localStorage.setItem(`seen_message_ids_${userId}`, JSON.stringify(arr));
+    }
   } catch (e) {
     console.error(e);
   }
@@ -37,10 +42,11 @@ const Navbar = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const searchRef = useRef(null);
   const isInitialCheckRef = useRef(true);
+  const sessionStartTimeRef = useRef(Date.now());
+  const seenIdsRef = useRef(new Set());
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -60,15 +66,21 @@ const Navbar = () => {
       console.error("Token decode error:", e);
     }
 
+    // Reset initial check ref, record session start time & load seen message IDs
+    isInitialCheckRef.current = true;
+    sessionStartTimeRef.current = Date.now();
+    seenIdsRef.current = getSeenMessageIds(currentUserId);
+
     const checkNotifications = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/auth/messagingusers`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const users = res.data || [];
-        const seenIds = getSeenMessageIds();
-
-        let totalUnread = 0;
+        
+        // Refresh seen IDs from storage
+        const storedSeen = getSeenMessageIds(currentUserId);
+        storedSeen.forEach(id => seenIdsRef.current.add(id));
 
         for (const user of users) {
           if (user.user_id === currentUserId) continue;
@@ -81,47 +93,47 @@ const Navbar = () => {
 
             const lastReadTimeStr = localStorage.getItem(`last_read_${user.user_id}`);
             const lastReadTime = lastReadTimeStr ? parseInt(lastReadTimeStr, 10) : 0;
+            const isCurrentlyChattingWithUser = window.location.pathname === `/messages/${user.user_id}`;
 
-            // Calculate unread messages (received after lastReadTime)
-            const unreadMsgs = incoming.filter(m => {
-              const msgTime = m.timestamp ? new Date(m.timestamp).getTime() : 0;
-              return msgTime > lastReadTime;
-            });
-
-            totalUnread += unreadMsgs.length;
-
-            // Check if any message is new and hasn't been toasted/seen
             for (const msg of incoming) {
-              if (msg.id && !seenIds.has(msg.id)) {
-                // If NOT initial load, toast for new message
-                if (!isInitialCheckRef.current) {
-                  const msgTime = msg.timestamp ? new Date(msg.timestamp).getTime() : 0;
-                  if (msgTime > lastReadTime) {
-                    toast((t) => (
-                      <div
-                        className="flex items-center gap-3 cursor-pointer"
-                        onClick={() => {
-                          toast.dismiss(t.id);
-                          navigate(`/messages/${user.user_id}`);
-                        }}
-                      >
-                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white">
-                          {user.first_name?.charAt(0)?.toUpperCase() || 'U'}
-                        </div>
-                        <div>
-                          <p className="font-bold text-sm text-white">{user.first_name} sent a message</p>
-                          <p className="text-xs text-gray-300 truncate max-w-[200px]">
-                            {msg.message_text || "Sent an image"}
-                          </p>
-                        </div>
+              const msgId = msg.id || msg._id;
+              if (msgId && !seenIdsRef.current.has(msgId)) {
+                const msgTime = msg.timestamp ? new Date(msg.timestamp).getTime() : 0;
+                
+                // ONLY show toast for real-time messages received AFTER login / session start
+                // and ONLY if user is not currently viewing that conversation
+                if (
+                  !isInitialCheckRef.current && 
+                  msgTime >= sessionStartTimeRef.current - 2000 && 
+                  msgTime > lastReadTime &&
+                  !isCurrentlyChattingWithUser
+                ) {
+                  toast((t) => (
+                    <div
+                      className="flex items-center gap-3 cursor-pointer"
+                      onClick={() => {
+                        toast.dismiss(t.id);
+                        navigate(`/messages/${user.user_id}`);
+                      }}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white">
+                        {user.first_name?.charAt(0)?.toUpperCase() || 'U'}
                       </div>
-                    ), {
-                      duration: 4000,
-                      style: { background: '#121216', border: '1px solid #3b82f6', color: '#fff' }
-                    });
-                  }
+                      <div>
+                        <p className="font-bold text-sm text-white">{user.first_name} sent a message</p>
+                        <p className="text-xs text-gray-300 truncate max-w-[200px]">
+                          {msg.message_text || "Sent an image"}
+                        </p>
+                      </div>
+                    </div>
+                  ), {
+                    duration: 4000,
+                    style: { background: '#121216', border: '1px solid #3b82f6', color: '#fff' }
+                  });
                 }
-                seenIds.add(msg.id);
+                
+                // Immediately add to seen IDs set so it will never toast again
+                seenIdsRef.current.add(msgId);
               }
             }
           } catch (e) {
@@ -129,8 +141,7 @@ const Navbar = () => {
           }
         }
 
-        saveSeenMessageIds(seenIds);
-        setUnreadCount(totalUnread);
+        saveSeenMessageIds(currentUserId, seenIdsRef.current);
         isInitialCheckRef.current = false;
       } catch (error) {
         console.error("Error fetching message notifications:", error);
@@ -195,6 +206,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("seen_message_ids");
     setIsLoggedIn(false);
     navigate("/login");
   };
@@ -268,20 +280,6 @@ const Navbar = () => {
           <button>Most Played</button>
         </div>
 
-        {/* Message Notifications Link */}
-        <div
-          className="relative flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors text-400 font-bold"
-          onClick={() => navigate('/messages')}
-          title="Messages & Notifications"
-        >
-          <MessageCircle className="mr-1.5" size={18} />
-          <button>Messages</button>
-          {unreadCount > 0 && (
-            <span className="ml-1.5 px-2 py-0.5 text-[10px] font-black bg-blue-500 text-white rounded-full animate-pulse shadow-md">
-              {unreadCount}
-            </span>
-          )}
-        </div>
 
         {/* Live Sync Party Link */}
         <div
@@ -430,7 +428,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Drawer */}
       {menuOpen && (
-        <div 
+        <div
           className="fixed inset-0 text-white flex flex-col p-6 z-[9999] md:hidden overflow-y-auto"
           style={{ backgroundColor: '#111111' }}
         >
@@ -490,20 +488,6 @@ const Navbar = () => {
               <span className="font-bold text-lg">Most Played</span>
             </div>
 
-            <div
-              className="flex items-center justify-between p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors w-full"
-              onClick={() => { setMenuOpen(false); navigate('/messages'); }}
-            >
-              <div className="flex items-center gap-4">
-                <MessageCircle className="text-blue-400 w-6 h-6" />
-                <span className="font-bold text-lg">Messages</span>
-              </div>
-              {unreadCount > 0 && (
-                <span className="px-2.5 py-0.5 text-xs font-black bg-blue-500 text-white rounded-full animate-pulse">
-                  {unreadCount}
-                </span>
-              )}
-            </div>
 
             <div
               className="flex items-center gap-4 p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors w-full"

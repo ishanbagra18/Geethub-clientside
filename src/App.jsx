@@ -26,75 +26,65 @@ import Myfollowing from "./pages/Myfollowing";
 import Mymostplayed from "./pages/Mymostplayed";
 import UsersList from "./pages/UsersList";
 import ChatConversation from "./pages/ChatConversation";
-import { useState, useEffect } from "react";
 import SearchPage from "./pages/SearchPage";
 import PremiumPage from "./pages/PremiumPage";
 import MyPlaylists from "./pages/MyPlaylists";
-import SaaSLoader from "../Components/SaaSLoader";
 import Footer from "../Components/Footer";
 import PartyLobby from "./pages/PartyLobby";
 import PartyRoom from "./pages/PartyRoom";
 import { PartyProvider } from "./context/PartyContext";
 
 function App() {
-  const [showIntroLoader, setShowIntroLoader] = useState(true);
   const location = useLocation();
 
   return (
     <MusicPlayerProvider>
       <MusicSectionsProvider>
         <PartyProvider>
-          {/* 🚀 SaaS Music Intro Splash Animation */}
-        {showIntroLoader ? (
-          <SaaSLoader onComplete={() => setShowIntroLoader(false)} />
-        ) : (
-          <>
-            {/* 🔥 Toast container (GLOBAL) */}
-            <Toaster
-              position="top-right"
-              reverseOrder={false}
-              toastOptions={{
-                duration: 3000,
-              }}
-            />
+          {/* 🔥 Toast container (GLOBAL) */}
+          <Toaster
+            position="top-right"
+            reverseOrder={false}
+            toastOptions={{
+              duration: 3000,
+            }}
+          />
 
-            <Routes>
-              <Route path="/login" element={<Loginpage />} />
-              <Route path="/signup" element={<Signuppage />} />
-              <Route path="/" element={<Homepage />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/forgotpassword" element={<ForgotPassword />} />
-              <Route path="/myprofile" element={<MyProfile />} />
-              <Route path="/updateprofile" element={<UpdateProfile />} />
-              <Route path="/playsong/:id" element={<PlaySong />} />
-              <Route path="/playlist/:id" element={<Playlist />} />
-              <Route path="/myplaylists" element={<MyPlaylists />} />
-              <Route path="/mylibrary" element={<Mylibrary />} />
-              <Route path="/topcharts" element={<SeeAllTopCharts />} />
-              <Route path="/mostliked" element={<SeeAllMostLiked />} />
-              <Route path="/mostsaved" element={<SeeAllMostSaved />} />
-              <Route path="/hindisongs" element={<SeeAllHindiSongs />} />
-              <Route path="/punjabisongs" element={<SeeAllPunjabiSongs />} />
-              <Route path="/communityplaylists" element={<SeeAllCommunityPlaylists />} />
-              <Route path="/trending" element={<TrendingPage />} />
-              <Route path="/artist/:id" element={<Artistdes />} />
-              <Route path="/myfollowing" element={<Myfollowing />} />
-              <Route path="/mymostplayed" element={<Mymostplayed />} />
-              <Route path="/messages" element={<UsersList />} />
-              <Route path="/messages/:userId" element={<ChatConversation />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/premium" element={<PremiumPage />} />
-              <Route path="/party" element={<PartyLobby />} />
-              <Route path="/party/:roomId" element={<PartyRoom />} />
-            </Routes>
+          <Routes>
+            <Route path="/login" element={<Loginpage />} />
+            <Route path="/signup" element={<Signuppage />} />
+            <Route path="/" element={<Homepage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/forgotpassword" element={<ForgotPassword />} />
+            <Route path="/myprofile" element={<MyProfile />} />
+            <Route path="/updateprofile" element={<UpdateProfile />} />
+            <Route path="/playsong/:id" element={<PlaySong />} />
+            <Route path="/playlist/:id" element={<Playlist />} />
+            <Route path="/myplaylists" element={<MyPlaylists />} />
+            <Route path="/mylibrary" element={<Mylibrary />} />
+            <Route path="/topcharts" element={<SeeAllTopCharts />} />
+            <Route path="/mostliked" element={<SeeAllMostLiked />} />
+            <Route path="/mostsaved" element={<SeeAllMostSaved />} />
+            <Route path="/hindisongs" element={<SeeAllHindiSongs />} />
+            <Route path="/punjabisongs" element={<SeeAllPunjabiSongs />} />
+            <Route path="/communityplaylists" element={<SeeAllCommunityPlaylists />} />
+            <Route path="/trending" element={<TrendingPage />} />
+            <Route path="/artist/:id" element={<Artistdes />} />
+            <Route path="/myfollowing" element={<Myfollowing />} />
+            <Route path="/mymostplayed" element={<Mymostplayed />} />
+            <Route path="/messages" element={<UsersList />} />
+            <Route path="/messages/:userId" element={<ChatConversation />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/premium" element={<PremiumPage />} />
+            <Route path="/party" element={<PartyLobby />} />
+            <Route path="/party/:roomId" element={<PartyRoom />} />
+          </Routes>
 
-            {/* Global Footer (Only on Homepage) */}
-            {location.pathname === "/" && <Footer />}
+          {/* Global Footer (Only on Homepage) */}
+          {location.pathname === "/" && <Footer />}
 
-            {/* Global Music Player Bar */}
-            <GlobalMusicPlayer />
-          </>
-        )}
+          {/* Global Music Player Bar */}
+          <GlobalMusicPlayer />
         </PartyProvider>
       </MusicSectionsProvider>
     </MusicPlayerProvider>

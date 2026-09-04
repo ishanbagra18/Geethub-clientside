@@ -144,8 +144,7 @@ export default function MyProfile() {
           </div>
         </div>
 
-        {/* 🏆 Badges / Achievements */}
-        <UserBadges />
+       
 
         {/* Info Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -217,7 +216,12 @@ export default function MyProfile() {
             </div>
           </div>
 
+        
+
         </div>
+
+           {/* 🏆 Badges / Achievements */}
+        <UserBadges /> 
       </main>
 
       <style>{`
