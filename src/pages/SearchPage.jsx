@@ -78,23 +78,80 @@ const SearchPage = () => {
     fetchSongs();
   }, []);
 
-  // Filter songs whenever query or allSongs changes
+  // Semantic search matching & relevance scoring algorithm
   useEffect(() => {
     if (!query.trim()) {
       setSearchResults([]);
       return;
     }
 
-    const q = query.trim().toLowerCase();
-    const filtered = allSongs.filter((song) => {
-      const titleMatch = song.title?.toLowerCase().includes(q);
-      const artistMatch = song.artist?.toLowerCase().includes(q);
-      const genreMatch = song.genre?.toLowerCase().includes(q);
-      const langMatch = song.language?.toLowerCase().includes(q);
-      return titleMatch || artistMatch || genreMatch || langMatch;
+    const rawQuery = query.trim().toLowerCase();
+    const tokens = rawQuery.split(/\s+/).filter(Boolean);
+
+    // Semantic Concept & Mood Dictionary
+    const semanticMappings = {
+      lofi: ["lo-fi", "chill", "soft", "acoustic", "ambient", "night", "quiet", "relax"],
+      chill: ["lo-fi", "soft", "peaceful", "slow", "acoustic", "relax", "ambient"],
+      romantic: ["love", "soulful", "heartbreak", "arijit", "sad", "unplugged", "ballad"],
+      love: ["romantic", "soulful", "heartbreak", "arijit", "unplugged"],
+      sad: ["soulful", "heartbreak", "arijit", "slow", "unplugged", "sadness"],
+      introspective: ["soulful", "heartbreak", "arijit", "slow", "acoustic", "lofi"],
+      party: ["dance", "punjabi", "remix", "banger", "club", "hype", "beat", "energy"],
+      energy: ["party", "dance", "punjabi", "club", "workout", "hype", "beat"],
+      workout: ["energy", "party", "dance", "hype", "beat", "club"],
+      retro: ["classic", "old", "vintage", "hindi", "90s", "80s"],
+      punjabi: ["bhangu", "karan", "sidhu", "guru", "hardy", "party", "beat"],
+      bollywood: ["hindi", "arijit", "pritam", "film", "movie", "soundtrack"],
+    };
+
+    // Expand search tokens with semantic synonyms
+    const expandedTokens = new Set(tokens);
+    tokens.forEach((t) => {
+      if (semanticMappings[t]) {
+        semanticMappings[t].forEach((syn) => expandedTokens.add(syn));
+      }
     });
 
-    setSearchResults(filtered);
+    const scoredSongs = allSongs.map((song) => {
+      let score = 0;
+      const title = (song.title || "").toLowerCase();
+      const artist = (song.artist || "").toLowerCase();
+      const genre = (song.genre || "").toLowerCase();
+      const language = (song.language || "").toLowerCase();
+      const info = (song.info || "").toLowerCase();
+      const album = (song.album || "").toLowerCase();
+
+      const combinedText = `${title} ${artist} ${genre} ${language} ${info} ${album}`;
+
+      // 1. Direct exact phrase match (highest weight)
+      if (combinedText.includes(rawQuery)) score += 25;
+      if (title.includes(rawQuery)) score += 15;
+      if (artist.includes(rawQuery)) score += 10;
+
+      // 2. Token matches
+      tokens.forEach((token) => {
+        if (title.includes(token)) score += 8;
+        if (artist.includes(token)) score += 6;
+        if (genre.includes(token)) score += 5;
+        if (language.includes(token)) score += 4;
+        if (combinedText.includes(token)) score += 3;
+      });
+
+      // 3. Semantic Synonym Matches
+      expandedTokens.forEach((synToken) => {
+        if (combinedText.includes(synToken)) score += 2;
+      });
+
+      return { song, score };
+    });
+
+    // Filter out 0-score tracks and sort by relevance score descending
+    const results = scoredSongs
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map((item) => item.song);
+
+    setSearchResults(results);
   }, [query, allSongs]);
 
   const saveRecentSearch = (searchTerm) => {

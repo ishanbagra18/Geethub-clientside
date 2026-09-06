@@ -14,6 +14,7 @@ import Dashboard from "../../Components/Dashboard.jsx";
 import Artists from "../../Components/Artists.jsx";
 import PremiumBanner from "../../Components/PremiumBanner.jsx";
 import InstagramFeed from "../../Components/InstagramFeed.jsx";
+import MoodAnalysisCard from "../../Components/MoodAnalysisCard.jsx";
 
 // Lazy load components for better performance
 const Mostliked = lazy(() => import("../../Components/Mostliked.jsx"));
@@ -358,8 +359,12 @@ const Homepage = () => {
       {/* CONTENT SECTIONS - Better loading states */}
       <main className="px-4 md:px-10 lg:px-20 xl:px-28 max-w-7xl mx-auto mb-20 space-y-24 lg:space-y-32">
 
-
-        {/* <Myplaylist /> */}
+        {/* 🤖 Hugging Face AI Mood Analysis Card */}
+        {user && (
+          <section aria-labelledby="ai-mood-analysis">
+            <MoodAnalysisCard onVibeSelect={(vibe) => navigate(`/search?q=${encodeURIComponent(vibe)}`)} />
+          </section>
+        )}
 
 
 

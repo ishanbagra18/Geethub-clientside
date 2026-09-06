@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GeetHub Documentation
+    url: https://github.com/ishanbagra18/Geethub-clientside#readme
+    about: Read the official setup and API documentation before submitting an issue.
+  - name: Security Vulnerability Reporting
+    url: https://github.com/ishanbagra18/Geethub-clientside/blob/main/SECURITY.md
+    about: Report security issues confidentially following our security policy.

@@ -5,6 +5,8 @@ import { useMusicPlayer } from "../context/MusicPlayerContext";
 import { Play, ListPlus, Trophy, TrendingUp, Music2, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 import API_BASE_URL from '../config/api';
+import Navbar from '../../Components/Navbar.jsx';
+import MoodAnalysisCard from '../../Components/MoodAnalysisCard.jsx';
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
@@ -122,7 +124,13 @@ const Mymostplayed = () => {
 
   return (
     <div className="min-h-screen bg-black text-white pb-32">
+      <Navbar />
       <div className="max-w-7xl mx-auto px-8 py-12">
+        {/* AI MOOD ANALYSIS */}
+        <div className="mb-10">
+          <MoodAnalysisCard onVibeSelect={(vibe) => navigate(`/search?q=${encodeURIComponent(vibe)}`)} />
+        </div>
+
         {/* HEADER SECTION */}
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-4">
