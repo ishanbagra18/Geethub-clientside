@@ -19,13 +19,7 @@
 
 </div>
 
----
 
-## 🎬 Application Demo & Live Experience
-
-![GeetHub Application Walkthrough](docs/assets/geethub_app_demo.webp)
-
-> **GeetHub** merges state-of-the-art music streaming with real-time community engagement, AI-driven vibe recommendations, party rooms, and creator analytics.
 
 ---
 
