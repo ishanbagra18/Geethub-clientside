@@ -1,316 +1,197 @@
 <div align="center">
 
-# 🎵 GeetHub
+# 🎵 GeetHub - Music Streaming & Community Platform
 
-**A modern, full-stack music streaming platform built with Go and React**
+**Your Localhost for Global Hits — A High-Performance Full-Stack Music Platform**
 
-Stream, save, and share music with playlists, artist pages, real-time messaging, and a fully responsive player — inspired by the core experience of apps like Spotify.
-
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Go](https://img.shields.io/badge/Go-1.19+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/)
+[![Gin Framework](https://img.shields.io/badge/Gin-v1.9-008080?style=for-the-badge&logo=go&logoColor=white)](https://gin-gonic.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Cloudinary](https://img.shields.io/badge/Cloudinary-Media-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)](https://cloudinary.com/)
 
-[![GitHub Stars](https://img.shields.io/badge/GitHub-Stars-gold?style=for-the-badge&logo=github)](https://github.com/ishanbagra18/Geethub-clientside/stargazers)
-[![GitHub Repo](https://img.shields.io/badge/Repo-Geethub--clientside-blue?style=for-the-badge&logo=github)](https://github.com/ishanbagra18/Geethub-clientside)
+[![GitHub Stars](https://img.shields.io/github/stars/ishanbagra18/Geethub-clientside?style=for-the-badge&logo=github&color=gold)](https://github.com/ishanbagra18/Geethub-clientside/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/ishanbagra18/Geethub-clientside?style=for-the-badge&logo=github&color=blue)](https://github.com/ishanbagra18/Geethub-clientside/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/ishanbagra18/Geethub-clientside?style=for-the-badge&logo=github&color=brightgreen)](https://github.com/ishanbagra18/Geethub-clientside/issues)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-[Live Demo](#) · [Features](#-features) · [Quick Start](#-quick-start) · [Architecture](#-architecture) · [API Docs](#-api-documentation) · [Deployment](#-deployment)
-
 </div>
 
 ---
 
-## 📸 Preview
+## 🎬 Application Demo & Live Experience
 
-> Add a screenshot or short GIF of the app here — this is the single biggest thing that makes visitors stick around and star the repo. A 2–3 second clip of the player + swipe carousels in action works great.
+![GeetHub Application Walkthrough](docs/assets/geethub_app_demo.webp)
+
+> **GeetHub** merges state-of-the-art music streaming with real-time community engagement, AI-driven vibe recommendations, party rooms, and creator analytics.
+
+---
+
+## 🔑 Demo Account Credentials
+
+Experience the fully authenticated user dashboard out of the box using our demo account:
+
+| Field | Demo Credential |
+| :--- | :--- |
+| **Email Address** | `gopalsharma@gmail.com` |
+| **Password** | `12345678` |
+
+---
+
+## 📸 Interface & Visual Gallery
 
 <div align="center">
-  <!-- <img src="docs/screenshots/home.png" width="800" alt="GeetHub home screen" /> -->
-  <!-- <img src="docs/screenshots/demo.gif" width="800" alt="GeetHub demo" /> -->
+
+### 🏠 Authenticated User Dashboard
+*Personalized greeting, curated category quick filters, trending music, and global player.*
+<img src="docs/assets/homepage.png" alt="GeetHub Homepage Dashboard" width="900" />
+
+<br/><br/>
+
+### 🎧 Fullscreen Audio Player & Visualizer
+*Vinyl turntable layout, playback speed (0.75x - 2x), sleep timer, instant sharing, and playlist manager.*
+<img src="docs/assets/active_player.png" alt="GeetHub Fullscreen Player" width="900" />
+
+<br/><br/>
+
+### 📊 Creator Analytics & Vault Dashboard
+*Track stats, total play counts, community saves, public/private visibility toggles, and playlist collections.*
+<img src="docs/assets/playlists_dashboard.png" alt="GeetHub Playlists Dashboard" width="900" />
+
+<br/><br/>
+
+### 🔐 Modern Authentication Portal
+*Sleek JWT-secured sign-in interface with background glassmorphism aesthetics.*
+<img src="docs/assets/login_page.png" alt="GeetHub Login Interface" width="900" />
+
 </div>
 
 ---
 
-## ✨ Features
+## ✨ Core Features & Highlights
 
-| Category | Features |
-|----------|----------|
-| 🔐 **Auth** | JWT-based authentication, password hashing, protected routes |
-| 🎵 **Music** | Streaming, likes, saves, search |
-| 📋 **Library** | Playlist creation & management |
-| 👤 **Social** | User profiles, artist pages, messaging |
-| 📊 **Insights** | Statistics dashboard |
-| 📱 **UX** | Full mobile responsiveness, fluid layouts, dynamic headers, aspect-scaling cover art |
-| 📲 **Navigation** | Full-screen overlay drawer with solid background, blocking clicks on underlying pages |
-| 🎛️ **Player** | Smart global player that adapts controls for mobile formats |
-| 🎚️ **Swipe UI** | Native-app-feel horizontal swipe carousels for featured artists & playlists |
+### 🎵 1. Advanced Music Player Engine
+- **Playback Control**: Variable playback speed (`0.75x`, `1.0x`, `1.25x`, `1.5x`, `2.0x`).
+- **Sleep Timer**: Built-in auto-stop timer options (`15m`, `30m`, `End of Track`).
+- **Interaction Tools**: 1-click Like counters, Save to Library, Add to Playlist modal, and direct track link copy.
+
+### ⚡ 2. AI Mood Analysis & Recommendation Engine
+- Integrates Hugging Face AI models to analyze user playback trends.
+- Displays real-time mood matches (e.g. *"⚡ Upbeat & High Vibrations - Match 88%"*).
+- Generates instant playlist tags based on current emotional frequency.
+
+### 📊 3. Creator Analytics & Playlist Vault
+- Comprehensive playlist manager located at `/myplaylists`.
+- Tracks total plays across user-created playlists, public vs. private visibility statuses, and community save counts.
+
+### 👥 4. Party Rooms & Real-Time Sync
+- Multi-user synchronized party rooms powered by WebSockets.
+- Listen together in real time with shared queue control and live participant chat.
+
+### 🏆 5. Gamified User Badges & Streaks
+- Dynamic badge reward system based on listening milestones, streak counters, and playlist creation.
+
+### 📱 6. Mobile-First Responsive Design
+- Full-bleed mobile navigation drawer with touch gestures.
+- Custom scrollbar hiding for horizontal list swipes across artists and top charts.
 
 ---
 
-## 🚀 Quick Start
+## 🏗️ Architecture & Technology Stack
+
+```mermaid
+graph TD
+    User([User Browser / Mobile]) <--> ReactApp[React 18 + Vite Frontend]
+    ReactApp <-->|REST API / JWT| GoBackend[Go Gin API Server]
+    ReactApp <-->|WebSockets| PartyServer[WebSocket Party Controller]
+    GoBackend <-->|CRUD Operations| MongoDB[(MongoDB Atlas)]
+    GoBackend <-->|Audio / Image Storage| Cloudinary[(Cloudinary CDN)]
+```
+
+### Stack Overview
+
+- **Frontend**: React 18, Vite, Tailwind CSS, React Router v7, Axios, Lucide React, React Hot Toast
+- **Backend**: Go (Gin Framework), JWT Auth, Gorilla WebSockets, Godotenv
+- **Database & Storage**: MongoDB Atlas, Cloudinary CDN
+
+---
+
+## ⚡ Quick Start Guide
 
 ### Prerequisites
+- **Go** v1.19+
+- **Node.js** v16+ & **npm**
+- **MongoDB** (Local or Atlas URL)
+- **Cloudinary Account**
 
-- **[Go](https://go.dev/dl/)** 1.19+
-- **[Node.js](https://nodejs.org/)** 16+
-- **[MongoDB](https://www.mongodb.com/)** (local or [Atlas](https://www.mongodb.com/atlas))
-- **[Cloudinary](https://cloudinary.com/)** account (for media uploads)
-
-### 1. Clone the Repository
+### 1. Repository Setup
 
 ```bash
+# Clone the repository
 git clone https://github.com/ishanbagra18/Geethub-clientside.git
-cd Geethub-clientside
+cd music
 ```
 
-> This repo contains the frontend only. The backend lives in a separate repo — see [Geethub-serversise](https://github.com/ishanbagra18/Geethub-serversise). Clone both if you want to run the full stack locally.
-
-### 2. Set Up the Backend
+### 2. Backend Setup (`backend/Geethub-serversise`)
 
 ```bash
-git clone https://github.com/ishanbagra18/Geethub-serversise.git
-cd Geethub-serversise
+cd backend/Geethub-serversise
 
-# Install Go dependencies
-go mod tidy
+# Copy environment file template
+copy .env.example .env
 
-# Create and configure your environment file
-cp .env.example .env
+# Start the Go Gin server (runs on http://localhost:9000)
+go run main.go
 ```
 
-Edit `.env` with your credentials:
-
-```env
-PORT=9000
-MONGODB_URL=mongodb+srv://<user>:<password>@cluster.mongodb.net/geethub
-SECRET_KEY=your-super-secret-jwt-key
-CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
-CORS_ORIGINS=http://localhost:5173
-```
-
-### 3. Set Up the Frontend
+### 3. Frontend Setup (`frontend/Geethub-clientside`)
 
 ```bash
-cd Geethub-clientside
+cd ../../frontend/Geethub-clientside
 
 # Install Node dependencies
 npm install
 
-# Create and configure your environment file
-cp .env.example .env
-```
+# Copy environment file template
+copy .env.example .env
 
-Edit `.env`:
-
-```env
-VITE_API_URL=http://localhost:9000
-```
-
-### 4. Run the Application
-
-Open **two terminals**:
-
-**Terminal 1 — Backend**
-```bash
-cd Geethub-serversise
-go run main.go
-# ✅ Running at http://localhost:9000
-```
-
-**Terminal 2 — Frontend**
-```bash
-cd Geethub-clientside
+# Launch Vite dev server (runs on http://localhost:5173)
 npm run dev
-# ✅ Running at http://localhost:5173
-```
-
-Open [http://localhost:5173](http://localhost:5173) in your browser and you're ready to go! 🎉
-
----
-
-## 🏗️ Architecture
-
-```
-Geethub/
-├── Geethub-serversise/         # Backend (separate repo)
-│   ├── controllers/            # Route handler logic
-│   ├── database/                # MongoDB connection setup
-│   ├── helpers/                 # Auth, JWT, Cloudinary utilities
-│   ├── middleware/               # Authentication middleware
-│   ├── models/                   # Data models / schemas
-│   ├── routes/                   # API route definitions
-│   ├── main.go                   # Application entry point
-│   ├── .env.example
-│   └── .env                      # ⚠️ Local config, not committed
-│
-├── Geethub-clientside/          # Frontend (this repo)
-│   └── src/
-│       ├── config/                # API base URL & Axios setup
-│       ├── context/                # React global state (auth, player, etc.)
-│       ├── pages/                   # Top-level page components
-│       └── Components/               # Shared/reusable UI components
-│
-├── docs/
-│   └── api_docs.md               # Full API endpoint reference
-│
-├── SETUP.md                       # Detailed setup guide
-├── DEPLOYMENT.md                  # Production deployment guide
-└── README.md                      # You are here
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## 📚 API Endpoints Summary
 
-### Backend
-| Technology | Purpose |
-|------------|---------|
-| [Go (Gin)](https://gin-gonic.com/) | HTTP framework |
-| [MongoDB](https://www.mongodb.com/) | Primary database |
-| [JWT](https://jwt.io/) | Stateless authentication |
-| [Cloudinary](https://cloudinary.com/) | Media storage & delivery |
-| [Gorilla WebSocket](https://github.com/gorilla/websocket) | Real-time messaging |
-
-### Frontend
-| Technology | Purpose |
-|------------|---------|
-| [React 18](https://react.dev/) | UI framework |
-| [Vite](https://vitejs.dev/) | Build tool & dev server |
-| [Tailwind CSS](https://tailwindcss.com/) | Utility-first styling |
-| [React Router v7](https://reactrouter.com/) | Client-side routing |
-| [Axios](https://axios-http.com/) | HTTP client |
-| [Lucide React](https://lucide.dev/) | Icon library |
-| [React Hot Toast](https://react-hot-toast.com/) | Notifications |
+| Endpoint | Method | Description | Auth Required |
+| :--- | :---: | :--- | :---: |
+| `/api/auth/login` | `POST` | Authenticate user and issue JWT token | ❌ |
+| `/api/auth/signup` | `POST` | Register new account | ❌ |
+| `/api/music/songs` | `GET` | Fetch music catalog & trending tracks | ❌ |
+| `/api/playlists` | `GET/POST` | Get user playlists or create new playlist | ✅ |
+| `/api/party/join` | `POST` | Join real-time music party room | ✅ |
+| `/api/badges` | `GET` | Retrieve user badges & achievements | ✅ |
+| `/api/mood/analyze` | `GET` | AI mood analysis & recommendation tags | ✅ |
 
 ---
 
-## 📚 API Documentation
+## 🛡️ Community Standards & Governance
 
-Full API docs are available in [`docs/api_docs.md`](docs/api_docs.md).
+GeetHub adheres to open-source community standards:
 
-The backend server for this project is hosted separately:
-👉 [Geethub Server Repository](https://github.com/ishanbagra18/Geethub-serversise)
-
----
-
-## 🚢 Deployment
-
-### Backend — Render / Railway
-
-1. Connect your GitHub repository
-2. Set the root directory to the backend repo's root
-3. Add all environment variables from `.env.example`
-4. Deploy
-
-### Frontend — Vercel / Netlify
-
-1. Connect your GitHub repository
-2. Set `VITE_API_URL` to your deployed backend URL
-3. Deploy
-
-> 📖 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed step-by-step deployment instructions.
-
----
-
-## 🗺️ Roadmap
-
-- [ ] Offline / cached playback
-- [ ] Collaborative playlists
-- [ ] Lyrics sync
-- [ ] Recommendation engine
-
-> Feel free to open an issue if you'd like to suggest or pick up one of these.
-
----
-
-## 🔒 Security
-
-- 🔑 All secrets stored in environment variables — never hardcoded
-- 🛡️ JWT-based stateless authentication
-- 🔐 Bcrypt password hashing
-- 🌐 CORS configured per environment
-- ✅ Input validation on all endpoints
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome!
-
-```bash
-# 1. Fork the repository on GitHub
-
-# 2. Create your feature branch
-git checkout -b feature/your-feature-name
-
-# 3. Commit your changes
-git commit -m "feat: add your feature"
-
-# 4. Push to your fork
-git push origin feature/your-feature-name
-
-# 5. Open a Pull Request
-```
-
-Please follow [conventional commits](https://www.conventionalcommits.org/) for commit messages.
-
----
-
-## ⭐ Show Your Support
-
-If you found this project useful or interesting, consider giving it a star — it helps others discover it and means a lot as a solo-built project.
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙋 Support
-
-- 📖 Setup issues? Check [SETUP.md](SETUP.md)
-- 🚀 Deployment issues? Check [DEPLOYMENT.md](DEPLOYMENT.md)
-- 🐛 Found a bug? [Open an issue](../../issues/new)
+- 📜 **[License](LICENSE)**: Licensed under the permissive MIT License.
+- 🤝 **[Contributing Guidelines](CONTRIBUTING.md)**: Guidelines for contributing code, reporting bugs, and submitting PRs.
+- 🛡️ **[Security Policy](SECURITY.md)**: Security vulnerability reporting process and best practices.
+- 📋 **[Code of Conduct](CODE_OF_CONDUCT.md)**: Contributor Covenant v2.1 code of conduct.
+- 🐛 **[Issue Templates](.github/ISSUE_TEMPLATE/)**: Structured Bug Report & Feature Request templates.
+- 🔀 **[Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md)**: PR submission checklist.
 
 ---
 
 <div align="center">
 
-Built with ❤️ using **Go** and **React**
-
-<!-- Earning GitHub Profile Badges: Pull Shark, Quickdraw, YOLO & Pair Extraordinaire -->
-<!-- Pair Extraordinaire Co-Author Badge Update -->
+**Built with ❤️ using Go, React, & Tailwind CSS**
 
 </div>
-
-<!-- Auto pull-shark badge progress: 1 of 14 -->
-
-<!-- Auto pull-shark badge progress: 2 of 14 -->
-
-<!-- Auto pull-shark badge progress: 3 of 14 -->
-
-<!-- Auto pull-shark badge progress: 4 of 14 -->
-
-<!-- Auto pull-shark badge progress: 5 of 14 -->
-
-<!-- Auto pull-shark badge progress: 6 of 14 -->
-
-<!-- Auto pull-shark badge progress: 7 of 14 -->
-
-<!-- Auto pull-shark badge progress: 8 of 14 -->
-
-<!-- Auto pull-shark badge progress: 9 of 14 -->
-
-<!-- Auto pull-shark badge progress: 10 of 14 -->
-
-<!-- Auto pull-shark badge progress: 11 of 14 -->
-
-<!-- Auto pull-shark badge progress: 12 of 14 -->
-
-<!-- Auto pull-shark badge progress: 13 of 14 -->
-
-<!-- Auto pull-shark badge progress: 14 of 14 -->
