@@ -50,21 +50,21 @@ const SongPreviewCard = ({ songId, navigate, isCurrentUser }) => {
     <div
       onClick={() => navigate(`/playsong/${songId}`)}
       className={`my-2 p-3 rounded-xl border transition-all cursor-pointer flex items-center gap-3 shadow-lg group ${isCurrentUser
-          ? 'bg-blue-950/60 border-blue-300/40 hover:border-blue-200'
-          : 'bg-gray-900/90 border-blue-500/40 hover:border-blue-400'
+          ? 'bg-blue-950/70 border-blue-400/40 hover:border-cyan-300'
+          : 'bg-slate-900/90 border-blue-500/40 hover:border-blue-400'
         }`}
     >
       <div className="w-12 h-12 rounded-lg overflow-hidden bg-blue-500/20 flex-shrink-0 flex items-center justify-center border border-blue-500/30">
         {loading ? (
-          <Loader2 className="animate-spin text-blue-400" size={20} />
+          <Loader2 className="animate-spin text-cyan-400" size={20} />
         ) : song?.image_url ? (
           <img src={song.image_url} alt={song.title} className="w-full h-full object-cover group-hover:scale-110 transition" />
         ) : (
-          <Music className="w-6 h-6 text-blue-400" />
+          <Music className="w-6 h-6 text-cyan-400" />
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1 text-[10px] uppercase font-bold text-blue-400 tracking-wider">
+        <div className="flex items-center gap-1 text-[10px] uppercase font-bold text-cyan-400 tracking-wider">
           <Music size={11} /> Shared Track
         </div>
         <h4 className="text-sm font-bold text-white truncate">{song?.title || "Listen to Song"}</h4>
@@ -75,9 +75,9 @@ const SongPreviewCard = ({ songId, navigate, isCurrentUser }) => {
           e.stopPropagation();
           navigate(`/playsong/${songId}`);
         }}
-        className="px-3 py-1.5 rounded-full bg-blue-500 hover:bg-blue-400 text-white font-bold text-xs flex items-center gap-1 shadow group-hover:scale-105 transition flex-shrink-0"
+        className="px-3 py-1.5 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs flex items-center gap-1 shadow group-hover:scale-105 transition flex-shrink-0"
       >
-        <Play size={12} fill="white" />
+        <Play size={12} fill="black" />
         Play
       </button>
     </div>
@@ -132,8 +132,8 @@ const PlaylistPreviewCard = ({ playlistId, navigate, isCurrentUser }) => {
     <div
       onClick={() => navigate(`/playlist/${playlistId}`)}
       className={`my-2 p-3 rounded-xl border transition-all cursor-pointer flex items-center gap-3 shadow-lg group ${isCurrentUser
-          ? 'bg-purple-950/60 border-purple-300/40 hover:border-purple-200'
-          : 'bg-gray-900/90 border-purple-500/40 hover:border-purple-400'
+          ? 'bg-purple-950/70 border-purple-400/40 hover:border-purple-300'
+          : 'bg-slate-900/90 border-purple-500/40 hover:border-purple-400'
         }`}
     >
       <div className="w-12 h-12 rounded-lg overflow-hidden bg-purple-500/20 flex-shrink-0 flex items-center justify-center border border-purple-500/30">
@@ -217,7 +217,7 @@ const renderFormattedMessage = (text, navigate, isCurrentUser) => {
 
     return (
       <div className="space-y-1">
-        {cleanText && <p className="break-words whitespace-pre-wrap">{cleanText}</p>}
+        {cleanText && <p className="break-words whitespace-pre-wrap leading-relaxed">{cleanText}</p>}
         {cards}
       </div>
     );
@@ -227,7 +227,7 @@ const renderFormattedMessage = (text, navigate, isCurrentUser) => {
   const parts = text.split(urlRegex);
 
   return (
-    <p className="break-words whitespace-pre-wrap">
+    <p className="break-words whitespace-pre-wrap leading-relaxed">
       {parts.map((part, i) => {
         if (part.match(urlRegex)) {
           return (
@@ -236,7 +236,7 @@ const renderFormattedMessage = (text, navigate, isCurrentUser) => {
               href={part}
               target="_blank"
               rel="noopener noreferrer"
-              className={`underline ${isCurrentUser ? 'text-blue-200 hover:text-white' : 'text-blue-400 hover:text-blue-300'}`}
+              className={`underline ${isCurrentUser ? 'text-cyan-200 hover:text-white' : 'text-cyan-400 hover:text-cyan-300'}`}
               onClick={(e) => {
                 if (part.includes(window.location.origin)) {
                   e.preventDefault();
@@ -416,7 +416,7 @@ const ChatConversation = () => {
 
       // Remove message from local state
       setMessages(messages.filter((msg) => msg.id !== messageId));
-      toast.success('Message deleted successfully');
+      toast.success('Message deleted');
     } catch (error) {
       console.error('Error deleting message:', error);
       toast.error('Failed to delete message');
@@ -453,53 +453,75 @@ const ChatConversation = () => {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900 flex flex-col overflow-hidden">
+    <div className="h-screen bg-[#0b0c10] text-white flex flex-col overflow-hidden font-sans selection:bg-cyan-500/30">
       <Navbar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 bg-gradient-to-br from-gray-900 via-black to-gray-900 border-x border-blue-500/20 shadow-2xl overflow-hidden flex flex-col">
+      
+      <div className="flex-1 flex flex-col overflow-hidden max-w-5xl w-full mx-auto sm:p-4 pb-20 sm:pb-24">
+        <div className="flex-1 bg-[#12141d]/90 backdrop-blur-2xl sm:rounded-3xl border border-slate-800/80 shadow-2xl overflow-hidden flex flex-col">
+          
           {/* Chat Header */}
-          <div className="p-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-b border-gray-700 flex items-center gap-4">
-            <button
-              onClick={() => navigate('/messages')}
-              className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-            >
-              <ArrowLeft className="text-white" size={24} />
-            </button>
+          <div className="p-4 bg-gradient-to-r from-slate-900 via-blue-950/40 to-slate-900 border-b border-slate-800 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate('/messages')}
+                className="p-2 hover:bg-slate-800/80 rounded-xl transition text-gray-300 hover:text-white"
+                title="Back to messaging directory"
+              >
+                <ArrowLeft size={22} />
+              </button>
 
-            {selectedUser ? (
-              <div className="flex items-center gap-3 flex-1">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold text-xl shadow-md">
-                  {selectedUser.emoji || selectedUser.first_name?.charAt(0)?.toUpperCase() || 'U'}
+              {selectedUser ? (
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-blue-600 via-cyan-500 to-indigo-500 p-0.5 shadow-md">
+                      <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-lg">
+                        {selectedUser.emoji || selectedUser.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                      </div>
+                    </div>
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-slate-900 rounded-full"></span>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-base leading-tight">
+                      {selectedUser.first_name} {selectedUser.last_name}
+                    </h3>
+                    <p className="text-xs text-cyan-400 font-mono flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Online • {selectedUser.email}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-white font-semibold text-lg">
-                    {selectedUser.first_name} {selectedUser.last_name}
-                  </h3>
-                  <p className="text-xs text-gray-400">{selectedUser.email}</p>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full bg-slate-800 animate-pulse"></div>
+                  <div className="space-y-2">
+                    <div className="w-32 h-4 bg-slate-800 rounded animate-pulse"></div>
+                    <div className="w-24 h-3 bg-slate-800 rounded animate-pulse"></div>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3 flex-1">
-                <div className="w-12 h-12 rounded-full bg-gray-700 animate-pulse"></div>
-                <div className="space-y-2">
-                  <div className="w-32 h-4 bg-gray-700 rounded animate-pulse"></div>
-                  <div className="w-24 h-3 bg-gray-700 rounded animate-pulse"></div>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
+
+            <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/20 text-cyan-400 text-xs font-semibold">
+              Live Messaging
+            </div>
           </div>
 
-          {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+          {/* Messages Feed */}
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 custom-scrollbar bg-radial from-slate-900/50 to-slate-950/80">
             {loading ? (
-              <div className="flex items-center justify-center h-full">
-                <Loader2 className="animate-spin text-blue-400" size={32} />
+              <div className="flex flex-col items-center justify-center h-full space-y-3">
+                <Loader2 className="animate-spin text-cyan-400" size={36} />
+                <p className="text-xs text-gray-400 font-medium">Decrypting conversation...</p>
               </div>
             ) : messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                <MessageCircle size={64} className="mb-4 opacity-30" />
-                <h3 className="text-xl font-semibold mb-2">No messages yet</h3>
-                <p className="text-sm">Start the conversation!</p>
+              <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 p-6 space-y-3">
+                <div className="w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center text-cyan-400 mb-1">
+                  <MessageCircle size={32} />
+                </div>
+                <h3 className="text-xl font-bold text-white">No messages yet</h3>
+                <p className="text-sm text-gray-400 max-w-xs">
+                  Say hi to {selectedUser?.first_name || 'this user'} and start sharing songs & playlists!
+                </p>
               </div>
             ) : (
               <>
@@ -507,43 +529,40 @@ const ChatConversation = () => {
                   const isCurrentUser = msg.sender_id === currentUserId;
                   const showDate =
                     index === 0 ||
-                    formatDate(msg.timestamp) !==
-                    formatDate(messages[index - 1]?.timestamp);
+                    formatDate(msg.timestamp) !== formatDate(messages[index - 1]?.timestamp);
 
                   return (
                     <React.Fragment key={msg.id || index}>
                       {showDate && (
                         <div className="flex justify-center my-4">
-                          <span className="px-3 py-1 bg-gray-800 text-gray-400 text-xs rounded-full">
+                          <span className="px-4 py-1 bg-slate-800/80 border border-slate-700/50 text-gray-400 text-xs font-semibold rounded-full shadow-sm">
                             {formatDate(msg.timestamp)}
                           </span>
                         </div>
                       )}
-                      <div
-                        className={`flex group ${isCurrentUser ? 'justify-end' : 'justify-start'
-                          }`}
-                      >
-                        <div className="flex items-end gap-2">
+                      <div className={`flex group ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+                        <div className="flex items-end gap-2 max-w-[85%] sm:max-w-[75%]">
                           {isCurrentUser && (
                             <button
                               onClick={() => deleteMessage(msg.id)}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full bg-red-500/80 hover:bg-red-600 text-white"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-red-200"
                               title="Delete message"
                             >
                               <Trash2 size={14} />
                             </button>
                           )}
+                          
                           <div
-                            className={`max-w-[80%] min-w-[100px] rounded-2xl px-4 py-2 ${isCurrentUser
-                                ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white'
-                                : 'bg-gray-800 text-gray-100'
+                            className={`rounded-2xl p-4 shadow-xl border ${isCurrentUser
+                                ? 'bg-gradient-to-r from-blue-600 via-blue-700 to-cyan-600 text-white border-blue-400/30 rounded-tr-xs'
+                                : 'bg-[#1b1e2e] text-slate-100 border-slate-700/70 rounded-tl-xs'
                               }`}
                           >
                             {msg.photo_url && (
                               <img
                                 src={msg.photo_url}
-                                alt="Shared"
-                                className="rounded-lg mb-2 max-w-full h-auto"
+                                alt="Shared image"
+                                className="rounded-xl mb-3 max-w-full h-auto max-h-72 object-cover border border-white/10"
                                 onError={(e) => {
                                   e.target.style.display = 'none';
                                 }}
@@ -551,7 +570,7 @@ const ChatConversation = () => {
                             )}
                             {msg.message_text && renderFormattedMessage(msg.message_text, navigate, isCurrentUser)}
                             <span
-                              className={`text-xs mt-1 block ${isCurrentUser ? 'text-blue-100' : 'text-gray-500'
+                              className={`text-[10px] font-mono mt-1.5 block text-right ${isCurrentUser ? 'text-cyan-200' : 'text-gray-400'
                                 }`}
                             >
                               {formatTime(msg.timestamp)}
@@ -567,16 +586,16 @@ const ChatConversation = () => {
             )}
           </div>
 
-          {/* Message Input */}
-          <div className="p-4 bg-gray-900/50 border-t border-gray-700">
+          {/* Message Input Box */}
+          <div className="p-4 bg-slate-900/90 border-t border-slate-800/90">
             {showImageInput && (
-              <div className="mb-2 flex gap-2 items-center">
+              <div className="mb-3 flex gap-2 items-center bg-slate-800/80 p-2 rounded-xl border border-slate-700">
                 <input
                   type="file"
                   ref={fileInputRef}
                   accept="image/*"
                   onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                  className="flex-1 px-3 py-2 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600 file:cursor-pointer"
+                  className="flex-1 text-xs text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-500 file:text-black hover:file:bg-cyan-400 file:cursor-pointer"
                 />
                 <button
                   onClick={() => {
@@ -586,37 +605,45 @@ const ChatConversation = () => {
                       fileInputRef.current.value = '';
                     }
                   }}
-                  className="px-3 text-gray-400 hover:text-white flex-shrink-0"
+                  className="p-1 text-gray-400 hover:text-white"
                 >
-                  <X size={20} />
+                  <X size={18} />
                 </button>
               </div>
             )}
+            
             {selectedFile && (
-              <div className="mb-2 px-3 py-2 bg-gray-800 rounded-lg text-sm text-gray-300">
-                Selected: {selectedFile.name}
+              <div className="mb-2 px-3 py-1.5 bg-cyan-500/10 border border-cyan-400/30 rounded-lg text-xs text-cyan-300 font-medium">
+                Attachment ready: {selectedFile.name}
               </div>
             )}
-            <form onSubmit={sendMessage} className="flex gap-2 items-center w-full">
+
+            <form onSubmit={sendMessage} className="flex gap-2 items-center">
               <button
                 type="button"
                 onClick={() => setShowImageInput(!showImageInput)}
-                className="flex-shrink-0 p-2 bg-gray-800 text-gray-400 hover:text-white rounded-lg transition-colors"
+                className={`p-3 rounded-xl transition border ${showImageInput
+                    ? 'bg-cyan-500/20 text-cyan-400 border-cyan-400/40'
+                    : 'bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white border-slate-700'
+                  }`}
+                title="Attach Image"
               >
                 <ImageIcon size={20} />
               </button>
+
               <input
                 type="text"
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
-                placeholder="Type a message..."
-                className="flex-1 min-w-0 px-4 py-2.5 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500 whitespace-nowrap overflow-x-auto"
+                placeholder="Type a message or paste a song/playlist URL..."
+                className="flex-1 px-4 py-3 bg-slate-800/90 text-white placeholder-gray-500 rounded-xl border border-slate-700/80 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/40 text-sm transition"
                 disabled={sendingMessage}
               />
+
               <button
                 type="submit"
                 disabled={sendingMessage || (!messageText.trim() && !selectedFile)}
-                className="flex-shrink-0 p-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="p-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl hover:from-blue-500 hover:to-cyan-400 transition-all duration-300 shadow-lg shadow-blue-500/20 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {sendingMessage ? (
                   <Loader2 className="animate-spin" size={20} />
@@ -626,6 +653,7 @@ const ChatConversation = () => {
               </button>
             </form>
           </div>
+
         </div>
       </div>
 
@@ -634,14 +662,14 @@ const ChatConversation = () => {
           width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.2);
+          background: rgba(15, 23, 42, 0.4);
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(59, 130, 246, 0.5);
+          background: rgba(59, 130, 246, 0.4);
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(59, 130, 246, 0.7);
+          background: rgba(6, 182, 212, 0.6);
         }
       `}</style>
     </div>

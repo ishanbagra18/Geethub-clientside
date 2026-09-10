@@ -1,5 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Clock, Play, Music, Flame, Award, BarChart2, Loader2, Sparkles } from 'lucide-react';
 import API_BASE_URL from '../src/config/api';
 
 const Dashboard = () => {
@@ -19,7 +20,6 @@ const Dashboard = () => {
       const token = localStorage.getItem('token');
       
       if (!token) {
-        setError('Please login to view stats');
         setLoading(false);
         return;
       }
@@ -44,46 +44,47 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-500 mx-auto mb-4"></div>
-          <p className="text-white text-xl">Loading your stats...</p>
-        </div>
+      <div className="w-full py-16 flex flex-col items-center justify-center space-y-3">
+        <Loader2 className="animate-spin text-cyan-400" size={36} />
+        <p className="text-gray-400 text-xs font-bold uppercase tracking-widest animate-pulse">
+          Computing Your Listening Analytics...
+        </p>
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
-        <div className="bg-red-500/20 border border-red-500 rounded-lg p-6 max-w-md">
-          <p className="text-red-400 text-center text-lg">{error}</p>
-        </div>
-      </div>
-    );
+  if (error || !localStorage.getItem('token')) {
+    return null; // Silent fallback if not logged in
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-6 pb-32">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-            Your Listening Stats
-          </h1>
-          <p className="text-gray-400 text-lg">
-            Discover your music journey
-          </p>
-        </div>
+    <section className="w-full max-w-7xl mx-auto my-16 px-4 sm:px-6">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0c0f1a] via-[#101424] to-[#0d0f18] border border-cyan-500/20 p-6 sm:p-10 shadow-2xl backdrop-blur-2xl">
+        {/* Glow Accents */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Range Toggle */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-full p-1 inline-flex border border-gray-700">
+        {/* Section Header & Range Toggle */}
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-slate-800/80 mb-8">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-xs font-black uppercase tracking-wider mb-2">
+              <BarChart2 size={14} className="text-cyan-400" /> Personal Audio Insights
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+              Your Listening Stats
+            </h2>
+            <p className="text-gray-400 text-sm mt-1 font-medium">
+              Track your music streaming trends, favorite artists & top tracks
+            </p>
+          </div>
+
+          {/* Time Range Selector */}
+          <div className="flex items-center bg-slate-900/90 p-1.5 rounded-2xl border border-slate-700/80 shadow-lg self-start md:self-auto">
             <button
               onClick={() => setRange('weekly')}
-              className={`px-8 py-3 rounded-full font-semibold transition-all duration-300 ${
+              className={`px-5 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all duration-300 ${
                 range === 'weekly'
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md shadow-blue-500/30'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
@@ -91,9 +92,9 @@ const Dashboard = () => {
             </button>
             <button
               onClick={() => setRange('monthly')}
-              className={`px-8 py-3 rounded-full font-semibold transition-all duration-300 ${
+              className={`px-5 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all duration-300 ${
                 range === 'monthly'
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
+                  ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md shadow-blue-500/30'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
@@ -102,141 +103,105 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Minutes Listened Card */}
-          <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-8 shadow-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300">
-            <div className="flex items-center mb-4">
-              <div className="bg-purple-500/30 p-3 rounded-xl">
-                <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+        {/* Stats Grid Cards */}
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          {/* Card 1: Minutes Listened */}
+          <div className="group relative rounded-2xl p-6 bg-gradient-to-br from-slate-900/90 to-blue-950/40 border border-slate-800 hover:border-blue-500/40 transition-all duration-300 shadow-xl hover:shadow-[0_0_25px_rgba(59,130,246,0.15)]">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-blue-400">
+                Total Listening
+              </span>
+              <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-400/20">
+                <Clock size={20} />
               </div>
             </div>
-            <h3 className="text-gray-400 text-sm font-medium mb-2 uppercase tracking-wider">
-              Minutes Listened
-            </h3>
-            <p className="text-5xl font-bold text-white mb-2">
-              {stats?.minutes_listened || 0}
-            </p>
-            <p className="text-purple-400 text-sm">
-              {range === 'weekly' ? 'This week' : 'This month'}
-            </p>
-          </div>
-
-          {/* Top Song Card */}
-          <div className="bg-gradient-to-br from-blue-600/20 to-cyan-600/20 backdrop-blur-sm border border-blue-500/30 rounded-2xl p-8 shadow-xl hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300">
-            <div className="flex items-center mb-4">
-              <div className="bg-blue-500/30 p-3 rounded-xl">
-                <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                </svg>
-              </div>
-            </div>
-            <h3 className="text-gray-400 text-sm font-medium mb-3 uppercase tracking-wider">
-              Top Song
-            </h3>
-            {stats?.top_song ? (
-              <div className="flex items-start gap-4">
-                <img
-                  src={stats.top_song.image || '/placeholder.jpg'}
-                  alt={stats.top_song.title}
-                  className="w-16 h-16 rounded-lg object-cover shadow-lg"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-bold text-lg truncate mb-1">
-                    {stats.top_song.title}
-                  </p>
-                  <p className="text-gray-400 text-sm truncate mb-2">
-                    {stats.top_song.artist}
-                  </p>
-                  <p className="text-blue-400 text-xs font-semibold">
-                    {stats.top_song.plays} plays
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm">No data available</p>
-            )}
-          </div>
-
-          {/* Top Artist Card */}
-          <div className="bg-gradient-to-br from-pink-600/20 to-rose-600/20 backdrop-blur-sm border border-pink-500/30 rounded-2xl p-8 shadow-xl hover:shadow-2xl hover:shadow-pink-500/20 transition-all duration-300">
-            <div className="flex items-center mb-4">
-              <div className="bg-pink-500/30 p-3 rounded-xl">
-                <svg className="w-8 h-8 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-            </div>
-            <h3 className="text-gray-400 text-sm font-medium mb-3 uppercase tracking-wider">
-              Top Artist
-            </h3>
-            {stats?.top_artist ? (
-              <>
-                <p className="text-white font-bold text-2xl mb-2 truncate">
-                  {stats.top_artist.name}
-                </p>
-                <p className="text-pink-400 text-sm font-semibold">
-                  {stats.top_artist.plays} plays
-                </p>
-              </>
-            ) : (
-              <p className="text-gray-500 text-sm">No data available</p>
-            )}
-          </div>
-        </div>
-
-        {/* Detailed Stats Section */}
-        {stats?.top_song && (
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 shadow-xl">
-            <h2 className="text-2xl font-bold text-white mb-6">
-              🎵 Your Most Played Track
-            </h2>
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <img
-                src={stats.top_song.image || '/placeholder.jpg'}
-                alt={stats.top_song.title}
-                className="w-48 h-48 rounded-2xl object-cover shadow-2xl"
-              />
-              <div className="flex-1 text-center md:text-left">
-                <h3 className="text-3xl font-bold text-white mb-2">
-                  {stats.top_song.title}
-                </h3>
-                <p className="text-xl text-gray-400 mb-4">
-                  by {stats.top_song.artist}
-                </p>
-                <div className="flex items-center gap-2 justify-center md:justify-start">
-                  <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                    🔥 {stats.top_song.plays} plays
-                  </span>
-                  <span className="bg-gray-700 text-gray-300 px-4 py-2 rounded-full text-sm font-semibold">
-                    {range === 'weekly' ? 'This week' : 'This month'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!stats?.top_song && !stats?.top_artist && stats?.minutes_listened === 0 && (
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-12 text-center">
-            <div className="text-gray-500 mb-4">
-              <svg className="w-24 h-24 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-              </svg>
-              <h3 className="text-2xl font-bold text-gray-400 mb-2">
-                No listening data yet
+            <div className="space-y-1">
+              <h3 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
+                {stats?.minutes_listened || 0}
               </h3>
-              <p className="text-gray-500">
-                Start listening to music to see your stats here!
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
+                Minutes Played ({range === 'weekly' ? '7 Days' : '30 Days'})
               </p>
             </div>
+            <div className="mt-4 pt-4 border-t border-slate-800/60 flex items-center gap-2 text-xs text-blue-300 font-medium">
+              <Sparkles size={14} className="text-cyan-400" />
+              <span>Real-time playback analytics active</span>
+            </div>
           </div>
-        )}
+
+          {/* Card 2: Top Song */}
+          <div className="group relative rounded-2xl p-6 bg-gradient-to-br from-slate-900/90 to-cyan-950/40 border border-slate-800 hover:border-cyan-500/40 transition-all duration-300 shadow-xl hover:shadow-[0_0_25px_rgba(6,182,212,0.15)]">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-cyan-400">
+                Top Streamed Track
+              </span>
+              <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-400/20">
+                <Flame size={20} />
+              </div>
+            </div>
+            
+            {stats?.top_song ? (
+              <div className="flex items-center gap-4">
+                <img
+                  src={stats.top_song.image || stats.top_song.image_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200'}
+                  alt={stats.top_song.title}
+                  className="w-16 h-16 rounded-xl object-cover border border-cyan-500/30 shadow-lg flex-shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-white font-extrabold text-base truncate group-hover:text-cyan-300 transition-colors">
+                    {stats.top_song.title}
+                  </h4>
+                  <p className="text-gray-400 text-xs truncate mt-0.5 font-medium">
+                    {stats.top_song.artist}
+                  </p>
+                  <span className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-[10px] font-bold">
+                    🔥 {stats.top_song.plays || 1} Plays
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="py-2 text-gray-500 text-xs">
+                Play songs to unlock your top track insights
+              </div>
+            )}
+          </div>
+
+          {/* Card 3: Top Artist */}
+          <div className="group relative rounded-2xl p-6 bg-gradient-to-br from-slate-900/90 to-purple-950/40 border border-slate-800 hover:border-purple-500/40 transition-all duration-300 shadow-xl hover:shadow-[0_0_25px_rgba(168,85,247,0.15)]">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-purple-400">
+                Top Creator
+              </span>
+              <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-400/20">
+                <Award size={20} />
+              </div>
+            </div>
+
+            {stats?.top_artist ? (
+              <div className="space-y-2">
+                <h4 className="text-2xl font-black text-white truncate group-hover:text-purple-300 transition-colors">
+                  {stats.top_artist.name}
+                </h4>
+                <p className="text-xs text-purple-400 font-bold uppercase tracking-wider">
+                  {stats.top_artist.plays || 1} Total Plays
+                </p>
+                <div className="pt-2">
+                  <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-400/30 text-purple-300 text-[10px] font-bold uppercase">
+                    ⭐ Favorite Artist
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="py-2 text-gray-500 text-xs">
+                Explore artist catalogs to track top creators
+              </div>
+            )}
+          </div>
+
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -38,7 +38,7 @@ const Footer = () => {
             </div>
 
             <p className="text-xs font-black uppercase tracking-[0.1em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">
-              Your localhost for global hits.
+              Desi vibes, global beats — Your ultimate Indian music destination 🇮🇳🎧
             </p>
 
             <p className="text-sm text-gray-400 leading-relaxed max-w-sm">

@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Music, Edit2, Play, Mail, Phone, Fingerprint, Lock, Settings, Book, User } from "lucide-react";
+import { Music, Edit2, Mail, Phone, Fingerprint, Lock, Settings, Book, User, Crown } from "lucide-react";
 import API_BASE_URL from '../config/api';
 import UserBadges from '../../Components/UserBadges';
-
-
-
 
 const getUidFromToken = () => {
   try {
@@ -94,18 +91,16 @@ export default function MyProfile() {
             <h2 className="text-zinc-500 uppercase tracking-[0.3em] text-xs font-bold mb-2">Verified Listener</h2>
             <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent">
               {user?.first_name ? user.first_name.charAt(0).toUpperCase() + user.first_name.slice(1) : ""}
-
               {user.last_name ? " " + user.last_name.charAt(0).toUpperCase() + user.last_name.slice(1) : ""}
             </h1>
+            
             <div className="flex flex-wrap justify-center md:justify-start gap-3">
-              <button className="flex items-center gap-2 px-8 py-3 bg-blue-500 hover:bg-blue-400 text-black font-bold rounded-full transition-all active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                <Play fill="currentColor" size={18} /> Play Mix
+              <button
+                onClick={() => (window.location.href = "/premium")}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-extrabold rounded-full transition-all active:scale-95 shadow-lg shadow-amber-500/30"
+              >
+                <Crown size={18} fill="black" /> VIP Premium
               </button>
-
-
-
-
-
 
               <button
                 onClick={() => (window.location.href = "/updateprofile")}
@@ -114,20 +109,12 @@ export default function MyProfile() {
                 <Edit2 size={16} /> Edit Profile
               </button>
 
-
-
-
-
-
-
               <button
                 onClick={() => (window.location.href = "/mylibrary")}
-                className="flex items-center gap-2 px-8 py-3 bg-blue-500 hover:bg-blue-400 text-black font-bold rounded-full transition-all active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full transition-all active:scale-95 shadow-[0_0_20px_rgba(59,130,246,0.3)]"
               >
                 <Book size={16} /> My Library
               </button>
-
-
 
               <button
                 onClick={() => (window.location.href = "/myfollowing")}
@@ -135,19 +122,12 @@ export default function MyProfile() {
               >
                 <User size={16} /> My Following
               </button>
-
-
-
-
-
             </div>
           </div>
         </div>
 
-       
-
         {/* Info Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
 
           {/* Card: Account Details */}
           <div className="md:col-span-2 bg-zinc-900/40 backdrop-blur-xl border border-zinc-800/50 rounded-3xl p-8 hover:border-blue-500/30 transition-colors group">
@@ -216,12 +196,10 @@ export default function MyProfile() {
             </div>
           </div>
 
-        
-
         </div>
 
-           {/* 🏆 Badges / Achievements */}
-        <UserBadges /> 
+        {/* 🏆 Badges / Achievements */}
+        <UserBadges />
       </main>
 
       <style>{`

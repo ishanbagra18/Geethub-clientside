@@ -1,441 +1,169 @@
-// Mostliked.jsx
 import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
 import { useMusicSections } from "../src/context/MusicSectionsContext";
-import { ListPlus } from "lucide-react";
+import { ListPlus, Heart, ChevronLeft, ChevronRight, Play, Sparkles } from "lucide-react";
+import toast from "react-hot-toast";
 
 const PLACEHOLDER = "https://via.placeholder.com/220?text=No+Image";
 
 const Mostliked = ({ limitToHome = false }) => {
-  const { sections, loading } = useMusicSections();
+  const { sections } = useMusicSections();
   const navigate = useNavigate();
   const rowRef = useRef(null);
   const { addToQueue } = useMusicPlayer();
 
-  // Get songs from context and limit if on homepage
-  const mostliked = limitToHome ? (sections.mostLiked || []).slice(0, 10) : (sections.mostLiked || []);
+  const mostliked = limitToHome
+    ? (sections.mostLiked || []).slice(0, 10)
+    : (sections.mostLiked || []);
 
   const scrollByAmount = (direction) => {
     if (!rowRef.current) return;
-    const cardWidth = 236; // 220 + gap
-    const amount = cardWidth * 3;
+    const amount = 340;
     rowRef.current.scrollBy({
       left: direction === "left" ? -amount : amount,
       behavior: "smooth",
     });
   };
 
-  const hasScroll = mostliked.length > 6;
-
-  const containerStyle = {
-    marginTop: 80,
-    paddingLeft: 32,
-    paddingRight: 32,
+  const handlePlay = (songId) => {
+    if (songId) navigate(`/playsong/${songId}`);
   };
 
-  const headerRowStyle = {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 18,
-    gap: 16,
+  const handleQueue = (e, song) => {
+    e.stopPropagation();
+    const songId = song.song_id || song._id || song.id;
+    if (songId) {
+      addToQueue(songId);
+      toast.success(`Added "${song.title}" to queue`);
+    }
   };
 
-  const titleStyle = {
-    fontSize: 28,
-    fontWeight: 800,
-    letterSpacing: 0.6,
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-  };
-
-  const accentBarStyle = {
-    width: 4,
-    height: 28,
-    borderRadius: 999,
-    background:
-      "linear-gradient(180deg, #fb7185 0%, #facc15 40%, #4ade80 100%)",
-  };
-
-  const seeAllButtonStyle = {
-     color: "#2216cdff",
-    fontSize: 14,
-    fontWeight: 600,
-    background: "transparent",
-    border: "1px solid rgba(5, 0, 157, 0.4)",
-    borderRadius: 999,
-    padding: "6px 14px",
-    cursor: "pointer",
-    display: limitToHome ? "flex" : "none",
-    alignItems: "center",
-    gap: 6,
-    backdropFilter: "blur(10px)",
-    backgroundColor: "rgba(15, 23, 42, 0.7)",
-  };
-
-  const scrollerShellStyle = {
-    position: "relative",
-    marginTop: 4,
-  };
-
-  const scrollerStyle = {
-    display: "flex",
-    gap: 16,
-    paddingTop: 10,
-    paddingBottom: 10,
-    overflowX: hasScroll ? "auto" : "visible",
-    WebkitOverflowScrolling: "touch",
-    scrollBehavior: "smooth",
-  };
-
-  const navBtnBase = {
-    position: "absolute",
-    top: "50%",
-    transform: "translateY(-50%)",
-    width: 34,
-    height: 34,
-    borderRadius: "999px",
-    border: "none",
-    display: hasScroll ? "flex" : "none",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    background:
-      "radial-gradient(circle at 10% 20%, rgba(248, 113, 113, 0.9), rgba(59, 130, 246, 0.9))",
-    color: "#f9fafb",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.45)",
-    zIndex: 10,
-  };
-
-  const leftBtnStyle = {
-    ...navBtnBase,
-    left: -6,
-  };
-
-  const rightBtnStyle = {
-    ...navBtnBase,
-    right: -6,
-  };
-
-  const cardStyle = {
-    width: 220,
-    flexShrink: 0,
-    borderRadius: 18,
-    cursor: "pointer",
-    padding: 10,
-    background:
-      "linear-gradient(135deg, rgba(6,182,212,0.10) 0%, rgba(16,185,129,0.10) 100%, rgba(24,24,27,0.96) 100%)",
-    boxShadow: "0 18px 45px rgba(15,23,42,0.7)",
-    border: "1px solid rgba(34,211,238,0.18)",
-    position: "relative",
-    overflow: "hidden",
-    transition:
-      "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease",
-  };
-
-  const imgContainerStyle = {
-    width: "100%",
-    height: 220,
-    overflow: "hidden",
-    borderRadius: 14,
-    background:
-      "radial-gradient(circle at top left, #0f172a, #020617 60%, #111827)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  };
-
-  const imgStyle = {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    display: "block",
-    transition: "transform 0.35s ease",
-  };
-
-  const overlayStyle = {
-    position: "absolute",
-    inset: 0,
-    background:
-      "linear-gradient(145deg, rgba(15,23,42,0.1), rgba(0,0,0,0.7))",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    opacity: 0,
-    transition: "opacity 0.3s ease",
-  };
-
-  const playCircleStyle = {
-    width: 50,
-    height: 50,
-    borderRadius: "999px",
-    border: "1px solid rgba(255, 255, 255, 0.4)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background:
-      "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)",
-    color: "#ffffff",
-    boxShadow: "0 8px 25px rgba(59, 130, 246, 0.5)",
-    fontSize: 18,
-    fontWeight: 700,
-  };
-
-  const titleTextStyle = {
-    marginTop: 12,
-    fontWeight: 700,
-    fontSize: 15,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    color: "#e5e7eb",
-  };
-
-  const uploaderTextStyle = {
-    color: "#9ca3af",
-    fontSize: 12,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    marginTop: 2,
-  };
-
-  const uploaderNameStyle = {
-    color: "#60a5fa",
-    fontWeight: 500,
-  };
-
-  // NEW like chip (no ID text)
-  const likeRowStyle = {
-    marginTop: 10,
-    display: "flex",
-    justifyContent: "flex-start",
-  };
-
-  const likeChipStyle = {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    padding: "4px 10px",
-    borderRadius: 999,
-    background: "rgba(15, 23, 42, 0.9)",
-    border: "1px solid rgba(248, 113, 113, 0.55)",
-    color: "#fecaca",
-    fontSize: 11,
-    fontWeight: 600,
-    boxShadow: "0 6px 18px rgba(15,23,42,0.8)",
-  };
-
-  const heartIconStyle = {
-    width: 16,
-    height: 16,
-    borderRadius: 999,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "#ef4444", // solid red
-    color: "#fff",
-    fontSize: 11,
-  };
-
-  const noDataStyle = {
-    marginTop: 18,
-    fontSize: 13,
-    color: "#6b7280",
+  const getLikesCount = (likes) => {
+    if (Array.isArray(likes)) return likes.length;
+    if (typeof likes === "number") return likes;
+    return 0;
   };
 
   return (
-    <section className="mt-10 md:mt-20 px-4 md:px-8">
-      {/* HEADER */}
-      <div style={headerRowStyle}>
-        <div style={titleStyle}>
-          <div style={accentBarStyle} />
+    <section className="mt-16 px-4 md:px-10 max-w-[1600px] mx-auto text-white">
+      {/* HEADER ROW */}
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-4">
+          <div className="w-1.5 h-12 rounded-full bg-gradient-to-b from-rose-500 via-pink-500 to-red-500 shadow-lg shadow-rose-500/30" />
           <div>
-            <p
-              style={{
-                fontSize: 11,
-                letterSpacing: 2,
-                textTransform: "uppercase",
-                color: "#6b7280",
-                marginBottom: 2,
-              }}
-            >
-              Curated just for you
-            </p>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-              <h2>Most Liked Songs</h2>
-              <span
-                style={{
-                  fontSize: 11,
-                  color: "#9ca3af",
-                  fontWeight: 400,
-                }}
-              >
-                {mostliked.length > 0
-                  ? `${mostliked.length} tracks`
-                  : "No tracks yet"}
-              </span>
-            </div>
+            <span className="text-rose-400 text-xs font-extrabold tracking-[0.25em] uppercase flex items-center gap-1 mb-1">
+              <Sparkles size={14} className="text-rose-400 animate-pulse" /> Community Choice
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white flex items-center gap-3">
+              Most Liked Songs
+            </h2>
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        {limitToHome && (
           <button
-            style={seeAllButtonStyle}
             onClick={() => navigate("/mostliked")}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-rose-500/30 bg-slate-950/70 backdrop-blur-md text-rose-300 text-xs font-bold hover:bg-rose-500/20 hover:border-rose-400 hover:text-white hover:scale-105 transition-all duration-300 shadow-lg"
           >
-            More in Most Liked
-            {/* <span style={{ fontSize: 16 }}>↗</span> */}
+            MORE IN MOST LIKED
+            <span className="text-sm">→</span>
           </button>
-        </div>
+        )}
       </div>
 
-      {/* CAROUSEL */}
-      <div style={scrollerShellStyle}>
+      {/* SCROLLER SHELL */}
+      <div className="relative group">
+        {/* Navigation Buttons */}
         <button
-          type="button"
-          style={leftBtnStyle}
           onClick={() => scrollByAmount("left")}
+          className="absolute -left-5 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-slate-950/90 border border-rose-500/40 text-rose-300 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-rose-600 hover:text-white hover:scale-110 shadow-2xl backdrop-blur-md"
         >
-          ❮
-        </button>
-        <button
-          type="button"
-          style={rightBtnStyle}
-          onClick={() => scrollByAmount("right")}
-        >
-          ❯
+          <ChevronLeft size={20} />
         </button>
 
+        <button
+          onClick={() => scrollByAmount("right")}
+          className="absolute -right-5 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-slate-950/90 border border-rose-500/40 text-rose-300 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-rose-600 hover:text-white hover:scale-110 shadow-2xl backdrop-blur-md"
+        >
+          <ChevronRight size={20} />
+        </button>
+
+        {/* CAROUSEL TRACK */}
         <div
           ref={rowRef}
-          className={hasScroll ? "hide-scrollbar" : ""}
-          style={scrollerStyle}
+          className="flex gap-5 overflow-x-auto scrollbar-hide hide-scrollbar no-scrollbar snap-x snap-mandatory pb-6 pt-2 transform-gpu"
         >
-          {mostliked.map((song) => (
-            <div
-              key={song.song_id}
-              style={cardStyle}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-4px) scale(1.02)";
-                e.currentTarget.style.boxShadow =
-                  "0 26px 55px rgba(15,23,42,0.9)";
-                const overlay =
-                  e.currentTarget.querySelector(".ml-overlay");
-                const img = e.currentTarget.querySelector(".ml-cover-img");
-                if (overlay) overlay.style.opacity = 1;
-                if (img) img.style.transform = "scale(1.08)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0) scale(1)";
-                e.currentTarget.style.boxShadow =
-                  "0 18px 45px rgba(15,23,42,0.7)";
-                const overlay =
-                  e.currentTarget.querySelector(".ml-overlay");
-                const img = e.currentTarget.querySelector(".ml-cover-img");
-                if (overlay) overlay.style.opacity = 0;
-                if (img) img.style.transform = "scale(1)";
-              }}
-            >
-              <div 
-                style={{...imgContainerStyle, position: 'relative', cursor: 'pointer'}}
-                onClick={() => {
-                  console.log(
-                    "[Mostliked] navigate to:",
-                    `/playsong/${song.song_id}`
-                  );
-                  navigate(`/playsong/${song.song_id}`);
-                }}
+          {mostliked.map((song, index) => {
+            const songId = song.song_id || song._id || song.id;
+            const likesCount = getLikesCount(song.likes);
+
+            return (
+              <div
+                key={songId || index}
+                className="group/card relative flex-shrink-0 w-[210px] snap-start"
               >
-                <img
-                  className="ml-cover-img"
-                  src={song.image_url || PLACEHOLDER}
-                  alt={song.title || "cover"}
-                  style={imgStyle}
-                  onError={(e) => {
-                    if (e.target.src !== PLACEHOLDER) {
-                      e.target.src = PLACEHOLDER;
-                    }
-                  }}
-                />
-                <div className="ml-overlay" style={overlayStyle}>
-                  <div style={playCircleStyle}>▶</div>
-                </div>
-                
-                {/* Queue Button Overlay */}
-                <div style={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                  display: 'flex',
-                  gap: 6,
-                }}>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addToQueue(song.song_id);
-                    }}
-                    style={{
-                      background: 'rgba(0, 0, 0, 0.75)',
-                      backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(59, 130, 246, 0.5)',
-                      borderRadius: 8,
-                      padding: '8px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.2s',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(59, 130, 246, 0.8)';
-                      e.currentTarget.style.transform = 'scale(1.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(0, 0, 0, 0.75)';
-                      e.currentTarget.style.transform = 'scale(1)';
-                    }}
-                    title="Add to Queue (Play Next)"
-                  >
-                    <ListPlus size={18} color="#3b82f6" />
-                  </button>
-                </div>
-              </div>
+                <div
+                  onClick={() => handlePlay(songId)}
+                  className="relative p-3.5 rounded-2xl bg-gray-950/70 border border-gray-800/80 backdrop-blur-xl transition-all duration-300 hover:border-rose-500/60 hover:shadow-2xl hover:shadow-rose-500/20 hover:-translate-y-1.5 cursor-pointer"
+                >
+                  {/* Artwork Container */}
+                  <div className="relative w-full h-[180px] aspect-square rounded-xl overflow-hidden bg-gray-900 border border-gray-800 flex-shrink-0">
+                    <img
+                      src={song.image_url || PLACEHOLDER}
+                      alt={song.title || "Cover"}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-108"
+                      onError={(e) => {
+                        e.target.src = PLACEHOLDER;
+                      }}
+                    />
 
-              <h3 style={titleTextStyle}>{song.title || "Untitled"}</h3>
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover/card:opacity-80 transition-opacity" />
 
-              <p style={uploaderTextStyle}>
-                Uploaded by:{" "}
-                <span style={uploaderNameStyle}>
-                  {song.artist || "Unknown"}
-                </span>
-              </p>
+                    {/* Play Hover Overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-all duration-300">
+                      <div className="w-13 h-13 flex items-center justify-center rounded-full bg-gradient-to-br from-rose-600 to-pink-500 text-white shadow-2xl shadow-rose-500/50 transform scale-75 group-hover/card:scale-100 transition-transform">
+                        <Play size={22} fill="currentColor" className="ml-0.5" />
+                      </div>
+                    </div>
 
-              {/* NEW like chip row */}
-              <div style={likeRowStyle}>
-                <div style={likeChipStyle}>
-                  <span style={heartIconStyle}>♥</span>
-                  <span>
-                    {Array.isArray(song.likes)
-                      ? song.likes.length
-                      : typeof song.likes === "number"
-                      ? song.likes
-                      : 0}{" "}
-                    likes
-                  </span>
+                    {/* Add to Queue Button */}
+                    <button
+                      onClick={(e) => handleQueue(e, song)}
+                      className="absolute top-2 right-2 p-2 rounded-lg bg-black/80 backdrop-blur-md border border-rose-500/40 text-rose-300 hover:bg-rose-600 hover:text-white transition-all opacity-0 group-hover/card:opacity-100 shadow-md"
+                      title="Add to Queue"
+                    >
+                      <ListPlus size={16} />
+                    </button>
+                  </div>
+
+                  {/* Song Metadata */}
+                  <div className="mt-3.5">
+                    <h3 className="text-sm font-bold text-white truncate group-hover/card:text-rose-300 transition-colors">
+                      {song.title || "Untitled"}
+                    </h3>
+                    <p className="text-xs text-gray-400 mt-1 truncate">
+                      {song.artist || "Unknown Artist"}
+                    </p>
+
+                    {/* Like Counter Badge */}
+                    <div className="mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30">
+                      <Heart size={11} className="text-rose-500 fill-rose-500" />
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-300">
+                        {likesCount} {likesCount === 1 ? "Like" : "Likes"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {mostliked.length === 0 && (
-          <p style={noDataStyle}>
-            No liked songs to display yet. Start exploring and liking tracks to
-            see them here.
+          <p className="mt-4 text-sm text-gray-500">
+            No liked songs to display yet. Start exploring and liking tracks!
           </p>
         )}
       </div>

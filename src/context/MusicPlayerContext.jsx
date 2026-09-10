@@ -36,6 +36,64 @@ export const MusicPlayerProvider = ({ children }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
+  // ⚙️ Settings & Theme State
+  const [repeatMode, setRepeatModeState] = useState(() => {
+    return localStorage.getItem("app_repeat_mode") || "off";
+  });
+  const [isShuffle, setIsShuffleState] = useState(() => {
+    return localStorage.getItem("app_shuffle_mode") === "true";
+  });
+  const [autoPlay, setAutoPlayState] = useState(() => {
+    const saved = localStorage.getItem("app_autoplay");
+    return saved !== null ? saved === "true" : true;
+  });
+  const [theme, setThemeState] = useState(() => {
+    return localStorage.getItem("app_theme") || "dark";
+  });
+
+  const setRepeatMode = (mode) => {
+    setRepeatModeState(mode);
+    localStorage.setItem("app_repeat_mode", mode);
+    const labels = { off: "Repeat Off", all: "Repeat Queue All", one: "Repeat Track One 🔂" };
+    toast.success(labels[mode] || `Repeat Mode: ${mode}`);
+  };
+
+  const setIsShuffle = (val) => {
+    const newVal = typeof val === "function" ? val(isShuffle) : val;
+    setIsShuffleState(newVal);
+    localStorage.setItem("app_shuffle_mode", String(newVal));
+    toast.success(newVal ? "Shuffle Mode ON 🔀" : "Shuffle Mode OFF");
+  };
+
+  const setAutoPlay = (val) => {
+    const newVal = typeof val === "function" ? val(autoPlay) : val;
+    setAutoPlayState(newVal);
+    localStorage.setItem("app_autoplay", String(newVal));
+    toast.success(newVal ? "Autoplay ON ▶️" : "Autoplay OFF ⏸️");
+  };
+
+  const setTheme = (newTheme) => {
+    const validTheme = newTheme === "light" ? "light" : "dark";
+    setThemeState(validTheme);
+    localStorage.setItem("app_theme", validTheme);
+    document.documentElement.setAttribute("data-theme", validTheme);
+    if (validTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    toast.success(`Theme set to ${validTheme.toUpperCase()} Mode`);
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
+
   // ⚡ Playback Speed State
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
 
@@ -193,24 +251,46 @@ export const MusicPlayerProvider = ({ children }) => {
         return;
       }
 
-      // Auto-play related next song when current ends
+      // Repeat One Track Mode
+      if (repeatMode === "one") {
+        audio.currentTime = 0;
+        audio.play().then(() => setIsPlaying(true)).catch(console.warn);
+        return;
+      }
+
+      // If Autoplay is OFF and repeat is not "all", stop playback immediately when track ends
+      if (!autoPlay && repeatMode !== "all") {
+        toast("Autoplay OFF: Playback paused at end of track", { icon: "⏸️", duration: 3500 });
+        return;
+      }
+
+      // Auto-play / Shuffle next track
       if (queue && queue.length > 0) {
-        const nextIdx = (currentIndex + 1) % queue.length;
+        let nextIdx;
+        if (isShuffle) {
+          nextIdx = Math.floor(Math.random() * queue.length);
+        } else {
+          nextIdx = (currentIndex + 1) % queue.length;
+          if (nextIdx === 0 && repeatMode === "off") {
+            toast("Reached end of playlist queue", { icon: "🏁", duration: 3500 });
+            return; // Stop at end of queue if repeat is off
+          }
+        }
+
         const nextSong = queue[nextIdx];
         if (nextSong) {
           setCurrentIndex(nextIdx);
           setCurrentSong(nextSong);
-          
+
           if (location.pathname.startsWith('/playsong/')) {
             navigate(`/playsong/${nextSong.song_id}`, { replace: true });
           }
-          
+
           audio.src = nextSong.file_url;
           audio.currentTime = 0;
           audio.play().then(() => {
             setIsPlaying(true);
-            const genreLabel = nextSong.genre || "related";
-            toast(`Autoplay: Playing related ${genreLabel} track "${nextSong.title}"`, {
+            toast(`Autoplay: Playing "${nextSong.title}"`, {
               icon: "🎧",
               duration: 3500,
             });
@@ -237,12 +317,15 @@ export const MusicPlayerProvider = ({ children }) => {
       audio.removeEventListener("play", handlePlay);
       audio.removeEventListener("pause", handlePause);
     };
-  }, [queue, currentIndex, location.pathname, navigate]);
+  }, [queue, currentIndex, location.pathname, navigate, repeatMode, autoPlay, isShuffle, sleepTimerMinutes]);
 
   // Play a specific song
-  const playSong = async (songId, queueData = null, mode = "random", contextId = null) => {
-    // Prevent loading the same song if already loading or loaded
-    if (isLoadingRef.current || currentSongIdRef.current === songId) {
+  const playSong = async (songIdInput, queueData = null, mode = "random", contextId = null) => {
+    const songId = typeof songIdInput === "object" ? (songIdInput?.song_id || songIdInput?._id || songIdInput?.id) : songIdInput;
+    if (!songId) return;
+
+    // Prevent loading the same song if already loading or currently playing
+    if (isLoadingRef.current || (currentSongIdRef.current === songId && isPlaying)) {
       return;
     }
     
@@ -424,7 +507,10 @@ export const MusicPlayerProvider = ({ children }) => {
   };
 
   // Addtion of the song in the queue here
-  const addToQueue = async (songId) => {
+  const addToQueue = async (songIdInput) => {
+    const songId = typeof songIdInput === "object" ? (songIdInput?.song_id || songIdInput?._id || songIdInput?.id) : songIdInput;
+    if (!songId) return false;
+
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
@@ -562,6 +648,16 @@ export const MusicPlayerProvider = ({ children }) => {
     // Speed & Timer State
     playbackSpeed,
     sleepTimerMinutes,
+
+    // Settings & Theme
+    repeatMode,
+    setRepeatMode,
+    isShuffle,
+    setIsShuffle,
+    autoPlay,
+    setAutoPlay,
+    theme,
+    setTheme,
 
     // Actions
     playSong,

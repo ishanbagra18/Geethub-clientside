@@ -15,10 +15,12 @@ import { MusicPlayerProvider } from "./context/MusicPlayerContext";
 import { MusicSectionsProvider } from "./context/MusicSectionsContext";
 import GlobalMusicPlayer from "../Components/GlobalMusicPlayer";
 import SeeAllTopCharts from "./pages/SeeAllTopCharts";
+
 import SeeAllMostLiked from "./pages/SeeAllMostLiked";
 import SeeAllMostSaved from "./pages/SeeAllMostSaved";
 import SeeAllHindiSongs from "./pages/SeeAllHindiSongs";
 import SeeAllPunjabiSongs from "./pages/SeeAllPunjabiSongs";
+import SeeAllLatestReleased from "./pages/SeeAllLatestReleased";
 import SeeAllCommunityPlaylists from "./pages/SeeAllCommunityPlaylists";
 import TrendingPage from "./pages/TrendingPage";
 import Artistdes from "./pages/Artistdes";
@@ -29,6 +31,7 @@ import ChatConversation from "./pages/ChatConversation";
 import SearchPage from "./pages/SearchPage";
 import PremiumPage from "./pages/PremiumPage";
 import MyPlaylists from "./pages/MyPlaylists";
+import DesiMusicTrivia from "./pages/DesiMusicTrivia";
 import Footer from "../Components/Footer";
 import PartyLobby from "./pages/PartyLobby";
 import PartyRoom from "./pages/PartyRoom";
@@ -65,6 +68,7 @@ function App() {
             <Route path="/topcharts" element={<SeeAllTopCharts />} />
             <Route path="/mostliked" element={<SeeAllMostLiked />} />
             <Route path="/mostsaved" element={<SeeAllMostSaved />} />
+            <Route path="/latestreleased" element={<SeeAllLatestReleased />} />
             <Route path="/hindisongs" element={<SeeAllHindiSongs />} />
             <Route path="/punjabisongs" element={<SeeAllPunjabiSongs />} />
             <Route path="/communityplaylists" element={<SeeAllCommunityPlaylists />} />
@@ -86,6 +90,7 @@ function App() {
           {/* Global Music Player Bar */}
           <GlobalMusicPlayer />
         </PartyProvider>
+
       </MusicSectionsProvider>
     </MusicPlayerProvider>
   );

@@ -1,7 +1,8 @@
-import { LogOut, Menu, X, Mic, MicOff, Users } from "lucide-react";
+import { LogOut, Menu, X, Mic, MicOff, Users, Settings } from "lucide-react";
 import { useVoiceSearch } from "../src/hooks/useVoiceSearch";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import SettingsModal from "./SettingsModal";
 import { FaMusic, FaFire } from "react-icons/fa";
 import { BiSolidLike } from "react-icons/bi";
 import { CiViewTimeline } from "react-icons/ci";
@@ -43,6 +44,7 @@ const Navbar = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const searchRef = useRef(null);
   const isInitialCheckRef = useRef(true);
   const sessionStartTimeRef = useRef(Date.now());
@@ -233,7 +235,7 @@ const Navbar = () => {
       <div
         className="flex flex-col cursor-pointer group"
         onClick={() => navigate("/")}
-        title="GeetHub: Your localhost for global hits."
+        title="GeetHub: Desi vibes, global beats — Your ultimate Indian music destination 🇮🇳🎧"
       >
         <div className="flex items-center gap-1">
           <FaMusic className="text-blue-400 dark:text-blue-600 group-hover:scale-110 transition" />
@@ -243,7 +245,7 @@ const Navbar = () => {
           </span>
         </div>
         <span className="text-[11px] font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent tracking-tight">
-          Your localhost for global hits.
+          Every Mood Has a Song. 🇮🇳🎧
         </span>
       </div>
 
@@ -292,25 +294,25 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className="relative" ref={searchRef}>
+      <div className="relative flex-1 max-w-sm sm:max-w-md md:max-w-lg mx-2 sm:mx-6" ref={searchRef}>
         <form
           onSubmit={(e) => {
             e.preventDefault();
             setShowSuggestions(false);
             navigate(searchQuery.trim() ? `/search?q=${encodeURIComponent(searchQuery.trim())}` : "/search");
           }}
-          className="flex items-center"
+          className="flex items-center relative w-full"
         >
           <IoMdSearch
             onClick={() => {
               setShowSuggestions(false);
               navigate(searchQuery.trim() ? `/search?q=${encodeURIComponent(searchQuery.trim())}` : "/search");
             }}
-            className="absolute left-3 text-gray-400 w-5 h-5 cursor-pointer hover:text-blue-400 transition"
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 w-5 h-5 cursor-pointer hover:text-blue-400 transition z-10"
           />
           <input
             type="text"
-            placeholder="Search songs..."
+            placeholder="Search songs, artists, albums..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => {
@@ -326,12 +328,12 @@ const Navbar = () => {
                 navigate(searchQuery.trim() ? `/search?q=${encodeURIComponent(searchQuery.trim())}` : "/search");
               }
             }}
-            className="pl-10 pr-10 py-2 rounded-lg bg-[#222] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all w-28 focus:w-36 sm:w-60 md:w-80 sm:focus:w-72"
+            className="w-full pl-12 pr-12 py-2.5 rounded-full bg-[#1e2330] dark:bg-slate-100 text-white dark:text-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-700/60 dark:border-slate-300 transition-all text-sm font-medium shadow-inner"
           />
           <button
             type="button"
             onClick={isListening ? stopListening : startListening}
-            className="absolute right-3 text-gray-400 hover:text-cyan-400 transition"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition z-10"
             title="Search with your voice"
           >
             {isListening ? (
@@ -389,6 +391,14 @@ const Navbar = () => {
 
       <div className="flex items-center ml-2 sm:ml-6 gap-3">
         <button
+          onClick={() => setSettingsOpen(true)}
+          className="p-2 rounded-full hover:bg-gray-800/80 dark:hover:bg-gray-200 transition text-gray-300 hover:text-white dark:text-gray-700 dark:hover:text-black"
+          title="Player Settings & Color Themes"
+        >
+          <Settings size={22} className="hover:rotate-45 transition-transform duration-300" />
+        </button>
+
+        <button
           onClick={handleMyProfile}
           className="relative flex items-center justify-center p-1 rounded-full 
                      hover:bg-gray-800 dark:hover:bg-gray-200 transition group"
@@ -443,7 +453,7 @@ const Navbar = () => {
                 </span>
               </div>
               <span className="text-[10px] font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                Your localhost for global hits.
+                Every Mood Has a Song. 🇮🇳🎧
               </span>
             </div>
             <button
@@ -512,6 +522,8 @@ const Navbar = () => {
           )}
         </div>
       )}
+      {/* Settings & Appearance Modal */}
+      <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </nav>
   );
 };

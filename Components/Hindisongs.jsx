@@ -282,12 +282,12 @@ const Hindisongs = ({ limitToHome = false }) => {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button
-            style={seeAllButtonStyle}
+       <button
             onClick={() => navigate("/hindisongs")}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-rose-500/30 bg-slate-950/70 backdrop-blur-md text-rose-300 text-xs font-bold hover:bg-rose-500/20 hover:border-rose-400 hover:text-white hover:scale-105 transition-all duration-300 shadow-lg"
           >
-            More in Hindi
-            {/* <span style={{ fontSize: 16 }}>↗</span> */}
+            MORE IN HINDI
+            <span className="text-sm">→</span>
           </button>
         </div>
       </div>

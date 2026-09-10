@@ -14,34 +14,35 @@ import Dashboard from "../../Components/Dashboard.jsx";
 import Artists from "../../Components/Artists.jsx";
 import PremiumBanner from "../../Components/PremiumBanner.jsx";
 import InstagramFeed from "../../Components/InstagramFeed.jsx";
-import MoodAnalysisCard from "../../Components/MoodAnalysisCard.jsx";
+import MoodRadioBar from "../../Components/MoodRadioBar.jsx";
 
 // Lazy load components for better performance
 const Mostliked = lazy(() => import("../../Components/Mostliked.jsx"));
 const Topcharts = lazy(() => import("../../Components/Topcharts.jsx"));
 const Mostsaved = lazy(() => import("../../Components/MostSaved.jsx"));
 const RandomSongs = lazy(() => import("../../Components/RandomSongs.jsx"));
+const CompactGrid = lazy(() => import("../../Components/CompactGrid.jsx"));
 
 // --- Helper Components ---
 
-/**
- * SectionHeading Component
- */
 const SectionHeading = ({ emoji, title, subtitle }) => (
-  <div className="group mb-8 border-b-2 border-transparent bg-gradient-to-r from-blue-400/20 to-cyan-500/20 bg-[length:0%_2px] pb-3 pl-1 pr-3 backdrop-blur-sm border-b-blue-400/50 hover:bg-[length:100%_2px] transition-all duration-500 inline-block rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-    <h2
-      className="text-sm font-heading3 tracking-[.25em] text-blue-400/80 uppercase font-semibold opacity-90 group-hover:opacity-100 transition-all"
-      role="subtitle"
-    >
-      {subtitle}
-    </h2>
-    <h1
-      className="text-3xl md:text-4xl lg:text-5xl font-heading3 leading-[0.9] bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mt-1 drop-shadow-xl"
-      role="heading"
-      aria-level="2"
-    >
-      {emoji} {title}
-    </h1>
+  <div className="group relative mb-8">
+    <div className="flex items-center gap-4">
+      {/* Neon Glow Accent Bar */}
+      <div className="w-1.5 h-12 rounded-full bg-gradient-to-b from-blue-400 via-cyan-400 to-indigo-500 shadow-lg shadow-cyan-500/30 group-hover:scale-y-110 transition-transform duration-300" />
+      <div>
+        {subtitle && (
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-400 text-xs font-bold uppercase tracking-[0.2em] mb-1">
+            <span>{emoji}</span>
+            <span>{subtitle}</span>
+          </div>
+        )}
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-white dark:via-slate-100 dark:to-cyan-300 drop-shadow-md dark:drop-shadow-xl">
+          {title}
+        </h2>
+      </div>
+    </div>
+    <div className="mt-3 h-[1px] w-full bg-gradient-to-r from-blue-500/40 via-cyan-500/20 to-transparent" />
   </div>
 );
 
@@ -206,7 +207,7 @@ const Homepage = () => {
       <Navbar />
 
       {/* HERO SECTION - Improved with better mobile experience */}
-      <section className="relative h-[80vh] md:h-[85vh] flex flex-col lg:flex-row px-4 md:px-10 lg:px-20 xl:px-28 items-center justify-center gap-6 lg:gap-12 pt-12 pb-16">
+      <section className="relative h-[80vh] md:h-[85vh] flex flex-col lg:flex-row px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto items-center justify-center gap-6 lg:gap-12 pt-12 pb-16">
         {/* Enhanced Background Elements with Intersection Observer ready */}
         <div className="absolute inset-0 pointer-events-none">
           <div
@@ -222,7 +223,7 @@ const Homepage = () => {
         </div>
 
         {/* LEFT CONTENT - Better mobile stacking, improved focus states */}
-        <article className="relative z-10 w-full lg:w-3/5 space-y-4 backdrop-blur-xl bg-black/20 border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.01] focus-within:ring-4 ring-blue-400/30">
+        <article className="relative z-0 w-full lg:w-3/5 space-y-4 backdrop-blur-xl bg-black/20 border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.01] focus-within:ring-4 ring-blue-400/30">
           {/* Enhanced glow effect */}
           <div
             className="absolute -inset-1 bg-gradient-to-r from-blue-400/15 via-transparent to-cyan-500/15 rounded-2xl blur opacity-75 animate-pulse-slow"
@@ -238,8 +239,8 @@ const Homepage = () => {
                 ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}`
                 : "Guest"} 👋
             </h1>
-            <p className="text-xs lg:text-sm tracking-[0.2em] font-heading2 font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent uppercase pt-1">
-              GeetHub: Your localhost for global hits.
+            <p className="text-xs lg:text-sm tracking-[0.2em] font-heading2 font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-amber-400 bg-clip-text text-transparent uppercase pt-1">
+              Every Mood Has a Song. 🇮🇳🎧
             </p>
           </header>
 
@@ -290,7 +291,7 @@ const Homepage = () => {
       </section>
 
       {/* VIDEO BANNER - Optimized with loading states */}
-      <section className="relative h-[60vh] md:h-[65vh] w-full overflow-hidden my-12 px-4 md:px-10 lg:px-20 xl:px-28">
+      <section className="relative h-[60vh] md:h-[65vh] w-full max-w-[1600px] mx-auto overflow-hidden my-12 px-4 sm:px-6 lg:px-12">
         <div className="relative w-full h-full rounded-3xl shadow-2xl overflow-hidden backdrop-blur-md border border-white/5">
           <video
             autoPlay
@@ -356,17 +357,8 @@ const Homepage = () => {
 
 
 
-      {/* CONTENT SECTIONS - Better loading states */}
-      <main className="px-4 md:px-10 lg:px-20 xl:px-28 max-w-7xl mx-auto mb-20 space-y-24 lg:space-y-32">
-
-        {/* 🤖 Hugging Face AI Mood Analysis Card */}
-        {user && (
-          <section aria-labelledby="ai-mood-analysis">
-            <MoodAnalysisCard onVibeSelect={(vibe) => navigate(`/search?q=${encodeURIComponent(vibe)}`)} />
-          </section>
-        )}
-
-
+      {/* CONTENT SECTIONS - Better loading states and spacious vertical margins */}
+      <main className="px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto pt-16 md:pt-24 pb-48 space-y-32 lg:space-y-44">
 
         {/* 🚀 NEW SECTION: User's Private Playlists */}
         {user && (
@@ -386,6 +378,22 @@ const Homepage = () => {
           </section>
         )}
         {/* 🚀 END NEW SECTION */}
+
+        {/* 📻 DESI SMART MOOD RADIO BAR */}
+        <MoodRadioBar />
+
+        <section aria-labelledby="quick-hits">
+          <SectionHeading emoji="⚡" title="Quick Hits & Collection" subtitle="Featured Mix" />
+          <Suspense fallback={
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-pulse">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="h-20 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
+              ))}
+            </div>
+          }>
+            <CompactGrid />
+          </Suspense>
+        </section>
 
         <section aria-labelledby="curators-spotlight">
           <SectionHeading emoji="✨" title="Curator's Spotlight" subtitle="Staff Picks" />
@@ -431,49 +439,79 @@ const Homepage = () => {
         <Latestreleased />
         <Hindisongs limitToHome={true} />
         <Punjabisongs limitToHome={true} />
-        {/* <Latestreleased/> */}
-        <Artists />
 
-        {/* 👑 GEETHUB VIP PREMIUM BANNER */}
-        <PremiumBanner />
-
-        {/* Messages Section */}
-        <section aria-labelledby="messages" className="mt-12">
-          <SectionHeading emoji="💬" title="Messages" subtitle="Connect with Users" />
-          <div className="flex justify-center items-center py-12">
-            <button
-              onClick={() => navigate('/messages')}
-              className="group relative px-12 py-6 bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500 text-white text-xl font-bold rounded-2xl shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 overflow-hidden"
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                <svg
-                  className="w-8 h-8 group-hover:rotate-12 transition-transform duration-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-                Chat Now
-                <svg
-                  className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </button>
-          </div>
-          <p className="text-center text-gray-400 mt-4 text-sm">
-            Connect with other users and start conversations
-          </p>
+        {/* 🎤 Featured Artists Showcase */}
+        <section aria-labelledby="featured-artists">
+          <SectionHeading emoji="🌟" title="Featured Artists" subtitle="Discover Top Music Creators" />
+          <Artists />
         </section>
 
-        {/* 📸 Official Instagram Feed Posts */}
-        <InstagramFeed />
+        {/* Messages Section - Extra spacious top/bottom and downside margin */}
+        <section aria-labelledby="messages" className="my-36 md:my-52 mb-44 md:mb-64 px-2 sm:px-4">
+          <SectionHeading emoji="💬" title="Desi Community Chat" subtitle="Connect & Vibing with Music Lovers" />
+          
+          <div className="mt-8 relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-950/60 via-slate-900/80 to-purple-950/60 border border-blue-500/20 p-8 sm:p-12 shadow-2xl backdrop-blur-xl group">
+            {/* Ambient Background Glow */}
+            <div className="absolute -top-24 -right-24 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-cyan-500/30 transition-all duration-700 pointer-events-none"></div>
+            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl group-hover:bg-purple-500/30 transition-all duration-700 pointer-events-none"></div>
+
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="max-w-xl text-center md:text-left space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-400 text-xs font-bold uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Real-time Messaging Active
+                </div>
+                <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                  Share Beats & Chat with Friends
+                </h3>
+                <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
+                  Join direct conversations, recommend your favorite tracks, and chat instantly with fellow listeners across India.
+                </p>
+              </div>
+
+              <div className="flex flex-col items-center gap-3">
+                <button
+                  onClick={() => navigate('/messages')}
+                  className="group relative px-10 py-5 bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 text-white text-lg font-bold rounded-2xl shadow-xl shadow-blue-500/25 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 overflow-hidden flex items-center gap-3"
+                >
+                  <span className="relative z-10 flex items-center gap-3">
+                    <svg
+                      className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    Open Messages Studio
+                    <svg
+                      className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+                <p className="text-gray-400 text-xs font-medium">
+                  Instant response • Encrypted direct messaging
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 📸 Official Instagram Feed Posts - Spacious wrapper */}
+        <div className="my-36 md:my-52">
+          <InstagramFeed />
+        </div>
+
+           {/* 👑 GEETHUB VIP PREMIUM BANNER - Spacious vertical wrapper */}
+        <div className="my-28 md:my-44">
+          <PremiumBanner />
+        </div>
 
         <Dashboard />
 

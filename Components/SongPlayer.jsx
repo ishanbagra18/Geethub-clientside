@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
 import { usePlaylist } from "../src/context/PlaylistContext";
-import { Heart, Star, SkipBack, SkipForward, Play, Pause, Volume2, ListPlus, X, Check, Share2, Gauge, Timer } from "lucide-react";
+import { Heart, Star, SkipBack, SkipForward, Play, Pause, Volume2, ListPlus, X, Check, Share2 } from "lucide-react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import API_BASE_URL from "../src/config/api";
@@ -16,7 +16,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
   const [addError, setAddError] = useState(null);
   const dropdownRef = useRef(null);
   const loadedSongIdRef = useRef(null);
-  
+
   // Use global music player context
   const {
     currentSong,
@@ -37,10 +37,6 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
     queue,
     currentIndex,
     playIndex,
-    playbackSpeed,
-    changePlaybackSpeed,
-    sleepTimerMinutes,
-    setSleepTimer,
   } = useMusicPlayer();
 
   // Use playlist context
@@ -60,7 +56,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
       loadedSongIdRef.current = songId;
       playSong(songId, initialQueue, mode, contextId);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [songId]);
 
   // Update local song state when global current song changes
@@ -84,7 +80,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
   // Add song to playlist function
   const handleAddToPlaylist = async (playlistId) => {
     if (!song?.song_id) return;
-    
+
     setAddingToPlaylist(playlistId);
     setAddError(null);
     setAddSuccess(null);
@@ -174,14 +170,14 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                   {song.title}
                 </h2>
                 <p className="text-gray-300">
-                  {song.artist} 
+                  {song.artist}
                 </p>
               </div>
               {/* GIF Visualizer in the empty space of the header */}
               {isPlaying && (
-                <img 
-                  src="https://i.pinimg.com/originals/fb/76/a2/fb76a2a20ba498c2867f018fe12caa40.gif" 
-                  alt="visualizer" 
+                <img
+                  src="https://i.pinimg.com/originals/fb/76/a2/fb76a2a20ba498c2867f018fe12caa40.gif"
+                  alt="visualizer"
                   className="h-12 w-24 object-cover rounded opacity-80"
                 />
               )}
@@ -300,47 +296,6 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                   </div>
                 )}
               </div>
-
-              {/* ⚡ Playback Speed Selector */}
-              <div className="flex flex-wrap items-center gap-1 bg-white/10 p-1 rounded-2xl text-xs font-bold text-gray-200 border border-white/10">
-                <Gauge size={16} className="ml-2 text-cyan-400" />
-                {[0.75, 1.0, 1.25, 1.5, 2.0].map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => changePlaybackSpeed(s)}
-                    className={`px-2.5 py-1 rounded-full transition ${
-                      playbackSpeed === s
-                        ? "bg-cyan-500 text-black font-extrabold shadow"
-                        : "hover:bg-white/10 text-gray-300"
-                    }`}
-                  >
-                    {s}x
-                  </button>
-                ))}
-              </div>
-
-              {/* ⏰ Sleep Timer Selector */}
-              <div className="flex items-center gap-1 bg-white/10 p-1 rounded-full text-xs font-bold text-gray-200 border border-white/10">
-                <Timer size={16} className="ml-2 text-amber-400" />
-                {[
-                  { label: "Off", val: null },
-                  { label: "15m", val: 15 },
-                  { label: "30m", val: 30 },
-                  { label: "End", val: "end" },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    onClick={() => setSleepTimer(item.val)}
-                    className={`px-2.5 py-1 rounded-full transition ${
-                      sleepTimerMinutes === item.val
-                        ? "bg-amber-400 text-black font-extrabold shadow animate-pulse"
-                        : "hover:bg-white/10 text-gray-300"
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* Controls */}
@@ -417,9 +372,9 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                   {Math.round(volume * 100)}%
                 </div>
                 {/* Visualizer GIF at the end of volume bar */}
-                <img 
-                  src="https://i.pinimg.com/originals/fb/76/a2/fb76a2a20ba498c2867f018fe12caa40.gif" 
-                  alt="" 
+                <img
+                  src="https://i.pinimg.com/originals/fb/76/a2/fb76a2a20ba498c2867f018fe12caa40.gif"
+                  alt=""
                   className="h-6 w-12 mix-blend-screen opacity-50"
                 />
               </div>

@@ -33,7 +33,7 @@ const PlaySong = () => {
       try {
         const token = localStorage.getItem("token");
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        
+
         // Fetch the playlist
         const res = await axios.get(`${API_BASE_URL}/playlist/${playlistId}`, config);
         const playlist = res.data.playlist;
@@ -44,9 +44,9 @@ const PlaySong = () => {
             playlist.song_ids.map((sid) => axios.get(`${API_BASE_URL}/song/${sid}`, config))
           );
           const playlistSongs = songResponses.map((r) => r.data.song);
-          
+
           setPlaylistQueue(playlistSongs);
-          
+
           // Play the song with the playlist queue
           if (!currentSong || currentSong.song_id !== id) {
             playSong(id, playlistSongs, "playlist", playlistId);
@@ -64,7 +64,7 @@ const PlaySong = () => {
     };
 
     loadPlaylistQueue();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, playlistId]);
 
   return (
@@ -75,9 +75,9 @@ const PlaySong = () => {
           Loading playlist...
         </div>
       ) : (
-        <SongPlayer 
-          key={id} 
-          songId={id} 
+        <SongPlayer
+          key={id}
+          songId={id}
           mode="playlist"
           contextId={playlistId}
           initialQueue={playlistQueue}
