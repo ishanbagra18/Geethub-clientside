@@ -21,6 +21,8 @@
 
 
 
+> **GeetHub** merges state-of-the-art music streaming with real-time community engagement, AI-driven vibe recommendations, party rooms, and creator analytics.
+
 ---
 
 ## 🔑 Demo Account Credentials
