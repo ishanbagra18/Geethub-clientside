@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMusicSections } from '../context/MusicSectionsContext';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
-import { ListPlus, PlayCircle, ArrowLeft } from 'lucide-react';
+import { ListPlus, Play, ArrowLeft } from 'lucide-react';
 import Navbar from '../../Components/Navbar';
 
 const PLACEHOLDER = 'https://via.placeholder.com/220?text=No+Image';
@@ -69,20 +69,20 @@ const SeeAllHindiSongs = () => {
                   />
                   
                   {/* Overlay with Play Button */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                     <button
                       onClick={() => handlePlaySong(song)}
-                      className="p-2 bg-rose-500 rounded-full hover:bg-rose-600 transition-colors"
+                      className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-amber-500 to-orange-600 rounded-full hover:scale-110 active:scale-95 transition-all shadow-lg shadow-amber-500/50 border border-white/20"
                       title="Play Song"
                     >
-                      <PlayCircle size={24} className="text-white" />
+                      <Play size={20} fill="white" className="text-white ml-0.5" />
                     </button>
                     <button
                       onClick={() => handleAddToQueue(song)}
-                      className="p-2 bg-gray-700 rounded-full hover:bg-gray-600 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center bg-gray-800/90 backdrop-blur-md rounded-full hover:bg-gray-700 hover:scale-105 active:scale-95 transition-all border border-white/10"
                       title="Add to Queue"
                     >
-                      <ListPlus size={24} className="text-white" />
+                      <ListPlus size={18} className="text-white" />
                     </button>
                   </div>
                 </div>

@@ -23,15 +23,15 @@ const Topcharts = ({ limitToHome = false }) => {
       {/* Header */}
       <div className="flex justify-between items-end mb-8">
         <div>
-          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
             Top Charts
           </h2>
-          <p className="text-zinc-400 mt-2 text-sm md:text-base">The most played tracks right now.</p>
+          <p className="text-slate-500 dark:text-zinc-400 mt-2 text-sm md:text-base">The most played tracks right now.</p>
         </div>
         {limitToHome && (
           <button
             onClick={() => navigate("/topcharts")}
-            className="hidden md:block px-6 py-2 rounded-full bg-white/5 hover:bg-white/10 text-white text-sm font-semibold transition-all"
+            className="hidden md:block px-6 py-2 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-800 dark:text-white text-sm font-semibold transition-all border border-slate-200 dark:border-transparent"
           >
             View Full Chart
           </button>
@@ -39,9 +39,9 @@ const Topcharts = ({ limitToHome = false }) => {
       </div>
 
       {loading.topCharts ? (
-        <div className="animate-pulse h-[400px] bg-zinc-900 rounded-3xl w-full"></div>
+        <div className="animate-pulse h-[400px] bg-slate-200 dark:bg-zinc-900 rounded-3xl w-full"></div>
       ) : recentSongs.length === 0 ? (
-        <div className="py-20 text-center text-zinc-500 bg-zinc-900/20 rounded-3xl">
+        <div className="py-20 text-center text-slate-400 dark:text-zinc-500 bg-slate-100 dark:bg-zinc-900/20 rounded-3xl">
           No chart data available.
         </div>
       ) : (
@@ -51,6 +51,7 @@ const Topcharts = ({ limitToHome = false }) => {
           {topSong && (
             <div 
               onClick={() => navigate(`/playsong/${topSong.song_id}`)}
+              data-preserve-dark
               className="lg:col-span-5 relative group cursor-pointer rounded-[2rem] overflow-hidden bg-zinc-900 shadow-2xl aspect-square md:aspect-auto md:min-h-[450px]"
             >
               {/* Blurred Background Effect */}
@@ -86,7 +87,7 @@ const Topcharts = ({ limitToHome = false }) => {
                   <p className="text-zinc-300 text-lg">{topSong.artist || "Unknown Artist"}</p>
 
                   <div className="mt-6 flex items-center gap-4">
-                    <button className="flex items-center justify-center w-12 h-12 rounded-full bg-white text-black hover:scale-105 transition-transform">
+                    <button className="flex items-center justify-center w-12 h-12 rounded-full bg-white text-black hover:scale-105 transition-transform shadow-lg">
                       <Play fill="currentColor" size={20} className="ml-1" />
                     </button>
                     <button 
@@ -108,16 +109,16 @@ const Topcharts = ({ limitToHome = false }) => {
               <div 
                 key={song.song_id}
                 onClick={() => navigate(`/playsong/${song.song_id}`)}
-                className="group flex items-center justify-between p-3 md:p-4 rounded-2xl hover:bg-zinc-800/60 border border-transparent hover:border-zinc-700/50 transition-all duration-300 cursor-pointer bg-zinc-900/30"
+                className="group flex items-center justify-between p-3 md:p-4 rounded-2xl hover:bg-slate-100 dark:hover:bg-zinc-800/60 border border-slate-200 dark:border-transparent hover:border-slate-300 dark:hover:border-zinc-700/50 transition-all duration-300 cursor-pointer bg-white dark:bg-zinc-900/30 shadow-sm"
               >
                 <div className="flex items-center gap-4 md:gap-6 w-full">
                   {/* Rank Number */}
-                  <span className="text-xl md:text-2xl font-bold text-zinc-500 w-6 text-center">
+                  <span className="text-xl md:text-2xl font-bold text-slate-400 dark:text-zinc-500 w-6 text-center">
                     {index + 2}
                   </span>
 
                   {/* Image */}
-                  <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-xl overflow-hidden flex-shrink-0">
+                  <div className="relative w-12 h-12 md:w-16 md:h-16 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-transparent">
                     <img 
                       src={song.image_url || PLACEHOLDER} 
                       alt={song.title} 
@@ -131,10 +132,10 @@ const Topcharts = ({ limitToHome = false }) => {
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-base md:text-lg font-bold text-zinc-100 truncate group-hover:text-white transition-colors">
+                    <h4 className="text-base md:text-lg font-bold text-slate-900 dark:text-zinc-100 truncate group-hover:text-blue-600 dark:group-hover:text-white transition-colors">
                       {song.title || "Untitled"}
                     </h4>
-                    <p className="text-sm text-zinc-400 truncate">
+                    <p className="text-sm text-slate-500 dark:text-zinc-400 truncate">
                       {song.artist || "Unknown Artist"}
                     </p>
                   </div>
@@ -142,7 +143,7 @@ const Topcharts = ({ limitToHome = false }) => {
                   {/* Action */}
                   <button 
                     onClick={(e) => { e.stopPropagation(); addToQueue(song.song_id); }}
-                    className="opacity-100 lg:opacity-0 group-hover:opacity-100 p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-full transition-all"
+                    className="opacity-100 lg:opacity-0 group-hover:opacity-100 p-2 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-700 rounded-full transition-all"
                   >
                     <ListPlus size={20} />
                   </button>
@@ -154,7 +155,7 @@ const Topcharts = ({ limitToHome = false }) => {
             {limitToHome && (
               <button
                 onClick={() => navigate("/topcharts")}
-                className="md:hidden mt-4 w-full py-4 rounded-2xl bg-zinc-900 text-white text-sm font-semibold border border-zinc-800"
+                className="md:hidden mt-4 w-full py-4 rounded-2xl bg-slate-100 dark:bg-zinc-900 text-slate-800 dark:text-white text-sm font-semibold border border-slate-200 dark:border-zinc-800"
               >
                 View Full Chart
               </button>

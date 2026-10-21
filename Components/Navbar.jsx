@@ -230,23 +230,29 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full bg-[#111] dark:bg-white pt-4 px-6 py-4 flex items-center justify-between shadow-lg text-white dark:text-black relative">
+    <nav className="w-full bg-white dark:bg-[#111] pt-4 px-6 py-4 flex items-center justify-between shadow-lg text-slate-900 dark:text-white border-b border-slate-200 dark:border-transparent relative transition-colors duration-200">
       <Toaster position="top-right" />
       <div
         className="flex flex-col cursor-pointer group"
         onClick={() => navigate("/")}
         title="GeetHub: Desi vibes, global beats — Your ultimate Indian music destination 🇮🇳🎧"
       >
-        <div className="flex items-center gap-1">
-          <FaMusic className="text-blue-400 dark:text-blue-600 group-hover:scale-110 transition" />
-          <span className="text-3xl font-black">Geet</span>
-          <span className="text-blue-400 dark:text-blue-600 font-black text-3xl">
-            Hub
-          </span>
-        </div>
-        <span className="text-[11px] font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent tracking-tight">
-          Every Mood Has a Song. 🇮🇳🎧
-        </span>
+       <div className="flex items-center gap-1">
+  <FaMusic className="text-[#3B82F6] group-hover:scale-110 transition" />
+
+  <span className="text-3xl font-black text-slate-900 dark:text-white">
+    Geet
+  </span>
+
+  <span className="font-black text-3xl text-[#3B82F6]">
+    Hub
+  </span>
+</div>
+
+
+       <span className="text-[11px] font-bold text-[#3B82F6] tracking-tight">
+  Every Mood Has a Song. 🇮🇳🎧
+</span>
       </div>
 
       <div className="hidden md:flex items-center gap-8 text-sm font-medium">
@@ -294,8 +300,11 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className="relative flex-1 max-w-sm sm:max-w-md md:max-w-lg mx-2 sm:mx-6" ref={searchRef}>
-        <form
+<div
+  className="relative w-48 sm:w-56 md:w-64 mx-2 sm:mx-4"
+  ref={searchRef}
+>
+          <form
           onSubmit={(e) => {
             e.preventDefault();
             setShowSuggestions(false);
@@ -328,12 +337,12 @@ const Navbar = () => {
                 navigate(searchQuery.trim() ? `/search?q=${encodeURIComponent(searchQuery.trim())}` : "/search");
               }
             }}
-            className="w-full pl-12 pr-12 py-2.5 rounded-full bg-[#1e2330] dark:bg-slate-100 text-white dark:text-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-700/60 dark:border-slate-300 transition-all text-sm font-medium shadow-inner"
+            className="w-full pl-12 pr-12 py-2.5 rounded-full bg-slate-100 dark:bg-[#1e2330] text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-300 dark:border-slate-700/60 transition-all text-sm font-medium shadow-inner"
           />
           <button
             type="button"
             onClick={isListening ? stopListening : startListening}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition z-10"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-500 transition z-10"
             title="Search with your voice"
           >
             {isListening ? (
@@ -346,8 +355,8 @@ const Navbar = () => {
 
         {/* Suggestions Dropdown */}
         {showSuggestions && (
-          <div className="absolute top-full left-0 w-full mt-2 bg-[#1a1a1a] dark:bg-white 
-                          rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-gray-700 dark:border-gray-300">
+          <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-[#1a1a1a] text-slate-900 dark:text-white
+                          rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-slate-200 dark:border-gray-700">
             {loading ? (
               <div className="p-4 text-center text-gray-400">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500 mx-auto"></div>
@@ -357,8 +366,8 @@ const Navbar = () => {
                 <div
                   key={song.song_id}
                   onClick={() => handleSuggestionClick(song)}
-                  className="flex items-center gap-3 p-3 hover:bg-[#2a2a2a] dark:hover:bg-gray-100 
-                             cursor-pointer transition border-b border-gray-800 dark:border-gray-200 last:border-0"
+                  className="flex items-center gap-3 p-3 hover:bg-slate-100 dark:hover:bg-[#2a2a2a] 
+                             cursor-pointer transition border-b border-slate-100 dark:border-gray-800 last:border-0"
                 >
                   <img
                     src={song.image_url || "/default-album.png"}
@@ -366,14 +375,14 @@ const Navbar = () => {
                     className="w-12 h-12 rounded object-cover"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-white dark:text-black font-medium truncate">
+                    <p className="text-slate-900 dark:text-white font-medium truncate">
                       {highlightMatch(song.title, searchQuery)}
                     </p>
-                    <p className="text-gray-400 dark:text-gray-600 text-sm truncate">
+                    <p className="text-slate-500 dark:text-gray-400 text-sm truncate">
                       {highlightMatch(song.artist, searchQuery)}
                     </p>
                     {song.album && (
-                      <p className="text-gray-500 dark:text-gray-500 text-xs truncate">
+                      <p className="text-slate-400 dark:text-gray-500 text-xs truncate">
                         {highlightMatch(song.album, searchQuery)}
                       </p>
                     )}
@@ -392,7 +401,7 @@ const Navbar = () => {
       <div className="flex items-center ml-2 sm:ml-6 gap-3">
         <button
           onClick={() => setSettingsOpen(true)}
-          className="p-2 rounded-full hover:bg-gray-800/80 dark:hover:bg-gray-200 transition text-gray-300 hover:text-white dark:text-gray-700 dark:hover:text-black"
+          className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-gray-800/80 transition text-slate-700 hover:text-black dark:text-gray-300 dark:hover:text-white"
           title="Player Settings & Color Themes"
         >
           <Settings size={22} className="hover:rotate-45 transition-transform duration-300" />
@@ -401,7 +410,7 @@ const Navbar = () => {
         <button
           onClick={handleMyProfile}
           className="relative flex items-center justify-center p-1 rounded-full 
-                     hover:bg-gray-800 dark:hover:bg-gray-200 transition group"
+                     hover:bg-slate-100 dark:hover:bg-gray-800 transition group"
         >
           {isLoggedIn && (
             <>
@@ -414,7 +423,7 @@ const Navbar = () => {
           {isLoggedIn && localStorage.getItem("user_emoji") ? (
             <span className="text-2xl relative z-10 p-1">{localStorage.getItem("user_emoji")}</span>
           ) : (
-            <CgProfile className="w-7 h-7 relative z-10 drop-shadow-sm" />
+            <CgProfile className="w-7 h-7 relative z-10 drop-shadow-sm text-slate-700 dark:text-white" />
           )}
         </button>
 
@@ -422,7 +431,7 @@ const Navbar = () => {
           onClick={handleLogout}
           className="hidden md:flex items-center gap-2 bg-blue-600 dark:bg-blue-500 
                      hover:bg-blue-500 dark:hover:bg-blue-400 
-                     px-4 py-2 rounded-full text-sm font-semibold transition text-white"
+                     px-4 py-2 rounded-full text-sm font-semibold transition !text-white"
         >
           Logout
           <LogOut size={18} />
@@ -430,7 +439,7 @@ const Navbar = () => {
 
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden p-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition text-white dark:text-black focus:outline-none"
+          className="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-800 transition text-slate-800 dark:text-white focus:outline-none"
         >
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -439,26 +448,25 @@ const Navbar = () => {
       {/* Mobile Menu Drawer */}
       {menuOpen && (
         <div
-          className="fixed inset-0 text-white flex flex-col p-6 z-[9999] md:hidden overflow-y-auto"
-          style={{ backgroundColor: '#111111' }}
+          className="fixed inset-0 bg-white dark:bg-[#111111] text-slate-900 dark:text-white flex flex-col p-6 z-[9999] md:hidden overflow-y-auto"
         >
           {/* Header inside drawer */}
-          <div className="flex items-center justify-between pb-6 border-b border-gray-800 mb-6">
+          <div className="flex items-center justify-between pb-6 border-b border-slate-200 dark:border-gray-800 mb-6">
             <div className="flex flex-col">
               <div className="flex items-center gap-1">
-                <FaMusic className="text-blue-400" />
+                <FaMusic className="text-blue-500" />
                 <span className="text-2xl font-black">Geet</span>
-                <span className="text-blue-400 font-black text-2xl">
+                <span className="text-blue-500 font-black text-2xl">
                   Hub
                 </span>
               </div>
-              <span className="text-[10px] font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+              <span className="text-[10px] font-bold bg-gradient-to-r from-blue-500 via-cyan-500 to-purple-500 bg-clip-text text-transparent">
                 Every Mood Has a Song. 🇮🇳🎧
               </span>
             </div>
             <button
               onClick={() => setMenuOpen(false)}
-              className="p-2 rounded-lg hover:bg-gray-800 transition text-white"
+              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-800 transition text-slate-800 dark:text-white"
             >
               <X size={28} />
             </button>
@@ -467,50 +475,50 @@ const Navbar = () => {
           {/* Links */}
           <div className="flex flex-col gap-5 flex-1">
             <div
-              className="flex items-center gap-4 p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
+              className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
               onClick={() => { setMenuOpen(false); navigate('/trending'); }}
             >
-              <FaFire className="text-blue-400 w-6 h-6" />
+              <FaFire className="text-rose-500 w-6 h-6" />
               <span className="font-bold text-lg">Trending</span>
             </div>
 
             <div
-              className="flex items-center gap-4 p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
+              className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
               onClick={() => { setMenuOpen(false); navigate('/mostliked'); }}
             >
-              <BiSolidLike className="text-blue-400 w-6 h-6" />
+              <BiSolidLike className="text-pink-500 w-6 h-6" />
               <span className="font-bold text-lg">Most Liked</span>
             </div>
 
             <div
-              className="flex items-center gap-4 p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
+              className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
               onClick={() => { setMenuOpen(false); navigate('/mylibrary', { state: { scrollToRecent: true } }); }}
             >
-              <CiViewTimeline className="text-blue-400 w-6 h-6" />
+              <CiViewTimeline className="text-cyan-500 w-6 h-6" />
               <span className="font-bold text-lg">Recently</span>
             </div>
 
             <div
-              className="flex items-center gap-4 p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
+              className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
               onClick={() => { setMenuOpen(false); navigate('/mymostplayed'); }}
             >
-              <PiChatsTeardropThin className="text-blue-400 w-6 h-6" />
+              <PiChatsTeardropThin className="text-purple-500 w-6 h-6" />
               <span className="font-bold text-lg">Most Played</span>
             </div>
 
 
             <div
-              className="flex items-center gap-4 p-3 hover:bg-gray-800 rounded-xl cursor-pointer transition-colors w-full"
+              className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors w-full"
               onClick={() => { setMenuOpen(false); navigate('/party'); }}
             >
-              <Users className="text-blue-400 w-6 h-6" />
+              <Users className="text-blue-500 w-6 h-6" />
               <span className="font-bold text-lg">Sync Party</span>
             </div>
           </div>
 
           {/* Footer inside drawer */}
           {isLoggedIn && (
-            <div className="pt-6 border-t border-gray-800 mt-auto">
+            <div className="pt-6 border-t border-slate-200 dark:border-gray-800 mt-auto">
               <button
                 onClick={() => { setMenuOpen(false); handleLogout(); }}
                 className="flex items-center gap-4 p-3 text-red-500 hover:bg-red-500/10 rounded-xl w-full text-left font-bold text-lg transition-colors"

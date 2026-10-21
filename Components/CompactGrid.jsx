@@ -79,12 +79,12 @@ const CompactGrid = () => {
 
   if (loading) {
     return (
-      <div className="w-full bg-[#080b14] p-4 rounded-2xl">
+      <div className="w-full bg-slate-100/80 dark:bg-[#080b14] border border-slate-200/80 dark:border-transparent p-4 rounded-2xl">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(12)].map((_, i) => (
             <div
               key={i}
-              className="h-20 rounded-2xl bg-[#111522] animate-pulse border border-slate-800"
+              className="h-20 rounded-2xl bg-white dark:bg-[#111522] animate-pulse border border-slate-200 dark:border-slate-800"
             />
           ))}
         </div>
@@ -93,7 +93,7 @@ const CompactGrid = () => {
   }
 
   return (
-    <div className="w-full font-sans bg-[#080b14] p-4 sm:p-5 rounded-2xl">
+    <div className="w-full font-sans bg-slate-100/80 dark:bg-[#080b14] border border-slate-200/80 dark:border-transparent p-4 sm:p-5 rounded-2xl shadow-sm">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {items.map((item) => (
           <div
@@ -102,11 +102,11 @@ const CompactGrid = () => {
             className="
               group relative flex items-center gap-3.5 p-3
               rounded-2xl
-              bg-[#111522]
-              border border-slate-800
+              bg-white dark:bg-[#111522]
+              border border-slate-200 dark:border-slate-800
               hover:border-cyan-500/50
-              shadow-md
-              hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]
+              shadow-sm hover:shadow-md
+              hover:shadow-[0_0_20px_rgba(6,182,212,0.15)]
               transition-all duration-300
               hover:-translate-y-1
               cursor-pointer
@@ -117,9 +117,9 @@ const CompactGrid = () => {
             <div
               className="
                 relative w-14 h-14 rounded-xl overflow-hidden
-                bg-slate-900 flex-shrink-0
-                border border-slate-700/60
-                shadow-md
+                bg-slate-200 dark:bg-slate-900 flex-shrink-0
+                border border-slate-300 dark:border-slate-700/60
+                shadow-sm
               "
             >
               <img
@@ -138,8 +138,8 @@ const CompactGrid = () => {
               <div
                 className="
                   absolute inset-0
-                  bg-black/30
-                  group-hover:bg-black/10
+                  bg-black/10 dark:bg-black/30
+                  group-hover:bg-transparent
                   transition-colors
                 "
               />
@@ -171,8 +171,8 @@ const CompactGrid = () => {
               <h3
                 className="
                   text-sm font-bold
-                  text-white
-                  group-hover:text-cyan-300
+                  text-slate-900 dark:text-white
+                  group-hover:text-cyan-600 dark:group-hover:text-cyan-300
                   transition-colors
                   truncate
                 "
@@ -183,7 +183,7 @@ const CompactGrid = () => {
               <p
                 className="
                   text-xs
-                  text-gray-400
+                  text-slate-500 dark:text-gray-400
                   font-medium
                   truncate
                   mt-0.5

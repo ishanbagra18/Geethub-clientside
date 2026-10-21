@@ -52,14 +52,14 @@ const Artists = () => {
   }
 
   return (
-    <div className="w-full px-4 md:px-8 py-8 bg-gradient-to-b from-transparent to-black/20 rounded-2xl">
+    <div className="w-full px-4 md:px-8 py-8 bg-transparent rounded-2xl">
       {/* Header section with gradient text */}
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 mb-1 tracking-tight">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-white dark:to-gray-400 mb-1 tracking-tight">
             Featured Artists
           </h2>
-          <p className="text-gray-400 text-sm font-medium">
+          <p className="text-slate-500 dark:text-gray-400 text-sm font-medium">
             Discover your favorite music creators
           </p>
         </div>
@@ -77,15 +77,15 @@ const Artists = () => {
             {/* Image Container */}
             <div className="relative mb-4">
               <div className="w-40 h-40 rounded-full overflow-hidden relative
-                bg-gray-800 shadow-xl shadow-black/40
+                bg-slate-200 dark:bg-gray-800 shadow-lg shadow-black/10 dark:shadow-black/40
                 group-hover:shadow-blue-500/20 group-hover:shadow-2xl 
-                transition-all duration-300 ease-out z-10">
+                transition-all duration-300 ease-out z-10 border border-slate-200 dark:border-transparent">
                 
                 <img
                   src={artist.image_url || 'https://via.placeholder.com/150'}
                   alt={artist.name}
                   className="w-full h-full object-cover 
-                    group-hover:scale-105 group-hover:opacity-60 transition-all duration-500"
+                    group-hover:scale-105 group-hover:opacity-80 transition-all duration-500"
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/150'
                   }}
@@ -93,33 +93,33 @@ const Artists = () => {
 
                 {/* Hover Play Icon Overlay */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="bg-blue-500 rounded-full p-3 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                    <Play className="w-6 h-6 text-white ml-1" fill="currentColor" />
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center transform translate-y-4 group-hover:translate-y-0 hover:scale-110 active:scale-95 transition-all duration-300 shadow-xl shadow-blue-500/50 border border-white/20">
+                    <Play className="w-6 h-6 !text-white ml-1" fill="currentColor" />
                   </div>
                 </div>
               </div>
 
               {/* Verified Badge - Anchored to the bottom right with a border cutout effect */}
               {artist.verified && (
-                <div className="absolute bottom-2 right-2 z-20 bg-blue-500 rounded-full p-[3px] 
-                  border-[3px] border-[#121212] shadow-sm transform group-hover:scale-110 transition-transform">
-                  <Verified className="w-4 h-4 text-white" fill="currentColor" />
+                <div className="absolute bottom-2 right-2 z-20 bg-blue-600 rounded-full p-[3px] 
+                  border-[3px] border-white dark:border-[#121212] shadow-sm transform group-hover:scale-110 transition-transform">
+                  <Verified className="w-4 h-4 !text-white" fill="currentColor" />
                 </div>
               )}
             </div>
 
             {/* Info Section */}
             <div className="text-center w-full px-2">
-              <h3 className="font-bold text-white text-base truncate group-hover:text-blue-400 transition-colors duration-200">
+              <h3 className="font-bold text-slate-900 dark:text-white text-base truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
                 {artist.name}
               </h3>
 
               {artist.genre?.length > 0 ? (
-                <p className="text-xs text-gray-400 mt-1 uppercase tracking-wider font-semibold truncate">
+                <p className="text-xs text-slate-500 dark:text-gray-400 mt-1 uppercase tracking-wider font-semibold truncate">
                   {artist.genre[0]}
                 </p>
               ) : (
-                <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider font-semibold truncate">
+                <p className="text-xs text-slate-400 dark:text-gray-500 mt-1 uppercase tracking-wider font-semibold truncate">
                   Artist
                 </p>
               )}

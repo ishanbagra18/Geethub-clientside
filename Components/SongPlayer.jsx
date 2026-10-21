@@ -143,13 +143,13 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
   return (
     <div className="max-w-full mx-auto p-6 mt-3">
       <Toaster position="bottom-right" />
-      <div className="relative rounded-3xl p-6 shadow-2xl overflow-hidden">
+      <div className="relative rounded-3xl p-6 shadow-xl border border-slate-200 dark:border-white/10 bg-white/90 dark:bg-slate-950/80 backdrop-blur-xl overflow-hidden text-slate-900 dark:text-white">
         {/* GIF Background filler for empty space */}
-        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+        <div className="absolute inset-0 z-0 opacity-10 dark:opacity-20 pointer-events-none">
           <img src="https://i.pinimg.com/originals/fb/76/a2/fb76a2a20ba498c2867f018fe12caa40.gif" alt="" className="w-full h-full object-cover" />
         </div>
 
-        <div className="absolute -inset-1 bg-gradient-to-br from-blue-600/30 to-blue-800/20 blur-3xl opacity-40 pointer-events-none" />
+        <div className="absolute -inset-1 bg-gradient-to-br from-blue-500/10 dark:from-blue-600/30 to-blue-800/10 dark:to-blue-800/20 blur-3xl opacity-40 pointer-events-none" />
 
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-[350px_1fr] gap-6 items-center">
           {/* Album Art */}
@@ -157,7 +157,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
             <img
               src={song.image_url}
               alt="cover"
-              className="w-[350px] h-[350px] object-cover rounded-sm block"
+              className="w-[350px] h-[350px] object-cover rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 block"
               style={{ width: 350, height: 350, objectFit: "cover" }}
             />
           </div>
@@ -166,10 +166,10 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-2xl md:text-3xl font-extrabold text-white">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">
                   {song.title}
                 </h2>
-                <p className="text-gray-300">
+                <p className="text-slate-600 dark:text-gray-300">
                   {song.artist}
                 </p>
               </div>
@@ -187,11 +187,11 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
             <div className="flex items-center gap-4 flex-wrap">
               <button
                 onClick={toggleLike}
-                className="flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent hover:scale-105 transition shadow-sm"
               >
                 <Heart
                   size={18}
-                  color={isLiked ? "#ef4444" : "white"}
+                  color={isLiked ? "#ef4444" : "currentColor"}
                   fill={isLiked ? "#ef4444" : "transparent"}
                 />
                 <span>{song.likes?.length || 0}</span>
@@ -199,11 +199,11 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
 
               <button
                 onClick={toggleSave}
-                className="flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent hover:scale-105 transition shadow-sm"
               >
                 <Star
                   size={18}
-                  color={isSaved ? "#facc15" : "white"}
+                  color={isSaved ? "#facc15" : "currentColor"}
                   fill={isSaved ? "#facc15" : "transparent"}
                 />
                 <span>{isSaved ? "Saved" : "Save"}</span>
@@ -212,7 +212,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
               {/* Share Song Link */}
               <button
                 onClick={handleShareSong}
-                className="flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 font-medium"
+                className="flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition bg-blue-50 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 font-medium border border-blue-200 dark:border-transparent shadow-sm"
                 title="Copy Song Link"
               >
                 <Share2 size={18} />
@@ -223,7 +223,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setShowPlaylistDropdown(!showPlaylistDropdown)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition bg-white/10 hover:bg-white/20 text-white font-medium"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full hover:scale-105 transition bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-800 dark:text-white font-medium border border-slate-200 dark:border-transparent shadow-sm"
                 >
                   <ListPlus size={18} />
                   <span>Add to Playlist</span>
@@ -231,33 +231,33 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
 
                 {/* Playlist Dropdown */}
                 {showPlaylistDropdown && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-gray-900/95 backdrop-blur-md rounded-xl shadow-2xl border border-white/10 z-50 overflow-hidden">
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-                      <span className="text-sm font-semibold text-white">Add to Playlist</span>
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-gray-900/95 backdrop-blur-md rounded-xl shadow-2xl border border-slate-200 dark:border-white/10 z-50 overflow-hidden text-slate-900 dark:text-white">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/10">
+                      <span className="text-sm font-semibold text-slate-900 dark:text-white">Add to Playlist</span>
                       <button
                         onClick={() => setShowPlaylistDropdown(false)}
-                        className="text-gray-400 hover:text-white"
+                        className="text-slate-400 hover:text-slate-700 dark:hover:text-white"
                       >
                         <X size={16} />
                       </button>
                     </div>
 
                     {addError && (
-                      <div className="px-4 py-2 text-xs text-red-400 bg-red-500/10">
+                      <div className="px-4 py-2 text-xs text-red-500 bg-red-500/10">
                         {addError}
                       </div>
                     )}
 
                     <div className="max-h-60 overflow-y-auto">
                       {playlistsLoading ? (
-                        <div className="px-4 py-3 text-gray-400 text-sm">Loading playlists...</div>
+                        <div className="px-4 py-3 text-slate-400 text-sm">Loading playlists...</div>
                       ) : playlists && playlists.length > 0 ? (
                         playlists.map((playlist) => (
                           <button
                             key={playlist.id}
                             onClick={() => handleAddToPlaylist(playlist.id)}
                             disabled={addingToPlaylist === playlist.id}
-                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 transition text-left"
+                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-100 dark:hover:bg-white/10 transition text-left"
                           >
                             {playlist.cover_image ? (
                               <img
@@ -267,14 +267,14 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                               />
                             ) : (
                               <div className="w-10 h-10 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                                <ListPlus size={16} />
+                                <ListPlus size={16} className="text-white" />
                               </div>
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-white truncate">
+                              <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
                                 {playlist.name}
                               </p>
-                              <p className="text-xs text-gray-400">
+                              <p className="text-xs text-slate-500 dark:text-gray-400">
                                 {playlist.song_ids?.length || 0} songs
                               </p>
                             </div>
@@ -287,7 +287,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                           </button>
                         ))
                       ) : (
-                        <div className="px-4 py-6 text-center text-gray-400 text-sm">
+                        <div className="px-4 py-6 text-center text-slate-500 dark:text-gray-400 text-sm">
                           <p>No playlists found</p>
                           <p className="text-xs mt-1">Create a playlist first</p>
                         </div>
@@ -304,21 +304,21 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
               <div className="flex items-center justify-center gap-6">
                 <button
                   onClick={playPrevious}
-                  className="p-3 rounded-full bg-white/6 hover:bg-white/10"
+                  className="p-3 rounded-full bg-slate-100 dark:bg-white/6 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent transition shadow-sm"
                 >
                   <SkipBack size={22} />
                 </button>
 
                 <button
                   onClick={togglePlayPause}
-                  className="p-4 rounded-full bg-gradient-to-br from-blue-500 to-blue-500 shadow-lg hover:scale-105"
+                  className="p-4 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 !text-white shadow-lg shadow-blue-500/30 hover:scale-105 transition"
                 >
-                  {isPlaying ? <Pause size={26} /> : <Play size={26} />}
+                  {isPlaying ? <Pause size={26} className="!text-white" /> : <Play size={26} className="!text-white" />}
                 </button>
 
                 <button
                   onClick={playNext}
-                  className="p-3 rounded-full bg-white/6 hover:bg-white/10"
+                  className="p-3 rounded-full bg-slate-100 dark:bg-white/6 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent transition shadow-sm"
                 >
                   <SkipForward size={22} />
                 </button>
@@ -327,7 +327,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
               {/* Seek Slider */}
               <div className="px-3">
                 <div className="flex items-center gap-3">
-                  <div className="text-xs text-gray-300 w-12 text-right">
+                  <div className="text-xs text-slate-500 dark:text-gray-300 w-12 text-right font-mono">
                     {formatTime(currentTime)}
                   </div>
 
@@ -339,15 +339,15 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                       step={0.01}
                       value={currentTime}
                       onChange={(e) => seekTo(parseFloat(e.target.value))}
-                      className="w-full h-2 appearance-none bg-white/10 rounded-lg"
+                      className="w-full h-2 appearance-none bg-slate-200 dark:bg-white/10 rounded-lg cursor-pointer accent-blue-500"
                       style={{
-                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${progressPct}%, rgba(255,255,255,0.1) ${progressPct}%, rgba(255,255,255,0.1) 100%)`,
+                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${progressPct}%, #cbd5e1 ${progressPct}%, #cbd5e1 100%)`,
                       }}
                       aria-label="Seek"
                     />
                   </div>
 
-                  <div className="text-xs text-gray-300 w-12">
+                  <div className="text-xs text-slate-500 dark:text-gray-300 w-12 font-mono">
                     {formatTime(duration)}
                   </div>
                 </div>
@@ -355,7 +355,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
 
               {/* Volume Slider */}
               <div className="flex items-center gap-3 px-3">
-                <div className="flex items-center gap-2 text-gray-200">
+                <div className="flex items-center gap-2 text-slate-600 dark:text-gray-200">
                   <Volume2 size={16} />
                 </div>
                 <input
@@ -365,10 +365,10 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                   step={0.01}
                   value={volume}
                   onChange={(e) => changeVolume(parseFloat(e.target.value))}
-                  className="w-48 h-2 appearance-none bg-white/10 rounded-lg"
+                  className="w-48 h-2 appearance-none bg-slate-200 dark:bg-white/10 rounded-lg cursor-pointer accent-blue-500"
                   aria-label="Volume"
                 />
-                <div className="text-xs text-gray-300 w-10 text-right">
+                <div className="text-xs text-slate-500 dark:text-gray-300 w-10 text-right font-mono">
                   {Math.round(volume * 100)}%
                 </div>
                 {/* Visualizer GIF at the end of volume bar */}
@@ -382,24 +382,24 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
 
             {/* Next Up — Smart Related Queue Section */}
             {queue && queue.length > 1 && (
-              <div className="mt-8 pt-6 border-t border-white/10">
+              <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/10">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">🎧</span>
-                    <h3 className="text-lg font-bold text-white">Next Up — Related Autoplay Queue</h3>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Next Up — Related Autoplay Queue</h3>
                     {song?.genre && (
-                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 font-semibold">
+                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/10 dark:bg-blue-500/20 border border-blue-400/40 text-blue-600 dark:text-blue-300 font-semibold">
                         Genre: {song.genre}
                       </span>
                     )}
                   </div>
-                  <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     Autoplay On
                   </span>
                 </div>
 
-                <div className="space-y-2.5 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-700">
+                <div className="space-y-2.5 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-700">
                   {queue.slice(currentIndex + 1, currentIndex + 7).map((nextTrack, idx) => {
                     const isSameGenre = song?.genre && nextTrack.genre && (
                       song.genre.toLowerCase().includes(nextTrack.genre.toLowerCase()) ||
@@ -409,7 +409,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                       <div
                         key={nextTrack.song_id || idx}
                         onClick={() => playIndex(currentIndex + 1 + idx)}
-                        className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer transition border border-white/5 group"
+                        className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 cursor-pointer transition border border-slate-200 dark:border-white/5 group shadow-sm"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <img
@@ -418,22 +418,22 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                             className="w-10 h-10 rounded-lg object-cover flex-shrink-0 group-hover:scale-105 transition"
                           />
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold text-white truncate group-hover:text-blue-400 transition">{nextTrack.title}</p>
-                            <p className="text-xs text-gray-400 truncate">{nextTrack.artist}</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{nextTrack.title}</p>
+                            <p className="text-xs text-slate-500 dark:text-gray-400 truncate">{nextTrack.artist}</p>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2 flex-shrink-0">
                           {isSameGenre ? (
-                            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40">
+                            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-500/40">
                               Matching Genre
                             </span>
                           ) : nextTrack.genre ? (
-                            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-white/10 text-gray-300 font-medium">
+                            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-gray-300 font-medium">
                               {nextTrack.genre}
                             </span>
                           ) : null}
-                          <span className="text-xs text-blue-400 font-semibold group-hover:translate-x-1 transition">Play ▶</span>
+                          <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold group-hover:translate-x-1 transition">Play ▶</span>
                         </div>
                       </div>
                     );

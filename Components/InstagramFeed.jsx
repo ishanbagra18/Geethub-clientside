@@ -44,22 +44,22 @@ const InstagramFeed = () => {
   return (
     <section className="my-24 md:my-36 px-4 md:px-8 max-w-7xl mx-auto font-sans">
       {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-slate-800/80">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-slate-200 dark:border-slate-800/80">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="p-2.5 rounded-xl bg-gradient-to-tr from-amber-500 via-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/20">
+            <span className="p-2.5 rounded-xl bg-gradient-to-tr from-amber-500 via-pink-500 to-purple-600 !text-white shadow-lg shadow-pink-500/20">
               <FaInstagram size={20} />
             </span>
-            <span className="text-xs font-black text-pink-400 uppercase tracking-widest flex items-center gap-1.5">
-              Official Instagram Social <Sparkles size={14} className="text-pink-400 animate-pulse" />
+            <span className="text-xs font-black text-pink-500 dark:text-pink-400 uppercase tracking-widest flex items-center gap-1.5">
+              Official Instagram Social <Sparkles size={14} className="text-pink-500 dark:text-pink-400 animate-pulse" />
             </span>
           </div>
 
-          <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight flex items-center gap-2">
+          <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             @geethub.music
-            <CheckCircle2 size={24} className="text-blue-400 fill-blue-400/20" />
+            <CheckCircle2 size={24} className="text-blue-500 fill-blue-500/20" />
           </h2>
-          <p className="text-xs md:text-sm text-gray-400 mt-1 max-w-xl font-medium">
+          <p className="text-xs md:text-sm text-slate-500 dark:text-gray-400 mt-1 max-w-xl font-medium">
             "Every Mood Has a Song." Stay connected for daily curated playlists, artist spotlights & exclusive releases.
           </p>
         </div>
@@ -69,10 +69,10 @@ const InstagramFeed = () => {
           href="https://www.instagram.com/geethub.music/"
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-xl shadow-pink-500/20 hover:scale-105 transition-all duration-300 self-start md:self-auto"
+          className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 !text-white font-extrabold text-xs uppercase tracking-wider shadow-xl shadow-pink-500/20 hover:scale-105 transition-all duration-300 self-start md:self-auto"
         >
           <FaInstagram size={18} />
-          <span>Follow @geethub.music</span>
+          <span className="!text-white">Follow @geethub.music</span>
           <ArrowRight size={14} />
         </a>
       </div>
@@ -85,26 +85,26 @@ const InstagramFeed = () => {
             href="https://www.instagram.com/geethub.music/"
             target="_blank"
             rel="noreferrer"
-            className="group relative bg-[#101322]/90 rounded-3xl overflow-hidden border border-slate-800 hover:border-pink-500/50 shadow-xl hover:shadow-[0_0_30px_rgba(236,72,153,0.25)] transition-all duration-500 flex flex-col justify-between hover:-translate-y-1.5"
+            className="group relative bg-white dark:bg-[#101322]/90 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-pink-500/50 shadow-sm hover:shadow-md hover:shadow-[0_0_30px_rgba(236,72,153,0.25)] transition-all duration-500 flex flex-col justify-between hover:-translate-y-1.5"
           >
             {/* Header profile bar inside card */}
-            <div className="p-3.5 flex items-center justify-between bg-black/40 backdrop-blur-md border-b border-slate-800/60 z-10">
+            <div className="p-3.5 flex items-center justify-between bg-slate-50 dark:bg-black/40 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/60 z-10">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-600 p-[1.5px]">
-                  <div className="w-full h-full rounded-full bg-slate-950 flex items-center justify-center text-[10px] font-black text-white">
+                  <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-[10px] font-black text-white">
                     GH
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-white leading-none">geethub.music</p>
-                  <p className="text-[9px] text-gray-400 leading-none mt-0.5 font-mono">GeetHub Official</p>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white leading-none">geethub.music</p>
+                  <p className="text-[9px] text-slate-500 dark:text-gray-400 leading-none mt-0.5 font-mono">GeetHub Official</p>
                 </div>
               </div>
-              <FaInstagram size={16} className="text-pink-400" />
+              <FaInstagram size={16} className="text-pink-500 dark:text-pink-400" />
             </div>
 
             {/* Post Image Container */}
-            <div className="relative aspect-square overflow-hidden bg-slate-900">
+            <div className="relative aspect-square overflow-hidden bg-slate-100 dark:bg-slate-900">
               <img
                 src={post.image}
                 alt="GeetHub Instagram Post"
@@ -126,15 +126,15 @@ const InstagramFeed = () => {
 
             {/* Post Details & Caption */}
             <div className="p-4 space-y-2">
-              <p className="text-xs text-gray-300 line-clamp-2 leading-relaxed font-medium">
+              <p className="text-xs text-slate-700 dark:text-gray-300 line-clamp-2 leading-relaxed font-medium">
                 {post.caption}
               </p>
-              <p className="text-[10px] font-bold text-pink-400">
+              <p className="text-[10px] font-bold text-pink-500 dark:text-pink-400">
                 {post.tag}
               </p>
-              <div className="flex items-center justify-between pt-2.5 border-t border-slate-800/60 text-[9px] text-gray-400 font-bold uppercase">
+              <div className="flex items-center justify-between pt-2.5 border-t border-slate-200 dark:border-slate-800/60 text-[9px] text-slate-500 dark:text-gray-400 font-bold uppercase">
                 <span>{post.date}</span>
-                <span className="text-cyan-400 group-hover:underline flex items-center gap-1">
+                <span className="text-cyan-600 dark:text-cyan-400 group-hover:underline flex items-center gap-1">
                   View Post →
                 </span>
               </div>

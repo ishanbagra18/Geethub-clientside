@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMusicSections } from '../context/MusicSectionsContext';
 import { useMusicPlayer } from '../context/MusicPlayerContext';
-import { ListPlus, PlayCircle, ArrowLeft, Heart, Sparkles } from 'lucide-react';
+import { ListPlus, Play, ArrowLeft, Heart, Sparkles } from 'lucide-react';
 import Navbar from '../../Components/Navbar';
 
 const PLACEHOLDER = 'https://via.placeholder.com/220?text=No+Image';
@@ -107,17 +107,17 @@ const SeeAllLatestReleased = () => {
                           e.stopPropagation();
                           handlePlaySong(song);
                         }}
-                        className="p-3 bg-gradient-to-r from-rose-500 to-rose-600 rounded-full hover:scale-110 transition-transform shadow-lg shadow-rose-500/40"
+                        className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full hover:scale-110 active:scale-95 transition-all shadow-lg shadow-cyan-500/50 border border-white/20"
                         title="Play Song"
                       >
-                        <PlayCircle size={24} fill="white" className="text-white ml-0.5" />
+                        <Play size={20} fill="white" className="text-white ml-0.5" />
                       </button>
                       <button
                         onClick={(e) => handleAddToQueue(e, song)}
-                        className="p-3 bg-slate-800/90 rounded-full hover:bg-slate-700 transition-colors border border-slate-700"
+                        className="w-10 h-10 flex items-center justify-center bg-slate-800/90 rounded-full hover:bg-slate-700 hover:scale-105 active:scale-95 transition-all border border-slate-700"
                         title="Add to Queue"
                       >
-                        <ListPlus size={20} className="text-cyan-400" />
+                        <ListPlus size={18} className="text-cyan-400" />
                       </button>
                     </div>
                   </div>

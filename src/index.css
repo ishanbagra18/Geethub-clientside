@@ -66,89 +66,243 @@ input[type="range"]::-moz-range-thumb:hover {
   box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
 }
 
-/* ☀️ COMPREHENSIVE LIGHT MODE OVERRIDES ☀️ */
+/* =========================================================================
+   ☀️ GEETHUB COMPREHENSIVE LIGHT THEME ENGINE ☀️
+   ========================================================================= */
+
+/* 1. Base Canvas & Body */
 [data-theme="light"],
 html.light,
-html.light body {
+html.light body,
+[data-theme="light"] body {
   background-color: #f8fafc !important;
+  color: #0f172a !important;
+  color-scheme: light;
+}
+
+/* 2. Full-page Background Wrappers */
+html.light .min-h-screen:not([data-preserve-dark]),
+[data-theme="light"] .min-h-screen:not([data-preserve-dark]) {
+  background-color: #f8fafc !important;
+  background-image: none !important;
   color: #0f172a !important;
 }
 
-/* Light mode specific container & card backgrounds */
-[data-theme="light"] nav,
-html.light nav,
-[data-theme="light"] main,
-html.light main,
-[data-theme="light"] footer,
-html.light footer,
-[data-theme="light"] section,
-html.light section,
-[data-theme="light"] .bg-\[\#0b0c10\],
-html.light .bg-\[\#0b0c10\],
-[data-theme="light"] .bg-\[\#050505\],
-html.light .bg-\[\#050505\],
-[data-theme="light"] .bg-\[\#111\],
-html.light .bg-\[\#111\],
-[data-theme="light"] .bg-black,
-html.light .bg-black,
-[data-theme="light"] .bg-black\/30,
-html.light .bg-black\/30,
-[data-theme="light"] .bg-black\/50,
-html.light .bg-black\/50,
-[data-theme="light"] .bg-slate-900,
-html.light .bg-slate-900,
-[data-theme="light"] .bg-slate-950,
-html.light .bg-slate-950,
-[data-theme="light"] .bg-gray-900,
-html.light .bg-gray-900,
-[data-theme="light"] .bg-gray-950,
-html.light .bg-gray-950,
-[data-theme="light"] .bg-\[\#121522\],
-html.light .bg-\[\#121522\],
-[data-theme="light"] .bg-\[\#141724\],
-html.light .bg-\[\#141724\] {
+/* 3. Global Card & Container Backgrounds in Light Mode (Excluding Overlays & Images) */
+html.light .bg-slate-900:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-slate-950:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-gray-900:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-gray-950:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-zinc-900:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-zinc-950:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#0a0a0a\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#0b0c10\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#050505\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#050507\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#050509\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#080b14\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#101322\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#111522\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#121522\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#131722\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#141724\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#18181b\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#1e1e2e\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#0c0f1a\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#101424\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+html.light .bg-\[\#0d0f18\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-slate-900:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-slate-950:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-gray-900:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-gray-950:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-zinc-900:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-zinc-950:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#0a0a0a\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#0b0c10\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#050505\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#050507\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#050509\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#080b14\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#101322\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#111522\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#121522\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#131722\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#141724\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#18181b\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#1e1e2e\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#0c0f1a\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#101424\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark),
+[data-theme="light"] .bg-\[\#0d0f18\]:not(.absolute):not([class*="inset-0"]):not([data-preserve-dark]):not([data-preserve-dark] *):not(.preserve-dark) {
   background-color: #ffffff !important;
   color: #0f172a !important;
 }
 
-[data-theme="light"] h1,
-[data-theme="light"] h2,
-[data-theme="light"] h3,
-[data-theme="light"] h4,
-[data-theme="light"] h5,
-[data-theme="light"] h6,
-html.light h1,
-html.light h2,
-html.light h3,
-html.light h4,
-html.light h5,
-html.light h6 {
+/* 4. PROTECT ALL IMAGES, ALBUM ART & OVERLAYS IN LIGHT MODE */
+html.light img,
+[data-theme="light"] img {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* Overlays on artwork must remain transparent vignettes and NEVER turn into solid white boxes */
+html.light [class*="inset-0"][class*="bg-gradient-"],
+html.light [class*="inset-0"][class*="bg-black"],
+[data-theme="light"] [class*="inset-0"][class*="bg-gradient-"],
+[data-theme="light"] [class*="inset-0"][class*="bg-black"],
+html.light [class*="aspect-"] [class*="inset-0"],
+[data-theme="light"] [class*="aspect-"] [class*="inset-0"],
+html.light .group\/card [class*="inset-0"],
+[data-theme="light"] .group\/card [class*="inset-0"] {
+  background-color: transparent !important;
+}
+
+/* 5. Clean Light Borders */
+html.light .border-slate-800:not(.preserve-dark),
+html.light .border-slate-800\/80:not(.preserve-dark),
+html.light .border-slate-800\/60:not(.preserve-dark),
+html.light .border-slate-700:not(.preserve-dark),
+html.light .border-slate-700\/60:not(.preserve-dark),
+html.light .border-slate-700\/80:not(.preserve-dark),
+html.light .border-gray-800:not(.preserve-dark),
+html.light .border-gray-800\/80:not(.preserve-dark),
+html.light .border-gray-700:not(.preserve-dark),
+html.light .border-zinc-800:not(.preserve-dark),
+html.light .border-zinc-700:not(.preserve-dark),
+html.light .border-white\/10:not(.preserve-dark),
+html.light .border-white\/5:not(.preserve-dark),
+html.light .border-white\/20:not(.preserve-dark),
+[data-theme="light"] .border-slate-800:not(.preserve-dark),
+[data-theme="light"] .border-slate-800\/80:not(.preserve-dark),
+[data-theme="light"] .border-slate-800\/60:not(.preserve-dark),
+[data-theme="light"] .border-slate-700:not(.preserve-dark),
+[data-theme="light"] .border-slate-700\/60:not(.preserve-dark),
+[data-theme="light"] .border-slate-700\/80:not(.preserve-dark),
+[data-theme="light"] .border-gray-800:not(.preserve-dark),
+[data-theme="light"] .border-gray-800\/80:not(.preserve-dark),
+[data-theme="light"] .border-gray-700:not(.preserve-dark),
+[data-theme="light"] .border-zinc-800:not(.preserve-dark),
+[data-theme="light"] .border-zinc-700:not(.preserve-dark),
+[data-theme="light"] .border-white\/10:not(.preserve-dark),
+[data-theme="light"] .border-white\/5:not(.preserve-dark),
+[data-theme="light"] .border-white\/20:not(.preserve-dark) {
+  border-color: #e2e8f0 !important;
+}
+
+/* 6. General Headings & Text in Light Mode (Context-Aware) */
+html.light h1:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *),
+html.light h2:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *),
+html.light h3:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *),
+html.light h4:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *),
+html.light h5:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *),
+html.light h6:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *),
+[data-theme="light"] h1:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *),
+[data-theme="light"] h2:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *),
+[data-theme="light"] h3:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *),
+[data-theme="light"] h4:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *),
+[data-theme="light"] h5:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *),
+[data-theme="light"] h6:not(.preserve-white):not([class*="text-transparent"]):not([class*="!text-white"]):not([data-preserve-dark] *) {
   color: #0f172a !important;
 }
 
-[data-theme="light"] .text-white,
-html.light .text-white {
-  color: #0f172a !important;
+/* Body & Muted Text */
+html.light .text-gray-400:not([data-preserve-dark] *):not(.preserve-white),
+html.light .text-slate-400:not([data-preserve-dark] *):not(.preserve-white),
+html.light .text-zinc-400:not([data-preserve-dark] *):not(.preserve-white),
+[data-theme="light"] .text-gray-400:not([data-preserve-dark] *):not(.preserve-white),
+[data-theme="light"] .text-slate-400:not([data-preserve-dark] *):not(.preserve-white),
+[data-theme="light"] .text-zinc-400:not([data-preserve-dark] *):not(.preserve-white) {
+  color: #64748b !important;
 }
 
-[data-theme="light"] .text-gray-400,
-[data-theme="light"] .text-gray-300,
-[data-theme="light"] .text-slate-400,
-[data-theme="light"] .text-slate-300,
-html.light .text-gray-400,
-html.light .text-gray-300,
-html.light .text-slate-400,
-html.light .text-slate-300 {
+html.light .text-gray-300:not([data-preserve-dark] *):not(.preserve-white),
+html.light .text-slate-300:not([data-preserve-dark] *):not(.preserve-white),
+html.light .text-zinc-300:not([data-preserve-dark] *):not(.preserve-white),
+[data-theme="light"] .text-gray-300:not([data-preserve-dark] *):not(.preserve-white),
+[data-theme="light"] .text-slate-300:not([data-preserve-dark] *):not(.preserve-white),
+[data-theme="light"] .text-zinc-300:not([data-preserve-dark] *):not(.preserve-white) {
   color: #475569 !important;
 }
 
-[data-theme="light"] .border-gray-800,
-[data-theme="light"] .border-slate-800,
-[data-theme="light"] .border-slate-700,
-[data-theme="light"] .border-white\/10,
-html.light .border-gray-800,
-html.light .border-slate-800,
-html.light .border-slate-700,
-html.light .border-white\/10 {
-  border-color: #e2e8f0 !important;
+/* 7. PROTECT WHITE TEXT ON SOLID/GRADIENT BUTTONS, CHIPS & BADGES */
+html.light button[class*="bg-blue"],
+html.light button[class*="from-blue"],
+html.light button[class*="bg-pink"],
+html.light button[class*="from-pink"],
+html.light button[class*="bg-rose"],
+html.light button[class*="from-rose"],
+html.light button[class*="bg-cyan"],
+html.light button[class*="from-cyan"],
+html.light button[class*="bg-purple"],
+html.light button[class*="from-purple"],
+html.light button[class*="from-amber"],
+html.light button[class*="bg-emerald"],
+html.light a[class*="from-pink"],
+html.light a[class*="from-blue"],
+html.light a[class*="from-purple"],
+html.light .preserve-white,
+html.light [class*="!text-white"],
+[data-theme="light"] button[class*="bg-blue"],
+[data-theme="light"] button[class*="from-blue"],
+[data-theme="light"] button[class*="bg-pink"],
+[data-theme="light"] button[class*="from-pink"],
+[data-theme="light"] button[class*="bg-rose"],
+[data-theme="light"] button[class*="from-rose"],
+[data-theme="light"] button[class*="bg-cyan"],
+[data-theme="light"] button[class*="from-cyan"],
+[data-theme="light"] button[class*="bg-purple"],
+[data-theme="light"] button[class*="from-purple"],
+[data-theme="light"] button[class*="from-amber"],
+[data-theme="light"] button[class*="bg-emerald"],
+[data-theme="light"] a[class*="from-pink"],
+[data-theme="light"] a[class*="from-blue"],
+[data-theme="light"] a[class*="from-purple"],
+[data-theme="light"] .preserve-white,
+[data-theme="light"] [class*="!text-white"] {
+  color: #ffffff !important;
+}
+
+/* 8. PRESERVE DARK THEATER ZONES (Video Banner, 3D Headphone Canvas, Overlays) */
+[data-preserve-dark],
+[data-preserve-dark] *,
+.video-hero,
+.video-hero *,
+#headphone-scroll-section,
+#headphone-scroll-section * {
+  /* Let inline dark styling stay intact for video/canvas experiences */
+}
+
+/* 9. Light Mode Global Footer */
+html.light footer,
+[data-theme="light"] footer {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-top-color: #e2e8f0 !important;
+}
+
+html.light footer h2,
+html.light footer h3,
+html.light footer span.text-white,
+[data-theme="light"] footer h2,
+[data-theme="light"] footer h3,
+[data-theme="light"] footer span.text-white {
+  color: #0f172a !important;
+}
+
+/* 10. Light Mode Global Player Bar */
+html.light .fixed.bottom-0,
+[data-theme="light"] .fixed.bottom-0 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+  border-top-color: #e2e8f0 !important;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .fixed.bottom-0 h3,
+[data-theme="light"] .fixed.bottom-0 h3 {
+  color: #0f172a !important;
+}
+
+html.light .fixed.bottom-0 p,
+[data-theme="light"] .fixed.bottom-0 p {
+  color: #64748b !important;
 }

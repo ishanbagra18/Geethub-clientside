@@ -113,8 +113,8 @@ const TrendingSongs = ({ limitToHome = false }) => {
                     }}
                   />
                   
-                  {/* Overlay Gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover/card:opacity-80 transition-opacity" />
+                  {/* Overlay Gradient (Only on Hover for Play Button) */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover/card:opacity-70 transition-opacity pointer-events-none" />
                   
                   {/* Rank Tag */}
                   <div className="absolute top-2 left-2 z-10">
@@ -125,8 +125,8 @@ const TrendingSongs = ({ limitToHome = false }) => {
 
                   {/* Play Trigger Overlay */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-all duration-300">
-                    <div className="w-13 h-13 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-400 text-white shadow-2xl shadow-cyan-500/50 transform scale-75 group-hover/card:scale-100 transition-transform">
-                      <Play size={22} fill="currentColor" className="ml-0.5" />
+                    <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-400 !text-white shadow-2xl shadow-cyan-500/60 border border-white/20 transform scale-75 group-hover/card:scale-100 hover:!scale-110 active:scale-95 transition-all duration-300">
+                      <Play size={22} fill="currentColor" className="ml-1 !text-white" />
                     </div>
                   </div>
 

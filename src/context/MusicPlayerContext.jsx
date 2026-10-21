@@ -79,8 +79,10 @@ export const MusicPlayerProvider = ({ children }) => {
     document.documentElement.setAttribute("data-theme", validTheme);
     if (validTheme === "dark") {
       document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
     } else {
       document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
     }
     toast.success(`Theme set to ${validTheme.toUpperCase()} Mode`);
   };
@@ -89,8 +91,10 @@ export const MusicPlayerProvider = ({ children }) => {
     document.documentElement.setAttribute("data-theme", theme);
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
     } else {
       document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
     }
   }, [theme]);
 

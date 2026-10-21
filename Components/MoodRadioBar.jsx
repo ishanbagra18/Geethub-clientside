@@ -150,7 +150,7 @@ const MoodRadioBar = () => {
 
   return (
     <div className="w-full my-8 font-sans">
-      <div className="relative overflow-hidden rounded-3xl bg-slate-900/90 dark:bg-slate-950/90 border border-slate-800 p-6 sm:p-8 shadow-2xl backdrop-blur-2xl">
+      <div className="relative overflow-hidden rounded-3xl bg-white dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-2xl backdrop-blur-2xl">
         {/* Glow Accent Circles */}
         <div className="absolute -top-20 -left-20 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -158,15 +158,15 @@ const MoodRadioBar = () => {
         {/* Top Header Row */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 relative z-10">
           <div className="flex items-center gap-3.5">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 text-white shadow-xl shadow-cyan-500/20">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 !text-white shadow-xl shadow-cyan-500/20">
               <Radio size={24} className="animate-pulse" />
             </div>
             <div>
-              <div className="inline-flex items-center gap-1.5 text-[11px] font-black text-cyan-400 uppercase tracking-[0.2em] mb-0.5">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-black text-cyan-600 dark:text-cyan-400 uppercase tracking-[0.2em] mb-0.5">
                 <Sparkles size={12} />
                 <span>Smart Desi Radio</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-white dark:text-white tracking-tight drop-shadow-md">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight drop-shadow-md">
                 Mood Radio Station
               </h2>
             </div>
@@ -175,9 +175,9 @@ const MoodRadioBar = () => {
           {/* Instant Play Mood Radio Button */}
           <button
             onClick={handlePlayMoodMix}
-            className="group relative inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 text-white text-xs font-black uppercase tracking-wider shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/45 hover:scale-105 transition-all duration-300 overflow-hidden"
+            className="group relative inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 !text-white text-xs font-black uppercase tracking-wider shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/45 hover:scale-105 transition-all duration-300 overflow-hidden"
           >
-            <span className="relative z-10 flex items-center gap-2">
+            <span className="relative z-10 flex items-center gap-2 !text-white">
               <Play size={14} fill="currentColor" />
               Play {currentMoodObj.label} Mix
             </span>
@@ -197,19 +197,19 @@ const MoodRadioBar = () => {
                 onClick={() => handleMoodClick(mood.id)}
                 className={`flex-shrink-0 flex items-center gap-2.5 px-4 sm:px-5 py-3 rounded-2xl text-xs font-black transition-all duration-300 border ${
                   isActive
-                    ? `bg-gradient-to-r ${mood.color} text-white border-cyan-300 shadow-xl shadow-cyan-500/25 scale-105`
-                    : 'bg-slate-900/90 hover:bg-slate-800 text-slate-100 border-slate-700/80 hover:border-cyan-400/80 hover:scale-102'
+                    ? `bg-gradient-to-r ${mood.color} !text-white border-cyan-300 shadow-xl shadow-cyan-500/25 scale-105`
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-900/90 dark:hover:bg-slate-800 dark:text-slate-100 border-slate-200 dark:border-slate-700/80 hover:border-cyan-400/80 hover:scale-102'
                 }`}
               >
                 <span className="text-base">{mood.emoji}</span>
-                <span className={`text-sm font-bold ${isActive ? 'text-white' : 'text-slate-100'}`}>
+                <span className={`text-sm font-bold ${isActive ? '!text-white' : 'text-slate-800 dark:text-slate-100'}`}>
                   {mood.label}
                 </span>
                 <span
                   className={`ml-1 text-[11px] px-2.5 py-0.5 rounded-full font-extrabold ${
                     isActive
-                      ? 'bg-white/20 text-white border border-white/30'
-                      : 'bg-slate-800 text-cyan-300 border border-slate-700/80'
+                      ? 'bg-white/20 !text-white border border-white/30'
+                      : 'bg-slate-200 text-cyan-800 dark:bg-slate-800 dark:text-cyan-300 border border-slate-300 dark:border-slate-700/80'
                   }`}
                 >
                   {count}

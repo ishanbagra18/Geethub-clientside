@@ -15,6 +15,7 @@ import Artists from "../../Components/Artists.jsx";
 import PremiumBanner from "../../Components/PremiumBanner.jsx";
 import InstagramFeed from "../../Components/InstagramFeed.jsx";
 import MoodRadioBar from "../../Components/MoodRadioBar.jsx";
+import HeadphoneScrollExperience from "../../Components/HeadphoneScrollExperience.jsx";
 
 // Lazy load components for better performance
 const Mostliked = lazy(() => import("../../Components/Mostliked.jsx"));
@@ -202,7 +203,7 @@ const Homepage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-black to-[#1a0a1a] text-white font-body overflow-x-hidden pb-32">
+    <div className="min-h-screen bg-slate-50 dark:bg-gradient-to-br dark:from-[#0a0a0a] dark:via-black dark:to-[#1a0a1a] text-slate-900 dark:text-white font-body overflow-x-clip">
       {/* NAVBAR */}
       <Navbar />
 
@@ -223,7 +224,7 @@ const Homepage = () => {
         </div>
 
         {/* LEFT CONTENT - Better mobile stacking, improved focus states */}
-        <article className="relative z-0 w-full lg:w-3/5 space-y-4 backdrop-blur-xl bg-black/20 border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.01] focus-within:ring-4 ring-blue-400/30">
+        <article className="relative z-0 w-full lg:w-3/5 space-y-4 backdrop-blur-xl bg-white/80 dark:bg-black/20 border border-slate-200/80 dark:border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.01] focus-within:ring-4 ring-blue-400/30">
           {/* Enhanced glow effect */}
           <div
             className="absolute -inset-1 bg-gradient-to-r from-blue-400/15 via-transparent to-cyan-500/15 rounded-2xl blur opacity-75 animate-pulse-slow"
@@ -232,23 +233,23 @@ const Homepage = () => {
 
           <header>
             <h1
-              className="text-xl md:text-3xl lg:text-4xl font-heading font-black bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent tracking-wide drop-shadow-lg"
+              className="text-xl md:text-3xl lg:text-4xl font-heading font-black bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500 bg-clip-text text-transparent tracking-wide drop-shadow-lg"
               role="banner"
             >
               Welcome {user?.first_name
                 ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}`
                 : "Guest"} 👋
             </h1>
-            <p className="text-xs lg:text-sm tracking-[0.2em] font-heading2 font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-amber-400 bg-clip-text text-transparent uppercase pt-1">
+            <p className="text-xs lg:text-sm tracking-[0.2em] font-heading2 font-bold bg-gradient-to-r from-blue-500 via-cyan-500 to-amber-500 bg-clip-text text-transparent uppercase pt-1">
               Every Mood Has a Song. 🇮🇳🎧
             </p>
           </header>
 
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black leading-tight bg-gradient-to-br from-white via-gray-100 to-gray-200 bg-clip-text text-transparent drop-shadow-2xl tracking-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black leading-tight bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 dark:from-white dark:via-gray-100 dark:to-gray-200 bg-clip-text text-transparent drop-shadow-2xl tracking-tight">
             Highly curated <br className="hidden md:block" /> music & sound effects.
           </h2>
 
-          <p className="text-base md:text-lg text-gray-300 max-w-xl leading-relaxed backdrop-blur-sm pt-2">
+          <p className="text-base md:text-lg text-slate-600 dark:text-gray-300 max-w-xl leading-relaxed backdrop-blur-sm pt-2">
             Trusted by filmmakers worldwide. Premium cinematic music and SFX collection.
           </p>
 
@@ -256,24 +257,23 @@ const Homepage = () => {
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <button
               onClick={handleCTA}
-              className="group relative bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-500 text-black px-8 md:px-10 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg tracking-wide shadow-2xl hover:shadow-3xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-400/50 transition-all duration-400 overflow-hidden border border-transparent font-heading2"
+              className="group relative bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 !text-white px-8 md:px-10 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg tracking-wide shadow-2xl hover:shadow-3xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-400/50 transition-all duration-400 overflow-hidden border border-transparent font-heading2"
               aria-label="Create free account"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-              <span className="relative z-10">CREATE FREE ACCOUNT</span>
+              <span className="relative z-10 !text-white">CREATE FREE ACCOUNT</span>
             </button>
-            {/* Browse Library button removed as requested */}
             <button
               onClick={handlePlayLastSong}
               disabled={historyLoading || !history || history.length === 0}
-              className="border-2 border-blue-400 text-blue-400 px-8 md:px-10 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg tracking-wide hover:bg-blue-400 hover:text-black backdrop-blur-sm transition-all duration-400 hover:scale-105 shadow-xl focus:outline-none focus:ring-4 focus:ring-yellow-400/50 disabled:opacity-50"
+              className="border-2 border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400 px-8 md:px-10 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg tracking-wide hover:bg-blue-500 hover:!text-white dark:hover:bg-blue-400 dark:hover:text-black backdrop-blur-sm transition-all duration-400 hover:scale-105 shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-400/50 disabled:opacity-50"
               aria-label="Play Last Song"
             >
               ▶ Play Last Song
             </button>
           </div>
 
-          <p className="text-gray-400 text-sm md:text-base pt-3 font-medium">
+          <p className="text-slate-500 dark:text-gray-400 text-sm md:text-base pt-3 font-medium">
             No credit card required. Start creating today.
           </p>
         </article>
@@ -291,7 +291,7 @@ const Homepage = () => {
       </section>
 
       {/* VIDEO BANNER - Optimized with loading states */}
-      <section className="relative h-[60vh] md:h-[65vh] w-full max-w-[1600px] mx-auto overflow-hidden my-12 px-4 sm:px-6 lg:px-12">
+      <section data-preserve-dark className="video-hero relative h-[60vh] md:h-[65vh] w-full max-w-[1600px] mx-auto overflow-hidden my-12 px-4 sm:px-6 lg:px-12">
         <div className="relative w-full h-full rounded-3xl shadow-2xl overflow-hidden backdrop-blur-md border border-white/5">
           <video
             autoPlay
@@ -447,61 +447,148 @@ const Homepage = () => {
         </section>
 
         {/* Messages Section - Extra spacious top/bottom and downside margin */}
-        <section aria-labelledby="messages" className="my-36 md:my-52 mb-44 md:mb-64 px-2 sm:px-4">
-          <SectionHeading emoji="💬" title="Desi Community Chat" subtitle="Connect & Vibing with Music Lovers" />
-          
-          <div className="mt-8 relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-950/60 via-slate-900/80 to-purple-950/60 border border-blue-500/20 p-8 sm:p-12 shadow-2xl backdrop-blur-xl group">
-            {/* Ambient Background Glow */}
-            <div className="absolute -top-24 -right-24 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-cyan-500/30 transition-all duration-700 pointer-events-none"></div>
-            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl group-hover:bg-purple-500/30 transition-all duration-700 pointer-events-none"></div>
+<section
+  aria-labelledby="messages"
+  className="my-36 md:my-52 mb-44 md:mb-64 px-2 sm:px-4"
+>
+  <SectionHeading
+    emoji="💬"
+    title="Desi Community Chat"
+    subtitle="Connect & Vibing with Music Lovers"
+  />
 
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="max-w-xl text-center md:text-left space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-400 text-xs font-bold uppercase tracking-wider">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Real-time Messaging Active
-                </div>
-                <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                  Share Beats & Chat with Friends
-                </h3>
-                <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-                  Join direct conversations, recommend your favorite tracks, and chat instantly with fellow listeners across India.
-                </p>
-              </div>
+  <div className="mt-8 relative overflow-hidden rounded-3xl
+    bg-white dark:bg-[#151922]
+    border border-slate-200 dark:border-slate-700/80
+    p-6 sm:p-10 md:p-12
+    shadow-lg dark:shadow-black/30
+    transition-colors duration-300"
+  >
+    {/* Subtle decorative accents */}
+    <div className="absolute top-0 right-0 w-64 h-64
+      bg-blue-500/[0.06] dark:bg-blue-500/[0.08]
+      rounded-full blur-3xl pointer-events-none"
+    />
 
-              <div className="flex flex-col items-center gap-3">
-                <button
-                  onClick={() => navigate('/messages')}
-                  className="group relative px-10 py-5 bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 text-white text-lg font-bold rounded-2xl shadow-xl shadow-blue-500/25 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 overflow-hidden flex items-center gap-3"
-                >
-                  <span className="relative z-10 flex items-center gap-3">
-                    <svg
-                      className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                    Open Messages Studio
-                    <svg
-                      className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </button>
-                <p className="text-gray-400 text-xs font-medium">
-                  Instant response • Encrypted direct messaging
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+    <div className="absolute bottom-0 left-0 w-56 h-56
+      bg-indigo-500/[0.04] dark:bg-indigo-500/[0.06]
+      rounded-full blur-3xl pointer-events-none"
+    />
+
+    <div className="relative z-10 flex flex-col md:flex-row
+      items-center justify-between gap-8 md:gap-10"
+    >
+      {/* Content */}
+      <div className="max-w-xl text-center md:text-left space-y-5">
+
+        <div className="inline-flex items-center gap-2
+          px-3 py-1.5 rounded-full
+          bg-blue-50 dark:bg-blue-500/10
+          border border-blue-200 dark:border-blue-400/25
+          text-blue-700 dark:text-blue-400
+          text-xs font-bold uppercase tracking-wider"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          Real-time Messaging Active
+        </div>
+
+        <h3 className="text-3xl sm:text-4xl font-extrabold
+          text-slate-900 dark:text-white tracking-tight leading-tight"
+        >
+          Share Beats & Chat with Friends
+        </h3>
+
+        <p className="text-slate-600 dark:text-slate-300
+          text-base sm:text-lg leading-relaxed"
+        >
+          Join direct conversations, recommend your favorite
+          tracks, and chat instantly with fellow listeners across India.
+        </p>
+
+        {/* Feature highlights */}
+        <div className="flex flex-wrap justify-center md:justify-start
+          gap-3 pt-1"
+        >
+          <span className="inline-flex items-center gap-2
+            text-sm text-slate-600 dark:text-slate-300"
+          >
+            <span className="text-blue-500">✓</span>
+            Instant messaging
+          </span>
+
+          <span className="inline-flex items-center gap-2
+            text-sm text-slate-600 dark:text-slate-300"
+          >
+            <span className="text-blue-500">✓</span>
+            Connect with listeners
+          </span>
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="flex flex-col items-center gap-4
+        shrink-0 w-full md:w-auto"
+      >
+        <button
+          onClick={() => navigate("/messages")}
+          className="group w-full sm:w-auto
+            relative inline-flex items-center justify-center gap-3
+            px-7 sm:px-9 py-4
+            bg-[#3B82F6] hover:bg-blue-500
+            active:scale-[0.98]
+            text-white text-base sm:text-lg font-bold
+            rounded-2xl
+            shadow-lg shadow-blue-600/20
+            hover:shadow-blue-500/30
+            transition-all duration-200
+            focus:outline-none focus-visible:ring-2
+            focus-visible:ring-blue-400 focus-visible:ring-offset-2
+            focus-visible:ring-offset-white
+            dark:focus-visible:ring-offset-[#151922]"
+        >
+          <svg
+            className="w-6 h-6 transition-transform duration-200
+              group-hover:scale-110"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
+          </svg>
+
+          Open Messages Studio
+
+          <svg
+            className="w-5 h-5 transition-transform duration-200
+              group-hover:translate-x-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 7l5 5m0 0l-5 5m5-5H6"
+            />
+          </svg>
+        </button>
+
+        <p className="text-slate-500 dark:text-slate-400
+          text-xs font-medium text-center leading-relaxed"
+        >
+          Real-time conversations • Chat with music lovers
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
         {/* 📸 Official Instagram Feed Posts - Spacious wrapper */}
         <div className="my-36 md:my-52">
@@ -517,11 +604,10 @@ const Homepage = () => {
 
       </main>
 
-
-
-
-
-
+      {/* 🎧 Immersive 3D Headphone Scroll Experience - Just before Footer */}
+      <div id="headphone-scroll-section" data-preserve-dark className="relative">
+        <HeadphoneScrollExperience />
+      </div>
 
     </div>
   );

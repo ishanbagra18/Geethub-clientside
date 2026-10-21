@@ -46,16 +46,16 @@ const Mostliked = ({ limitToHome = false }) => {
   };
 
   return (
-    <section className="mt-16 px-4 md:px-10 max-w-[1600px] mx-auto text-white">
+    <section className="mt-16 px-4 md:px-10 max-w-[1600px] mx-auto text-slate-900 dark:text-white">
       {/* HEADER ROW */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
           <div className="w-1.5 h-12 rounded-full bg-gradient-to-b from-rose-500 via-pink-500 to-red-500 shadow-lg shadow-rose-500/30" />
           <div>
-            <span className="text-rose-400 text-xs font-extrabold tracking-[0.25em] uppercase flex items-center gap-1 mb-1">
-              <Sparkles size={14} className="text-rose-400 animate-pulse" /> Community Choice
+            <span className="text-rose-500 dark:text-rose-400 text-xs font-extrabold tracking-[0.25em] uppercase flex items-center gap-1 mb-1">
+              <Sparkles size={14} className="text-rose-500 dark:text-rose-400 animate-pulse" /> Community Choice
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white flex items-center gap-3">
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
               Most Liked Songs
             </h2>
           </div>
@@ -64,7 +64,7 @@ const Mostliked = ({ limitToHome = false }) => {
         {limitToHome && (
           <button
             onClick={() => navigate("/mostliked")}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-rose-500/30 bg-slate-950/70 backdrop-blur-md text-rose-300 text-xs font-bold hover:bg-rose-500/20 hover:border-rose-400 hover:text-white hover:scale-105 transition-all duration-300 shadow-lg"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-slate-200 dark:border-rose-500/30 bg-slate-100 hover:bg-slate-200 dark:bg-slate-950/70 backdrop-blur-md text-rose-600 dark:text-rose-300 text-xs font-bold hover:dark:bg-rose-500/20 hover:border-rose-400 hover:text-white hover:scale-105 transition-all duration-300 shadow-sm"
           >
             MORE IN MOST LIKED
             <span className="text-sm">→</span>
@@ -77,14 +77,14 @@ const Mostliked = ({ limitToHome = false }) => {
         {/* Navigation Buttons */}
         <button
           onClick={() => scrollByAmount("left")}
-          className="absolute -left-5 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-slate-950/90 border border-rose-500/40 text-rose-300 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-rose-600 hover:text-white hover:scale-110 shadow-2xl backdrop-blur-md"
+          className="absolute -left-5 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/90 dark:bg-slate-950/90 border border-slate-200 dark:border-rose-500/40 text-slate-700 dark:text-rose-300 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-rose-600 hover:!text-white hover:scale-110 shadow-xl backdrop-blur-md"
         >
           <ChevronLeft size={20} />
         </button>
 
         <button
           onClick={() => scrollByAmount("right")}
-          className="absolute -right-5 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-slate-950/90 border border-rose-500/40 text-rose-300 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-rose-600 hover:text-white hover:scale-110 shadow-2xl backdrop-blur-md"
+          className="absolute -right-5 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/90 dark:bg-slate-950/90 border border-slate-200 dark:border-rose-500/40 text-slate-700 dark:text-rose-300 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-rose-600 hover:!text-white hover:scale-110 shadow-xl backdrop-blur-md"
         >
           <ChevronRight size={20} />
         </button>
@@ -105,10 +105,10 @@ const Mostliked = ({ limitToHome = false }) => {
               >
                 <div
                   onClick={() => handlePlay(songId)}
-                  className="relative p-3.5 rounded-2xl bg-gray-950/70 border border-gray-800/80 backdrop-blur-xl transition-all duration-300 hover:border-rose-500/60 hover:shadow-2xl hover:shadow-rose-500/20 hover:-translate-y-1.5 cursor-pointer"
+                  className="relative p-3.5 rounded-2xl bg-white dark:bg-gray-950/70 border border-slate-200 dark:border-gray-800/80 backdrop-blur-xl transition-all duration-300 hover:border-rose-500/60 shadow-sm hover:shadow-xl hover:shadow-rose-500/20 hover:-translate-y-1.5 cursor-pointer"
                 >
                   {/* Artwork Container */}
-                  <div className="relative w-full h-[180px] aspect-square rounded-xl overflow-hidden bg-gray-900 border border-gray-800 flex-shrink-0">
+                  <div className="relative w-full h-[180px] aspect-square rounded-xl overflow-hidden bg-slate-100 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 flex-shrink-0">
                     <img
                       src={song.image_url || PLACEHOLDER}
                       alt={song.title || "Cover"}
@@ -118,20 +118,20 @@ const Mostliked = ({ limitToHome = false }) => {
                       }}
                     />
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover/card:opacity-80 transition-opacity" />
+                    {/* Gradient Overlay (Only on Hover for Play Button) */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover/card:opacity-70 transition-opacity pointer-events-none" />
 
                     {/* Play Hover Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-all duration-300">
-                      <div className="w-13 h-13 flex items-center justify-center rounded-full bg-gradient-to-br from-rose-600 to-pink-500 text-white shadow-2xl shadow-rose-500/50 transform scale-75 group-hover/card:scale-100 transition-transform">
-                        <Play size={22} fill="currentColor" className="ml-0.5" />
+                      <div className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-br from-rose-600 to-pink-500 !text-white shadow-2xl shadow-rose-500/60 border border-white/20 transform scale-75 group-hover/card:scale-100 hover:!scale-110 active:scale-95 transition-all duration-300">
+                        <Play size={22} fill="currentColor" className="ml-1 !text-white" />
                       </div>
                     </div>
 
                     {/* Add to Queue Button */}
                     <button
                       onClick={(e) => handleQueue(e, song)}
-                      className="absolute top-2 right-2 p-2 rounded-lg bg-black/80 backdrop-blur-md border border-rose-500/40 text-rose-300 hover:bg-rose-600 hover:text-white transition-all opacity-0 group-hover/card:opacity-100 shadow-md"
+                      className="absolute top-2 right-2 p-2 rounded-lg bg-black/80 backdrop-blur-md border border-rose-500/40 text-rose-300 hover:bg-rose-600 hover:!text-white transition-all opacity-0 group-hover/card:opacity-100 shadow-md"
                       title="Add to Queue"
                     >
                       <ListPlus size={16} />
@@ -140,17 +140,17 @@ const Mostliked = ({ limitToHome = false }) => {
 
                   {/* Song Metadata */}
                   <div className="mt-3.5">
-                    <h3 className="text-sm font-bold text-white truncate group-hover/card:text-rose-300 transition-colors">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover/card:text-rose-600 dark:group-hover/card:text-rose-300 transition-colors">
                       {song.title || "Untitled"}
                     </h3>
-                    <p className="text-xs text-gray-400 mt-1 truncate">
+                    <p className="text-xs text-slate-500 dark:text-gray-400 mt-1 truncate">
                       {song.artist || "Unknown Artist"}
                     </p>
 
                     {/* Like Counter Badge */}
                     <div className="mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30">
                       <Heart size={11} className="text-rose-500 fill-rose-500" />
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-300">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-600 dark:text-rose-300">
                         {likesCount} {likesCount === 1 ? "Like" : "Likes"}
                       </span>
                     </div>

@@ -39,7 +39,7 @@ const GlobalMusicPlayer = () => {
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-blue-500/30 shadow-2xl z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-t border-slate-200 dark:border-blue-500/30 shadow-2xl z-50 text-slate-900 dark:text-white">
       <div className="max-w-screen-2xl mx-auto px-4 py-3">
         {/* Progress Bar */}
         <div className="mb-2">
@@ -49,12 +49,12 @@ const GlobalMusicPlayer = () => {
             max={duration || 100}
             value={currentTime}
             onChange={(e) => seekTo(parseFloat(e.target.value))}
-            className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
+            className="w-full h-1 bg-slate-200 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
             style={{
-              background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${progressPercent}%, #1f2937 ${progressPercent}%, #1f2937 100%)`,
+              background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${progressPercent}%, #cbd5e1 ${progressPercent}%, #cbd5e1 100%)`,
             }}
           />
-          <div className="flex justify-between text-xs text-gray-400 mt-1">
+          <div className="flex justify-between text-xs text-slate-500 dark:text-gray-400 mt-1">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
@@ -64,7 +64,7 @@ const GlobalMusicPlayer = () => {
         <div className="flex items-center justify-between gap-4">
           {/* Song Info */}
           <div
-            className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer hover:bg-blue-800/20 p-2 rounded-xl transition-all"
+            className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer hover:bg-slate-100 dark:hover:bg-blue-800/20 p-2 rounded-xl transition-all"
             onClick={() => navigate(`/playsong/${currentSong.song_id}`)}
           >
             <img
@@ -73,17 +73,17 @@ const GlobalMusicPlayer = () => {
               className="w-12 h-12 rounded-lg object-cover shadow-lg"
             />
             <div className="min-w-0 flex-1">
-              <h3 className="text-white font-semibold text-sm truncate flex items-center gap-1.5">
+              <h3 className="text-slate-900 dark:text-white font-semibold text-sm truncate flex items-center gap-1.5">
                 {currentSong.title}
                 {isPlaying && (
                   <span className="flex items-end gap-[2px] h-3">
-                    <span className="w-[3px] h-full bg-blue-400 animate-bounce" />
-                    <span className="w-[3px] h-[60%] bg-blue-400 animate-bounce" style={{ animationDelay: '0.15s' }} />
-                    <span className="w-[3px] h-[80%] bg-blue-400 animate-bounce" style={{ animationDelay: '0.3s' }} />
+                    <span className="w-[3px] h-full bg-blue-500 animate-bounce" />
+                    <span className="w-[3px] h-[60%] bg-blue-500 animate-bounce" style={{ animationDelay: '0.15s' }} />
+                    <span className="w-[3px] h-[80%] bg-blue-500 animate-bounce" style={{ animationDelay: '0.3s' }} />
                   </span>
                 )}
               </h3>
-              <p className="text-gray-400 text-xs truncate">{currentSong.artist}</p>
+              <p className="text-slate-500 dark:text-gray-400 text-xs truncate">{currentSong.artist}</p>
             </div>
           </div>
 
@@ -94,7 +94,7 @@ const GlobalMusicPlayer = () => {
               onClick={toggleLike}
               className={`p-2 rounded-full transition-all hidden md:flex ${isLiked
                   ? "text-red-500 bg-red-500/20 hover:bg-red-500/30"
-                  : "text-gray-300 hover:text-red-500 hover:bg-blue-700/30"
+                  : "text-slate-500 dark:text-gray-300 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-blue-700/30"
                 }`}
               title={isLiked ? "Unlike" : "Like"}
             >
@@ -104,7 +104,7 @@ const GlobalMusicPlayer = () => {
             {/* Previous Button */}
             <button
               onClick={playPrevious}
-              className="p-1.5 sm:p-2 rounded-full bg-blue-700/40 text-white hover:bg-blue-600/70 transition-all"
+              className="p-1.5 sm:p-2 rounded-full bg-slate-100 dark:bg-blue-700/40 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-blue-600/70 border border-slate-200 dark:border-transparent transition-all"
               title="Previous"
             >
               <SkipBack size={18} />
@@ -113,16 +113,16 @@ const GlobalMusicPlayer = () => {
             {/* Play/Pause Button */}
             <button
               onClick={togglePlayPause}
-              className="p-2.5 sm:p-3 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 text-white hover:from-blue-500 hover:to-blue-400 transition-all shadow-lg shadow-blue-500/30 hover:scale-105"
+              className="p-2.5 sm:p-3 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 !text-white hover:from-blue-500 hover:to-blue-400 transition-all shadow-lg shadow-blue-500/30 hover:scale-105"
               title={isPlaying ? "Pause" : "Play"}
             >
-              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+              {isPlaying ? <Pause size={20} className="!text-white" /> : <Play size={20} className="!text-white" />}
             </button>
 
             {/* Next Button */}
             <button
               onClick={playNext}
-              className="p-1.5 sm:p-2 rounded-full bg-blue-700/40 text-white hover:bg-blue-600/70 transition-all"
+              className="p-1.5 sm:p-2 rounded-full bg-slate-100 dark:bg-blue-700/40 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-blue-600/70 border border-slate-200 dark:border-transparent transition-all"
               title="Next"
             >
               <SkipForward size={18} />
@@ -133,7 +133,7 @@ const GlobalMusicPlayer = () => {
               onClick={toggleSave}
               className={`p-2 rounded-full transition-all hidden md:flex ${isSaved
                   ? "text-yellow-500 bg-yellow-500/20 hover:bg-yellow-500/30"
-                  : "text-gray-300 hover:text-yellow-500 hover:bg-blue-700/30"
+                  : "text-slate-500 dark:text-gray-300 hover:text-yellow-500 hover:bg-slate-100 dark:hover:bg-blue-700/30"
                 }`}
               title={isSaved ? "Unsave" : "Save"}
             >

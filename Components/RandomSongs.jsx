@@ -123,60 +123,80 @@ const RandomSongs = ({ maxToShow = 4 }) => {
         {primaryItem && (
           <div
             onClick={() => handlePlay(primaryItem)}
-            className="lg:col-span-7 group relative rounded-3xl overflow-hidden cursor-pointer border border-cyan-500/30 bg-gradient-to-br from-slate-950 via-blue-950/60 to-purple-950/40 p-8 sm:p-10 shadow-2xl transition-all duration-500 hover:border-cyan-400 hover:shadow-[0_0_40px_rgba(6,182,212,0.3)] hover:-translate-y-1.5 flex flex-col justify-between min-h-[380px]"
+            className="lg:col-span-7 group relative rounded-3xl overflow-hidden cursor-pointer border border-slate-200 dark:border-cyan-500/30 bg-white dark:bg-gradient-to-br dark:from-[#0c1220] dark:via-[#080d18] dark:to-[#121626] p-6 sm:p-8 shadow-sm hover:shadow-2xl hover:shadow-cyan-500/10 dark:hover:shadow-[0_0_40px_rgba(6,182,212,0.25)] transition-all duration-500 hover:border-cyan-400 hover:-translate-y-1.5 flex flex-col justify-between min-h-[380px]"
           >
-            {/* Background Image / Vinyl */}
-            <div className="absolute inset-0 z-0 overflow-hidden">
-              <img
-                src={failedImages[primaryItem.song_id] || primaryItem.img}
-                alt={primaryItem.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 brightness-[0.4] group-hover:brightness-[0.45]"
-                onError={() => handleImageError(primaryItem.song_id, primaryItem.fallbackImg)}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
-            </div>
+            {/* Ambient Blurred Artwork Glow (Background Accent) */}
+            <div 
+              className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full opacity-10 dark:opacity-20 blur-3xl pointer-events-none bg-cover bg-center"
+              style={{ backgroundImage: `url(${failedImages[primaryItem.song_id] || primaryItem.img})` }}
+            />
 
             {/* Top Badges Bar */}
-            <div className="relative z-10 flex items-center justify-between gap-3">
-              <span className="px-4 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 backdrop-blur-xl text-cyan-300 text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-lg">
-                <Sparkles size={14} className="text-cyan-400 animate-pulse" />
+            <div className="relative z-10 flex items-center justify-between gap-3 mb-6">
+              <span className="px-3.5 py-1.5 rounded-full bg-cyan-500/15 border border-cyan-400/40 text-cyan-600 dark:text-cyan-300 text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                <Sparkles size={14} className="text-cyan-500 dark:text-cyan-400 animate-pulse" />
                 Featured Spotlight #1
               </span>
 
               <button
                 onClick={(e) => handleQueue(e, primaryItem)}
-                className="p-3 rounded-2xl bg-black/80 backdrop-blur-md border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500 hover:text-black transition-all shadow-xl hover:scale-105"
+                className="p-3 rounded-2xl bg-slate-100 dark:bg-black/80 backdrop-blur-md border border-slate-200 dark:border-cyan-500/40 text-slate-700 dark:text-cyan-300 hover:bg-cyan-500 hover:!text-black transition-all shadow-md hover:scale-105"
                 title="Add to Queue"
               >
                 <ListPlus size={20} />
               </button>
             </div>
 
-            {/* Middle Play Action Icon */}
-            <div className="relative z-10 my-6 flex items-center gap-5">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-cyan-500/50 group-hover:scale-110 transition-all duration-300 border-2 border-white/20">
-                <Play size={34} fill="currentColor" className="ml-1" />
+            {/* Middle Section: Artwork Showcase & Stream Action */}
+            <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6 my-auto">
+              {/* Prominent High-Res Album Art with Drop Shadow */}
+              <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-2xl overflow-hidden flex-shrink-0 shadow-xl border border-slate-200 dark:border-white/10 group-hover:scale-105 transition-transform duration-500 bg-slate-100 dark:bg-slate-900">
+                <img
+                  src={failedImages[primaryItem.song_id] || primaryItem.img}
+                  alt={primaryItem.title}
+                  className="w-full h-full object-cover"
+                  onError={() => handleImageError(primaryItem.song_id, primaryItem.fallbackImg)}
+                />
+                {/* Center Play Button Overlay */}
+                <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 !text-white flex items-center justify-center shadow-2xl shadow-cyan-500/50 transform scale-75 group-hover:scale-100 transition-transform">
+                    <Play size={24} fill="currentColor" className="ml-1 !text-white" />
+                  </div>
+                </div>
               </div>
-              <div className="hidden sm:block">
-                <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
-                  <Radio size={14} className="animate-pulse" /> Stream Now
-                </span>
-                <p className="text-gray-300 text-sm font-medium">Click to play featured curator pick</p>
+
+              {/* Action Prompt */}
+              <div className="flex-1 flex flex-col justify-center text-center sm:text-left space-y-3">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-400/30 text-blue-600 dark:text-cyan-300 text-xs font-mono font-bold uppercase w-fit mx-auto sm:mx-0">
+                  <Flame size={13} className="text-blue-500 dark:text-cyan-400" />
+                  {primaryItem.tag}
+                </div>
+
+                <div className="flex items-center gap-3 justify-center sm:justify-start">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 !text-white flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                    <Play size={20} fill="currentColor" className="ml-0.5 !text-white" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+                      <Radio size={13} className="animate-pulse" /> Stream Now
+                    </span>
+                    <p className="text-slate-500 dark:text-gray-400 text-xs font-medium">Click card to play featured pick</p>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Bottom Content Metadata */}
-            <div className="relative z-10 space-y-2">
-              <div className="inline-block px-3 py-1 rounded-md bg-blue-500/20 border border-blue-400/30 text-cyan-300 text-[11px] font-mono font-bold uppercase">
-                {primaryItem.tag}
-              </div>
-              <h3 className="text-3xl sm:text-4xl font-black text-white group-hover:text-cyan-300 transition-colors tracking-tight">
+            <div className="relative z-10 pt-4 border-t border-slate-100 dark:border-white/5 space-y-1">
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors tracking-tight line-clamp-1">
                 {primaryItem.title}
               </h3>
-              <p className="text-base text-gray-300 font-semibold flex items-center gap-2">
+              <p className="text-sm sm:text-base text-slate-600 dark:text-gray-300 font-semibold flex items-center gap-2">
                 <span>{primaryItem.artist}</span>
                 <span>•</span>
-                <span className="text-xs font-bold uppercase text-purple-400">{primaryItem.genre}</span>
+                <span className="text-xs font-bold uppercase text-purple-600 dark:text-purple-400">{primaryItem.genre}</span>
+                <span>•</span>
+                <span className="text-xs font-bold uppercase text-slate-400">{primaryItem.lang}</span>
               </p>
             </div>
           </div>
@@ -191,17 +211,17 @@ const RandomSongs = ({ maxToShow = 4 }) => {
               <div
                 key={s.song_id || i}
                 onClick={() => handlePlay(s)}
-                className="group relative rounded-2xl overflow-hidden cursor-pointer border border-slate-800/80 bg-[#12141d]/90 p-4 shadow-xl transition-all duration-300 hover:border-cyan-500/50 hover:shadow-cyan-500/20 hover:-translate-y-1 flex items-center gap-4"
+                className="group relative rounded-2xl overflow-hidden cursor-pointer border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#12141d]/90 p-4 shadow-sm hover:shadow-md transition-all duration-300 hover:border-cyan-500/50 hover:shadow-cyan-500/20 hover:-translate-y-1 flex items-center gap-4"
               >
                 {/* Image Disc */}
-                <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-900 flex-shrink-0 border border-slate-700/60 shadow-md">
+                <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-200 dark:bg-slate-900 flex-shrink-0 border border-slate-300 dark:border-slate-700/60 shadow-md">
                   <img
                     src={currentImg}
                     alt={s.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     onError={() => handleImageError(s.song_id, s.fallbackImg)}
                   />
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />
+                  <div className="absolute inset-0 bg-black/10 dark:bg-black/30 group-hover:bg-transparent transition-colors" />
                   
                   {/* Small Play Center Icon */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -213,13 +233,13 @@ const RandomSongs = ({ maxToShow = 4 }) => {
 
                 {/* Metadata Info */}
                 <div className="flex-1 min-w-0">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-cyan-400 block mb-0.5">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 block mb-0.5">
                     {s.tag}
                   </span>
-                  <h4 className="text-base font-bold text-white truncate group-hover:text-cyan-300 transition-colors">
+                  <h4 className="text-base font-bold text-slate-900 dark:text-white truncate group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors">
                     {s.title}
                   </h4>
-                  <p className="text-xs text-gray-400 truncate mt-0.5 font-medium">
+                  <p className="text-xs text-slate-500 dark:text-gray-400 truncate mt-0.5 font-medium">
                     {s.artist}
                   </p>
                 </div>
@@ -227,7 +247,7 @@ const RandomSongs = ({ maxToShow = 4 }) => {
                 {/* Queue Action Button */}
                 <button
                   onClick={(e) => handleQueue(e, s)}
-                  className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-cyan-500 hover:text-black text-cyan-400 transition-all border border-slate-700 flex-shrink-0"
+                  className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-cyan-500 hover:!text-black text-cyan-600 dark:text-cyan-400 transition-all border border-slate-200 dark:border-slate-700 flex-shrink-0"
                   title="Add to Queue"
                 >
                   <ListPlus size={16} />
