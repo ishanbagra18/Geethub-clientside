@@ -10,6 +10,12 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Components/Navbar';
 import API_BASE_URL from '../config/api';
 
+import {
+    Music2,
+    ArrowRight,
+    Clock3,
+} from 'lucide-react';
+
 Modal.setAppElement('#root');
 
 const Mylibrary = () => {
@@ -205,69 +211,214 @@ const Mylibrary = () => {
         }
 
         const displayList = getDisplayList();
-        return (
+       
+return (
+    <div className="relative space-y-7 sm:space-y-9">
 
-            <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <h2 className="text-2xl font-bold text-white tracking-tight">{activeTab.toUpperCase()}</h2>
-                        {/* Clear History Button UI */}
-                        {activeTab === 'history' && displayList.length > 0 && (
-                            <button
-                                onClick={handleClearHistory}
-                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-all text-xs font-bold"
-                            >
-                                <Trash2 size={14} />
-                                CLEAR HISTORY
-                            </button>
-                        )}
-                    </div>
-                    <span className="text-sm text-gray-400 px-3 py-1 bg-gray-900/50 rounded-full">{displayList.length} songs</span>
+        {/* Header */}
+        <section className="flex flex-col gap-4 border-b border-white/[0.07] pb-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.24em] text-violet-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_10px_rgba(167,139,250,0.8)]" />
+                    YOUR MUSIC LIBRARY
                 </div>
 
-                {/* Saved Playlists Quick Access Banner */}
-                {activeTab === 'saved' && (
-                    <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-transparent border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40">
-                                <Bookmark size={24} />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-white">Looking for your Saved Playlists?</h3>
-                                <p className="text-xs text-gray-400">View and play all bookmarked custom mixes in your Playlist Hub</p>
-                            </div>
-                        </div>
-                        <button
-                            onClick={() => navigate('/myplaylists')}
-                            className="px-5 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition shadow-lg shadow-amber-500/20 flex-shrink-0"
-                        >
-                            Open Saved Playlists Vault →
-                        </button>
-                    </div>
-                )}
+                <div className="flex flex-wrap items-center gap-3">
+                    <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                        {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                        <span className="text-violet-400">.</span>
+                    </h2>
 
-                {displayList.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-20 bg-[#121212] rounded-3xl border border-dashed border-gray-800">
-                        <p className="text-gray-500">No songs found in your {activeTab}.</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {displayList.map((song, index) => (
-                            <SongCard
-                                key={song.id || song.song_id || index}
-                                song={activeTab === 'history' ? songLookup[song.song_id] || song : song}
-                                isHovered={hoveredSong === (song.id || song.song_id)}
-                                onHover={() => setHoveredSong(song.id || song.song_id)}
-                                onLeave={() => setHoveredSong(null)}
-                                onClick={() => navigate(`/playsong/${song.song_id || song.id}`)}
-                                ref={activeTab === 'history' && index === 0 ? firstSongRef : undefined}
-                                highlight={activeTab === 'history' && index === 0}
-                            />
-                        ))}
-                    </div>
-                )}
+                    {activeTab === 'history' && displayList.length > 0 && (
+                        <button
+                            onClick={handleClearHistory}
+                            className="inline-flex items-center gap-2 rounded-lg border border-rose-500/20 bg-rose-500/[0.07] px-3 py-2 text-[10px] font-bold tracking-wider text-rose-400 transition-all duration-300 hover:border-rose-500/40 hover:bg-rose-500/[0.14] hover:text-rose-300 active:scale-95"
+                        >
+                            <Trash2 size={14} />
+                            CLEAR HISTORY
+                        </button>
+                    )}
+                </div>
+
+                <p className="mt-2 text-sm text-gray-500">
+                    {activeTab === 'history'
+                        ? 'Pick up where your music journey left off.'
+                        : activeTab === 'saved'
+                        ? 'All your saved tracks, together in one place.'
+                        : 'Your personal collection of favorite tracks.'}
+                </p>
             </div>
-        );
+
+            {/* Song count */}
+            <div className="flex w-fit items-center gap-2.5 rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 py-2.5">
+                <Music2 size={16} className="text-violet-400" />
+
+                <span className="text-sm font-semibold tabular-nums text-white">
+                    {displayList.length}
+                </span>
+
+                <span className="text-xs text-gray-500">
+                    {displayList.length === 1 ? 'song' : 'songs'}
+                </span>
+            </div>
+        </section>
+
+        {/* Saved Playlists Banner */}
+        {activeTab === 'saved' && (
+            <section className="group relative isolate overflow-hidden rounded-2xl border border-amber-400/15 bg-[#111015] transition-colors duration-300 hover:border-amber-400/30 sm:rounded-3xl">
+                {/* Ambient glow */}
+                <div className="pointer-events-none absolute -right-12 -top-20 -z-10 h-64 w-64 rounded-full bg-amber-500/[0.09] blur-[90px] transition-all duration-500 group-hover:bg-amber-500/[0.15]" />
+
+                <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+                    <div className="flex items-start gap-4">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-amber-400/20 bg-amber-400/[0.08] text-amber-400 transition-transform duration-300 group-hover:scale-105 sm:h-14 sm:w-14">
+                            <Bookmark size={25} />
+                        </div>
+
+                        <div className="min-w-0">
+                            <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-amber-400">
+                                    YOUR COLLECTION
+                                </span>
+
+                                <span className="rounded-full border border-amber-400/15 bg-amber-400/[0.06] px-2 py-0.5 text-[9px] font-medium text-amber-300/80">
+                                    PLAYLIST HUB
+                                </span>
+                            </div>
+
+                            <h3 className="text-lg font-bold tracking-tight text-white sm:text-xl">
+                                Your playlists, your vibe.
+                            </h3>
+
+                            <p className="mt-1.5 max-w-md text-xs leading-6 text-gray-400 sm:text-sm">
+                                Explore your bookmarked playlists and jump
+                                back into your favorite mixes anytime.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => navigate('/myplaylists')}
+                        className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-400 px-5 py-3 text-xs font-bold text-black transition-all duration-300 hover:bg-amber-300 hover:shadow-[0_0_25px_rgba(251,191,36,0.12)] active:scale-[0.98] sm:text-sm"
+                    >
+                        Open Playlist Hub
+                        <ArrowRight
+                            size={16}
+                            className="transition-transform duration-300 group-hover:translate-x-1"
+                        />
+                    </button>
+                </div>
+            </section>
+        )}
+
+        {/* Song Collection */}
+        {displayList.length === 0 ? (
+            <section className="relative flex min-h-[300px] flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-white/[0.09] bg-white/[0.015] px-6 py-16 text-center sm:min-h-[360px]">
+                <div className="pointer-events-none absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/[0.07] blur-[80px]" />
+
+                <div className="relative mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-violet-400/15 bg-violet-500/[0.07]">
+                    {activeTab === 'history' ? (
+                        <Clock3 size={29} className="text-violet-300" />
+                    ) : activeTab === 'saved' ? (
+                        <Bookmark size={29} className="text-violet-300" />
+                    ) : (
+                        <Music2 size={29} className="text-violet-300" />
+                    )}
+                </div>
+
+                <h3 className="relative text-xl font-semibold tracking-tight text-white">
+                    {activeTab === 'history'
+                        ? 'Nothing played yet'
+                        : activeTab === 'saved'
+                        ? 'No saved songs yet'
+                        : 'Your collection is waiting'}
+                </h3>
+
+                <p className="relative mt-2 max-w-sm text-sm leading-6 text-gray-500">
+                    {activeTab === 'history'
+                        ? 'The songs you listen to will show up here. Find something you love and press play.'
+                        : activeTab === 'saved'
+                        ? 'Save your favorite tracks to keep them close and find them whenever you want.'
+                        : 'Discover new music and add your favorite songs to your collection.'}
+                </p>
+
+                <button
+                    onClick={() => navigate('/')}
+                    className="relative mt-6 inline-flex items-center gap-2 rounded-xl border border-violet-400/20 bg-violet-500/[0.08] px-5 py-3 text-sm font-semibold text-violet-200 transition-all duration-300 hover:border-violet-400/40 hover:bg-violet-500/[0.14] active:scale-[0.98]"
+                >
+                    <Music2 size={16} />
+                    Discover music
+                    <ArrowRight size={15} />
+                </button>
+            </section>
+        ) : (
+            <section className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
+                {displayList.map((song, index) => (
+                    <div
+                        key={song.id || song.song_id || index}
+                        className="min-w-0 animate-library-card"
+                        style={{
+                            animationDelay: `${Math.min(index, 10) * 45}ms`,
+                        }}
+                    >
+                        <SongCard
+                            song={
+                                activeTab === 'history'
+                                    ? songLookup[song.song_id] || song
+                                    : song
+                            }
+                            isHovered={
+                                hoveredSong === (song.id || song.song_id)
+                            }
+                            onHover={() =>
+                                setHoveredSong(song.id || song.song_id)
+                            }
+                            onLeave={() => setHoveredSong(null)}
+                            onClick={() =>
+                                navigate(
+                                    `/playsong/${song.song_id || song.id}`
+                                )
+                            }
+                            ref={
+                                activeTab === 'history' && index === 0
+                                    ? firstSongRef
+                                    : undefined
+                            }
+                            highlight={
+                                activeTab === 'history' && index === 0
+                            }
+                        />
+                    </div>
+                ))}
+            </section>
+        )}
+
+        {/* Entrance animation */}
+        <style>{`
+            @keyframes libraryCardEnter {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .animate-library-card {
+                animation: libraryCardEnter 400ms ease-out both;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .animate-library-card {
+                    animation: none;
+                }
+            }
+        `}</style>
+    </div>
+);
+
     };
 
 

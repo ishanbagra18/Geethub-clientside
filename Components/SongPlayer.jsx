@@ -304,7 +304,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
               <div className="flex items-center justify-center gap-6">
                 <button
                   onClick={playPrevious}
-                  className="p-3 rounded-full bg-slate-100 dark:bg-white/6 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent transition shadow-sm"
+                  className="p-3 rounded-full  dark:bg-white/6 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent transition shadow-sm"
                 >
                   <SkipBack size={22} />
                 </button>
@@ -318,7 +318,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
 
                 <button
                   onClick={playNext}
-                  className="p-3 rounded-full bg-slate-100 dark:bg-white/6 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent transition shadow-sm"
+                  className="p-3 rounded-full  dark:bg-white/6 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent transition shadow-sm"
                 >
                   <SkipForward size={22} />
                 </button>

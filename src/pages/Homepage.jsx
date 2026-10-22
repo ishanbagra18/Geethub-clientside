@@ -379,8 +379,7 @@ const Homepage = () => {
         )}
         {/* 🚀 END NEW SECTION */}
 
-        {/* 📻 DESI SMART MOOD RADIO BAR */}
-        <MoodRadioBar />
+      
 
         <section aria-labelledby="quick-hits">
           <SectionHeading emoji="⚡" title="Quick Hits & Collection" subtitle="Featured Mix" />
@@ -440,6 +439,12 @@ const Homepage = () => {
         <Hindisongs limitToHome={true} />
         <Punjabisongs limitToHome={true} />
 
+
+          {/* 📻 DESI SMART MOOD RADIO BAR */}
+        <MoodRadioBar />
+
+        
+
         {/* 🎤 Featured Artists Showcase */}
         <section aria-labelledby="featured-artists">
           <SectionHeading emoji="🌟" title="Featured Artists" subtitle="Discover Top Music Creators" />
@@ -447,147 +452,298 @@ const Homepage = () => {
         </section>
 
         {/* Messages Section - Extra spacious top/bottom and downside margin */}
+
 <section
-  aria-labelledby="messages"
-  className="my-36 md:my-52 mb-44 md:mb-64 px-2 sm:px-4"
+  aria-labelledby="community-chat-heading"
+  className="relative my-28 mb-36 px-4 sm:my-36 sm:mb-44 md:px-6"
 >
-  <SectionHeading
-    emoji="💬"
-    title="Desi Community Chat"
-    subtitle="Connect & Vibing with Music Lovers"
-  />
-
-  <div className="mt-8 relative overflow-hidden rounded-3xl
-    bg-white dark:bg-[#151922]
-    border border-slate-200 dark:border-slate-700/80
-    p-6 sm:p-10 md:p-12
-    shadow-lg dark:shadow-black/30
-    transition-colors duration-300"
-  >
-    {/* Subtle decorative accents */}
-    <div className="absolute top-0 right-0 w-64 h-64
-      bg-blue-500/[0.06] dark:bg-blue-500/[0.08]
-      rounded-full blur-3xl pointer-events-none"
+  <div className="mx-auto max-w-7xl">
+    <SectionHeading
+      emoji="💬"
+      title="Desi Community Chat"
+      subtitle="Your people. Your music. Your conversations."
     />
 
-    <div className="absolute bottom-0 left-0 w-56 h-56
-      bg-indigo-500/[0.04] dark:bg-indigo-500/[0.06]
-      rounded-full blur-3xl pointer-events-none"
-    />
+    <div className="group relative mt-10 overflow-hidden rounded-[2rem] border border-white/[0.08] bg-[#0b0d14] shadow-2xl shadow-black/20">
+      {/* Ambient background */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+      >
+        <div className="absolute -right-24 -top-32 h-80 w-80 rounded-full bg-blue-600/[0.15] blur-[100px] transition-all duration-700 group-hover:bg-blue-500/[0.22]" />
 
-    <div className="relative z-10 flex flex-col md:flex-row
-      items-center justify-between gap-8 md:gap-10"
-    >
-      {/* Content */}
-      <div className="max-w-xl text-center md:text-left space-y-5">
+        <div className="absolute -bottom-40 left-1/4 h-80 w-80 rounded-full bg-violet-600/[0.12] blur-[100px]" />
 
-        <div className="inline-flex items-center gap-2
-          px-3 py-1.5 rounded-full
-          bg-blue-50 dark:bg-blue-500/10
-          border border-blue-200 dark:border-blue-400/25
-          text-blue-700 dark:text-blue-400
-          text-xs font-bold uppercase tracking-wider"
-        >
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          Real-time Messaging Active
-        </div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(59,130,246,0.08),transparent_55%)]" />
 
-        <h3 className="text-3xl sm:text-4xl font-extrabold
-          text-slate-900 dark:text-white tracking-tight leading-tight"
-        >
-          Share Beats & Chat with Friends
-        </h3>
-
-        <p className="text-slate-600 dark:text-slate-300
-          text-base sm:text-lg leading-relaxed"
-        >
-          Join direct conversations, recommend your favorite
-          tracks, and chat instantly with fellow listeners across India.
-        </p>
-
-        {/* Feature highlights */}
-        <div className="flex flex-wrap justify-center md:justify-start
-          gap-3 pt-1"
-        >
-          <span className="inline-flex items-center gap-2
-            text-sm text-slate-600 dark:text-slate-300"
-          >
-            <span className="text-blue-500">✓</span>
-            Instant messaging
-          </span>
-
-          <span className="inline-flex items-center gap-2
-            text-sm text-slate-600 dark:text-slate-300"
-          >
-            <span className="text-blue-500">✓</span>
-            Connect with listeners
-          </span>
-        </div>
+        <div className="absolute inset-0 opacity-[0.035] [background-image:linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:36px_36px]" />
       </div>
 
-      {/* CTA */}
-      <div className="flex flex-col items-center gap-4
-        shrink-0 w-full md:w-auto"
-      >
-        <button
-          onClick={() => navigate("/messages")}
-          className="group w-full sm:w-auto
-            relative inline-flex items-center justify-center gap-3
-            px-7 sm:px-9 py-4
-            bg-[#3B82F6] hover:bg-blue-500
-            active:scale-[0.98]
-            text-white text-base sm:text-lg font-bold
-            rounded-2xl
-            shadow-lg shadow-blue-600/20
-            hover:shadow-blue-500/30
-            transition-all duration-200
-            focus:outline-none focus-visible:ring-2
-            focus-visible:ring-blue-400 focus-visible:ring-offset-2
-            focus-visible:ring-offset-white
-            dark:focus-visible:ring-offset-[#151922]"
-        >
-          <svg
-            className="w-6 h-6 transition-transform duration-200
-              group-hover:scale-110"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      <div className="relative grid items-center gap-12 p-6 sm:p-9 md:grid-cols-[1.1fr_0.9fr] md:gap-10 md:p-12 lg:p-16">
+        {/* Left content */}
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.07] px-3.5 py-2 text-xs font-semibold tracking-wide text-emerald-300">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            </span>
+            YOUR MUSIC COMMUNITY
+          </div>
+
+          <h3
+            id="community-chat-heading"
+            className="mt-6 max-w-xl text-3xl font-extrabold leading-[1.15] tracking-tight text-white sm:text-4xl lg:text-5xl"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-            />
-          </svg>
+            Good music sounds
+            <span className="mt-1 block bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400 bg-clip-text pb-1 text-transparent">
+              even better together.
+            </span>
+          </h3>
 
-          Open Messages Studio
+          <p className="mt-5 max-w-lg text-sm leading-7 text-slate-400 sm:text-base sm:leading-8">
+            Discover people who get your vibe. Share tracks, exchange
+            recommendations, and turn your favorite songs into conversations.
+          </p>
 
-          <svg
-            className="w-5 h-5 transition-transform duration-200
-              group-hover:translate-x-1"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 7l5 5m0 0l-5 5m5-5H6"
-            />
-          </svg>
-        </button>
+          {/* Feature chips */}
+          <div className="mt-7 flex flex-wrap gap-2.5">
+            <span className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3.5 py-2.5 text-xs font-medium text-slate-300 sm:text-sm">
+              <svg
+                className="h-4 w-4 text-blue-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.4-4 8-9 8a10 10 0 0 1-4.3-.95L3 20l1.4-3.7A7.4 7.4 0 0 1 3 12c0-4.4 4-8 9-8s9 3.6 9 8Z"
+                />
+              </svg>
+              Direct messages
+            </span>
 
-        <p className="text-slate-500 dark:text-slate-400
-          text-xs font-medium text-center leading-relaxed"
-        >
-          Real-time conversations • Chat with music lovers
-        </p>
+            <span className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3.5 py-2.5 text-xs font-medium text-slate-300 sm:text-sm">
+              <svg
+                className="h-4 w-4 text-violet-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 18V5l12-2v13M9 10l12-2M5 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm12-3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                />
+              </svg>
+              Share your vibe
+            </span>
+
+            <span className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3.5 py-2.5 text-xs font-medium text-slate-300 sm:text-sm">
+              <svg
+                className="h-4 w-4 text-pink-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"
+                />
+              </svg>
+              Find your people
+            </span>
+          </div>
+
+          {/* CTA */}
+          <div className="mt-9 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+            <button
+              type="button"
+              onClick={() => navigate("/messages")}
+              className="group/button inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-blue-500 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-400 hover:shadow-xl hover:shadow-blue-500/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d14] active:translate-y-0 sm:w-auto sm:px-7 sm:text-base"
+            >
+              <svg
+                className="h-5 w-5 transition-transform duration-300 group-hover/button:scale-110"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8 12h.01M12 12h.01M16 12h.01"
+                />
+              </svg>
+
+              Enter the Chat
+
+              <svg
+                className="h-4 w-4 transition-transform duration-300 group-hover/button:translate-x-1"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 12h14m-6-6 6 6-6 6"
+                />
+              </svg>
+            </button>
+
+            <p className="text-xs leading-5 text-slate-500">
+              Made for music lovers, by music lovers.
+            </p>
+          </div>
+        </div>
+
+        {/* Right visual: chat preview */}
+        <div className="relative mx-auto w-full max-w-md md:ml-auto">
+          {/* Floating decoration */}
+          <div
+            aria-hidden="true"
+            className="absolute -right-3 -top-5 h-20 w-20 rounded-full border border-blue-400/10 bg-blue-400/[0.04] blur-[1px] sm:-right-5 sm:-top-7"
+          />
+
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#11141d]/95 p-4 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-5">
+            {/* Preview header */}
+            <div className="flex items-center justify-between border-b border-white/[0.07] pb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/20 to-violet-500/20 text-blue-300 ring-1 ring-white/10">
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.4-4 8-9 8a10 10 0 0 1-4.3-.95L3 20l1.4-3.7A7.4 7.4 0 0 1 3 12c0-4.4 4-8 9-8s9 3.6 9 8Z"
+                    />
+                  </svg>
+                </div>
+
+                <div>
+                  <p className="text-sm font-bold text-white">
+                    The Listening Room
+                  </p>
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    A little music, a lot of connection
+                  </p>
+                </div>
+              </div>
+
+              <span className="rounded-full border border-emerald-400/15 bg-emerald-400/[0.07] px-2.5 py-1 text-[10px] font-semibold text-emerald-300">
+                COMMUNITY
+              </span>
+            </div>
+
+            {/* Illustrative messages */}
+            <div className="space-y-4 py-5">
+              <div className="flex items-end gap-2.5">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-orange-400 text-[10px] font-bold text-white">
+                  A
+                </div>
+                <div className="max-w-[85%] rounded-2xl rounded-bl-md border border-white/[0.06] bg-white/[0.045] px-3.5 py-3">
+                  <p className="mb-1 text-[10px] font-semibold text-pink-300">
+                    A music lover
+                  </p>
+                  <p className="text-sm leading-5 text-slate-300">
+                    Anyone got a playlist for late-night drives? 🌙
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-end justify-end gap-2.5">
+                <div className="max-w-[85%] rounded-2xl rounded-br-md border border-blue-400/15 bg-blue-500/10 px-3.5 py-3">
+                  <p className="mb-1 text-[10px] font-semibold text-blue-300">
+                    Your next music buddy
+                  </p>
+                  <p className="text-sm leading-5 text-slate-300">
+                    Lo-fi, indie, and a little Arijit Singh. 🎧
+                  </p>
+                </div>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-500 text-[10px] font-bold text-white">
+                  M
+                </div>
+              </div>
+
+              <div className="flex items-end gap-2.5">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-rose-400 text-[10px] font-bold text-white">
+                  R
+                </div>
+                <div className="rounded-2xl rounded-bl-md border border-white/[0.06] bg-white/[0.045] px-3.5 py-3">
+                  <p className="mb-1 text-[10px] font-semibold text-amber-300">
+                    Another listener
+                  </p>
+                  <p className="text-sm text-slate-300">
+                    Okay, that playlist sounds like a vibe ✨
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Message input visual */}
+            <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-[#0b0d14] px-4 py-3">
+              <span className="flex-1 text-sm text-slate-600">
+                Your next conversation starts here...
+              </span>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-500/15 text-blue-300">
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <p className="mt-3 text-center text-[10px] tracking-wide text-slate-600">
+              A PREVIEW OF THE COMMUNITY EXPERIENCE
+            </p>
+          </div>
+
+          {/* Bottom accent */}
+          <div
+            aria-hidden="true"
+            className="absolute -bottom-2 left-[12%] right-[12%] -z-10 h-12 rounded-full bg-blue-500/20 blur-2xl"
+          />
+        </div>
       </div>
     </div>
   </div>
 </section>
+
+
+
+
 
 
         {/* 📸 Official Instagram Feed Posts - Spacious wrapper */}

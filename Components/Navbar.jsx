@@ -244,9 +244,9 @@ const Navbar = () => {
     Geet
   </span>
 
-  <span className="font-black text-3xl text-[#3B82F6]">
+  <span className="font-black text-3xl text-[#2391FF]"> 
     Hub
-  </span>
+  </span>         
 </div>
 
 
