@@ -451,7 +451,8 @@ const Homepage = () => {
           <Artists />
         </section>
 
-        {/* Messages Section - Extra spacious top/bottom and downside margin */}
+        {/* Messages Section - Extra spacious top/bottom and downside margin  inhanced the message component*/}
+        
 
 <section
   aria-labelledby="community-chat-heading"
