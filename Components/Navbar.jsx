@@ -1,23 +1,42 @@
-import { LogOut, Menu, X, Mic, MicOff, Users, Settings, Keyboard, Sparkles } from "lucide-react";
+import {
+  LogOut,
+  Menu,
+  X,
+  Mic,
+  MicOff,
+  Users,
+  Settings,
+  Keyboard,
+  Sparkles,
+} from "lucide-react";
+
 import { useVoiceSearch } from "../src/hooks/useVoiceSearch";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import SettingsModal from "./SettingsModal";
 import AICopilotModal from "./AICopilotModal";
+
 import { FaMusic, FaFire } from "react-icons/fa";
 import { BiSolidLike } from "react-icons/bi";
 import { CiViewTimeline } from "react-icons/ci";
 import { PiChatsTeardropThin } from "react-icons/pi";
 import { CgProfile } from "react-icons/cg";
 import { IoMdSearch } from "react-icons/io";
+
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import API_BASE_URL from '../src/config/api';
+import API_BASE_URL from "../src/config/api";
 
 const getSeenMessageIds = (userId) => {
   try {
-    const storageKey = userId ? `seen_message_ids_${userId}` : "seen_message_ids";
-    const data = localStorage.getItem(storageKey) || localStorage.getItem("seen_message_ids");
+    const storageKey = userId
+      ? `seen_message_ids_${userId}`
+      : "seen_message_ids";
+
+    const data =
+      localStorage.getItem(storageKey) ||
+      localStorage.getItem("seen_message_ids");
+
     return data ? new Set(JSON.parse(data)) : new Set();
   } catch (e) {
     return new Set();
@@ -27,9 +46,14 @@ const getSeenMessageIds = (userId) => {
 const saveSeenMessageIds = (userId, setObj) => {
   try {
     const arr = Array.from(setObj);
+
     localStorage.setItem("seen_message_ids", JSON.stringify(arr));
+
     if (userId) {
-      localStorage.setItem(`seen_message_ids_${userId}`, JSON.stringify(arr));
+      localStorage.setItem(
+        `seen_message_ids_${userId}`,
+        JSON.stringify(arr)
+      );
     }
   } catch (e) {
     console.error(e);
@@ -38,7 +62,9 @@ const saveSeenMessageIds = (userId, setObj) => {
 
 const Navbar = () => {
   const navigate = useNavigate();
+
   const { isListening, startListening, stopListening } = useVoiceSearch();
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -47,6 +73,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [copilotOpen, setCopilotOpen] = useState(false);
+
   const searchRef = useRef(null);
   const isInitialCheckRef = useRef(true);
   const sessionStartTimeRef = useRef(Date.now());
@@ -60,10 +87,13 @@ const Navbar = () => {
         setCopilotOpen((prev) => !prev);
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
+
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Check login status
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
@@ -72,83 +102,123 @@ const Navbar = () => {
   // Message notifications polling
   useEffect(() => {
     const token = localStorage.getItem("token");
+
     if (!token) return;
 
     let currentUserId = null;
+
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = JSON.parse(atob(token.split(".")[1]));
       currentUserId = payload.Uid;
     } catch (e) {
       console.error("Token decode error:", e);
     }
 
-    // Reset initial check ref, record session start time & load seen message IDs
     isInitialCheckRef.current = true;
     sessionStartTimeRef.current = Date.now();
     seenIdsRef.current = getSeenMessageIds(currentUserId);
 
     const checkNotifications = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/auth/messagingusers`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await axios.get(
+          `${API_BASE_URL}/auth/messagingusers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
         const users = res.data || [];
-        
+
         // Refresh seen IDs from storage
         const storedSeen = getSeenMessageIds(currentUserId);
-        storedSeen.forEach(id => seenIdsRef.current.add(id));
+
+        storedSeen.forEach((id) => seenIdsRef.current.add(id));
 
         for (const user of users) {
           if (user.user_id === currentUserId) continue;
-          try {
-            const convRes = await axios.get(`${API_BASE_URL}/messages/conversation/${user.user_id}`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-            const msgs = convRes.data?.messages || [];
-            const incoming = msgs.filter(m => m.sender_id !== currentUserId);
 
-            const lastReadTimeStr = localStorage.getItem(`last_read_${user.user_id}`);
-            const lastReadTime = lastReadTimeStr ? parseInt(lastReadTimeStr, 10) : 0;
-            const isCurrentlyChattingWithUser = window.location.pathname === `/messages/${user.user_id}`;
+          try {
+            const convRes = await axios.get(
+              `${API_BASE_URL}/messages/conversation/${user.user_id}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+
+            const msgs = convRes.data?.messages || [];
+
+            const incoming = msgs.filter(
+              (m) => m.sender_id !== currentUserId
+            );
+
+            const lastReadTimeStr = localStorage.getItem(
+              `last_read_${user.user_id}`
+            );
+
+            const lastReadTime = lastReadTimeStr
+              ? parseInt(lastReadTimeStr, 10)
+              : 0;
+
+            const isCurrentlyChattingWithUser =
+              window.location.pathname === `/messages/${user.user_id}`;
 
             for (const msg of incoming) {
               const msgId = msg.id || msg._id;
+
               if (msgId && !seenIdsRef.current.has(msgId)) {
-                const msgTime = msg.timestamp ? new Date(msg.timestamp).getTime() : 0;
-                
-                // ONLY show toast for real-time messages received AFTER login / session start
-                // and ONLY if user is not currently viewing that conversation
+                const msgTime = msg.timestamp
+                  ? new Date(msg.timestamp).getTime()
+                  : 0;
+
+                // Show toast only for new messages received after login
+                // and only if the user is not viewing that conversation.
                 if (
-                  !isInitialCheckRef.current && 
-                  msgTime >= sessionStartTimeRef.current - 2000 && 
+                  !isInitialCheckRef.current &&
+                  msgTime >= sessionStartTimeRef.current - 2000 &&
                   msgTime > lastReadTime &&
                   !isCurrentlyChattingWithUser
                 ) {
-                  toast((t) => (
-                    <div
-                      className="flex items-center gap-3 cursor-pointer"
-                      onClick={() => {
-                        toast.dismiss(t.id);
-                        navigate(`/messages/${user.user_id}`);
-                      }}
-                    >
-                      <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white">
-                        {user.first_name?.charAt(0)?.toUpperCase() || 'U'}
+                  toast(
+                    (t) => (
+                      <div
+                        className="flex items-center gap-3 cursor-pointer"
+                        onClick={() => {
+                          toast.dismiss(t.id);
+                          navigate(`/messages/${user.user_id}`);
+                        }}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white">
+                          {user.first_name?.charAt(0)?.toUpperCase() ||
+                            "U"}
+                        </div>
+
+                        <div>
+                          <p className="font-bold text-sm text-white">
+                            {user.first_name} sent a message
+                          </p>
+
+                          <p className="text-xs text-gray-300 truncate max-w-[200px]">
+                            {msg.message_text || "Sent an image"}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-bold text-sm text-white">{user.first_name} sent a message</p>
-                        <p className="text-xs text-gray-300 truncate max-w-[200px]">
-                          {msg.message_text || "Sent an image"}
-                        </p>
-                      </div>
-                    </div>
-                  ), {
-                    duration: 4000,
-                    style: { background: '#121216', border: '1px solid #3b82f6', color: '#fff' }
-                  });
+                    ),
+                    {
+                      duration: 4000,
+                      style: {
+                        background: "#121216",
+                        border: "1px solid #3b82f6",
+                        color: "#fff",
+                      },
+                    }
+                  );
                 }
-                
-                // Immediately add to seen IDs set so it will never toast again
+
+                // Prevent duplicate notifications
                 seenIdsRef.current.add(msgId);
               }
             }
@@ -158,6 +228,7 @@ const Navbar = () => {
         }
 
         saveSeenMessageIds(currentUserId, seenIdsRef.current);
+
         isInitialCheckRef.current = false;
       } catch (error) {
         console.error("Error fetching message notifications:", error);
@@ -165,6 +236,7 @@ const Navbar = () => {
     };
 
     checkNotifications();
+
     const interval = setInterval(checkNotifications, 5000);
 
     const handleMessagesRead = () => {
@@ -172,22 +244,36 @@ const Navbar = () => {
     };
 
     window.addEventListener("messages_read", handleMessagesRead);
+
     return () => {
       clearInterval(interval);
-      window.removeEventListener("messages_read", handleMessagesRead);
+
+      window.removeEventListener(
+        "messages_read",
+        handleMessagesRead
+      );
     };
   }, [navigate]);
 
   // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target)
+      ) {
         setShowSuggestions(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+    };
   }, []);
 
   // Debounced search
@@ -199,17 +285,23 @@ const Navbar = () => {
     }
 
     setLoading(true);
+
     const delayTimer = setTimeout(async () => {
       try {
         const response = await fetch(
-          `${API_BASE_URL}/music/autocomplete?q=${encodeURIComponent(searchQuery)}`
+          `${API_BASE_URL}/music/autocomplete?q=${encodeURIComponent(
+            searchQuery
+          )}`
         );
+
         const data = await response.json();
+
         setSuggestions(data.suggestions || []);
         setShowSuggestions(true);
         setLoading(false);
       } catch (error) {
         console.error("Search error:", error);
+
         setSuggestions([]);
         setLoading(false);
       }
@@ -218,61 +310,79 @@ const Navbar = () => {
     return () => clearTimeout(delayTimer);
   }, [searchQuery]);
 
+  // Profile navigation
   const handleMyProfile = () => navigate("/myprofile");
 
+  // Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("seen_message_ids");
+
     setIsLoggedIn(false);
+
     navigate("/login");
   };
 
+  // Song suggestion click
   const handleSuggestionClick = (song) => {
     navigate(`/playsong/${song.song_id}`);
+
     setSearchQuery("");
     setShowSuggestions(false);
   };
 
+  // Highlight matching search text
   const highlightMatch = (text, query) => {
     if (!text || !query) return text;
-    const parts = text.split(new RegExp(`(${query})`, 'gi'));
+
+    const parts = text.split(new RegExp(`(${query})`, "gi"));
+
     return parts.map((part, index) =>
-      part.toLowerCase() === query.toLowerCase() ?
-        <span key={index} className="font-bold text-blue-400">{part}</span> :
+      part.toLowerCase() === query.toLowerCase() ? (
+        <span
+          key={index}
+          className="font-bold text-blue-400"
+        >
+          {part}
+        </span>
+      ) : (
         part
+      )
     );
   };
 
   return (
     <nav className="sticky top-0 z-40 w-full bg-white/85 dark:bg-[#07090e]/80 backdrop-blur-2xl py-3.5 px-6 flex items-center justify-between shadow-lg shadow-black/20 text-slate-900 dark:text-white border-b border-slate-200/80 dark:border-white/10 relative transition-all duration-300">
       <Toaster position="top-right" />
+
+      {/* GeetHub Logo */}
       <div
         className="flex flex-col cursor-pointer group"
         onClick={() => navigate("/")}
         title="GeetHub: Desi vibes, global beats — Your ultimate Indian music destination 🇮🇳🎧"
       >
-       <div className="flex items-center gap-1">
-  <FaMusic className="text-[#3B82F6] group-hover:scale-110 transition" />
+        <div className="flex items-center gap-1">
+          <FaMusic className="text-[#3B82F6] group-hover:scale-110 transition" />
 
-  <span className="text-3xl font-black text-slate-900 dark:text-white">
-    Geet
-  </span>
+          <span className="text-3xl font-black text-slate-900 dark:text-white">
+            Geet
+          </span>
 
-  <span className="font-black text-3xl text-[#2391FF]"> 
-    Hub
-  </span>         
-</div>
+          <span className="font-black text-3xl text-[#2391FF]">
+            Hub
+          </span>
+        </div>
 
-
-       <span className="text-[11px] font-bold text-[#3B82F6] tracking-tight">
-  Every Mood Has a Song. 🇮🇳🎧
-</span>
+        <span className="text-[11px] font-bold text-[#3B82F6] tracking-tight">
+          Every Mood Has a Song. 🇮🇳🎧
+        </span>
       </div>
 
+      {/* Desktop Navigation */}
       <div className="hidden md:flex items-center gap-8 text-sm font-medium">
         <div
           className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors"
-          onClick={() => navigate('/trending')}
+          onClick={() => navigate("/trending")}
         >
           <FaFire className="mr-2" />
           <button>Trending</button>
@@ -280,7 +390,7 @@ const Navbar = () => {
 
         <div
           className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors"
-          onClick={() => navigate('/mostliked')}
+          onClick={() => navigate("/mostliked")}
         >
           <BiSolidLike className="mr-2" />
           <button>Most Liked</button>
@@ -288,7 +398,11 @@ const Navbar = () => {
 
         <div
           className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors"
-          onClick={() => navigate('/mylibrary', { state: { scrollToRecent: true } })}
+          onClick={() =>
+            navigate("/mylibrary", {
+              state: { scrollToRecent: true },
+            })
+          }
         >
           <CiViewTimeline className="mr-2" />
           <button>Recently</button>
@@ -296,17 +410,16 @@ const Navbar = () => {
 
         <div
           className="flex items-center cursor-pointer hover:opacity-80 hover:text-blue-400 transition-colors"
-          onClick={() => navigate('/mymostplayed')}
+          onClick={() => navigate("/mymostplayed")}
         >
           <PiChatsTeardropThin className="mr-2" />
           <button>Most Played</button>
         </div>
 
-
-        {/* Live Sync Party Link */}
+        {/* Live Sync Party */}
         <div
           className="flex items-center cursor-pointer hover:opacity-80 hover:text-cyan-400 transition-colors text-400 font-bold"
-          onClick={() => navigate('/party')}
+          onClick={() => navigate("/party")}
           title="Live Sync Listening Party"
         >
           <Users className="mr-1.5" size={18} />
@@ -314,25 +427,41 @@ const Navbar = () => {
         </div>
       </div>
 
-<div
-  className="relative w-48 sm:w-56 md:w-64 mx-2 sm:mx-4"
-  ref={searchRef}
->
-          <form
+      {/* Search Bar */}
+      <div
+        className="relative w-48 sm:w-56 md:w-64 mx-2 sm:mx-4"
+        ref={searchRef}
+      >
+        <form
           onSubmit={(e) => {
             e.preventDefault();
             setShowSuggestions(false);
-            navigate(searchQuery.trim() ? `/search?q=${encodeURIComponent(searchQuery.trim())}` : "/search");
+
+            navigate(
+              searchQuery.trim()
+                ? `/search?q=${encodeURIComponent(
+                    searchQuery.trim()
+                  )}`
+                : "/search"
+            );
           }}
           className="flex items-center relative w-full"
         >
           <IoMdSearch
             onClick={() => {
               setShowSuggestions(false);
-              navigate(searchQuery.trim() ? `/search?q=${encodeURIComponent(searchQuery.trim())}` : "/search");
+
+              navigate(
+                searchQuery.trim()
+                  ? `/search?q=${encodeURIComponent(
+                      searchQuery.trim()
+                    )}`
+                  : "/search"
+              );
             }}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 w-5 h-5 cursor-pointer hover:text-blue-400 transition z-10"
           />
+
           <input
             type="text"
             placeholder="Search songs, artists, albums..."
@@ -348,29 +477,42 @@ const Navbar = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 setShowSuggestions(false);
-                navigate(searchQuery.trim() ? `/search?q=${encodeURIComponent(searchQuery.trim())}` : "/search");
+
+                navigate(
+                  searchQuery.trim()
+                    ? `/search?q=${encodeURIComponent(
+                        searchQuery.trim()
+                      )}`
+                    : "/search"
+                );
               }
             }}
             className="w-full pl-12 pr-12 py-2.5 rounded-full bg-slate-100 dark:bg-[#1e2330] text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-300 dark:border-slate-700/60 transition-all text-sm font-medium shadow-inner"
           />
+
+          {/* Voice Search */}
           <button
             type="button"
-            onClick={isListening ? stopListening : startListening}
+            onClick={
+              isListening ? stopListening : startListening
+            }
             className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-500 transition z-10"
             title="Search with your voice"
           >
             {isListening ? (
-              <Mic className="text-red-500 animate-pulse" size={18} />
+              <Mic
+                className="text-red-500 animate-pulse"
+                size={18}
+              />
             ) : (
               <MicOff size={18} />
             )}
           </button>
         </form>
 
-        {/* Suggestions Dropdown */}
+        {/* Search Suggestions */}
         {showSuggestions && (
-          <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-[#1a1a1a] text-slate-900 dark:text-white
-                          rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-slate-200 dark:border-gray-700">
+          <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-[#1a1a1a] text-slate-900 dark:text-white rounded-lg shadow-2xl max-h-96 overflow-y-auto z-50 border border-slate-200 dark:border-gray-700">
             {loading ? (
               <div className="p-4 text-center text-gray-400">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500 mx-auto"></div>
@@ -380,24 +522,35 @@ const Navbar = () => {
                 <div
                   key={song.song_id}
                   onClick={() => handleSuggestionClick(song)}
-                  className="flex items-center gap-3 p-3 hover:bg-slate-100 dark:hover:bg-[#2a2a2a] 
-                             cursor-pointer transition border-b border-slate-100 dark:border-gray-800 last:border-0"
+                  className="flex items-center gap-3 p-3 hover:bg-slate-100 dark:hover:bg-[#2a2a2a] cursor-pointer transition border-b border-slate-100 dark:border-gray-800 last:border-0"
                 >
                   <img
                     src={song.image_url || "/default-album.png"}
                     alt={song.title}
                     className="w-12 h-12 rounded object-cover"
                   />
+
                   <div className="flex-1 min-w-0">
                     <p className="text-slate-900 dark:text-white font-medium truncate">
-                      {highlightMatch(song.title, searchQuery)}
+                      {highlightMatch(
+                        song.title,
+                        searchQuery
+                      )}
                     </p>
+
                     <p className="text-slate-500 dark:text-gray-400 text-sm truncate">
-                      {highlightMatch(song.artist, searchQuery)}
+                      {highlightMatch(
+                        song.artist,
+                        searchQuery
+                      )}
                     </p>
+
                     {song.album && (
                       <p className="text-slate-400 dark:text-gray-500 text-xs truncate">
-                        {highlightMatch(song.album, searchQuery)}
+                        {highlightMatch(
+                          song.album,
+                          searchQuery
+                        )}
                       </p>
                     )}
                   </div>
@@ -412,71 +565,85 @@ const Navbar = () => {
         )}
       </div>
 
+      {/* Right Side Actions */}
       <div className="flex items-center ml-2 sm:ml-6 gap-2.5">
+        {/* AI Copilot */}
         <button
           onClick={() => setCopilotOpen(true)}
           className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-600/20 via-fuchsia-600/20 to-cyan-600/20 hover:from-violet-600/35 hover:to-fuchsia-600/35 border border-violet-500/40 text-violet-300 hover:text-white transition shadow-sm group"
           title="AI Music Copilot (Alt+C)"
           aria-label="AI Music Copilot"
         >
-          <Sparkles size={16} className="text-violet-400 group-hover:rotate-12 group-hover:scale-110 transition-transform animate-pulse" />
-          <span className="text-xs font-semibold tracking-wide hidden lg:inline">Copilot</span>
+          <Sparkles
+            size={16}
+            className="text-violet-400 group-hover:rotate-12 group-hover:scale-110 transition-transform animate-pulse"
+          />
+
+          <span className="text-xs font-semibold tracking-wide hidden lg:inline">
+            Copilot
+          </span>
+
           <span className="flex h-1.5 w-1.5 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-violet-500"></span>
           </span>
         </button>
 
+        {/* Keyboard Shortcuts */}
         <button
           onClick={() => navigate("/shortcuts")}
           className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-gray-800/80 transition text-slate-700 hover:text-black dark:text-gray-300 dark:hover:text-white"
           title="Keyboard Shortcuts & Hotkeys"
           aria-label="Keyboard shortcuts"
         >
-          <Keyboard size={22} className="hover:scale-110 transition-transform" />
+          <Keyboard
+            size={22}
+            className="hover:scale-110 transition-transform"
+          />
         </button>
 
+        {/* Settings */}
         <button
           onClick={() => setSettingsOpen(true)}
           className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-gray-800/80 transition text-slate-700 hover:text-black dark:text-gray-300 dark:hover:text-white"
           title="Player Settings & Color Themes"
         >
-          <Settings size={22} className="hover:rotate-45 transition-transform duration-300" />
+          <Settings
+            size={22}
+            className="hover:rotate-45 transition-transform duration-300"
+          />
         </button>
 
+        {/* Profile - Simplified: no pulsing, no glow, no gradient */}
         <button
           onClick={handleMyProfile}
-          className="relative flex items-center justify-center p-1 rounded-full 
-                     hover:bg-slate-100 dark:hover:bg-gray-800 transition group"
+          className="flex items-center justify-center p-1.5 rounded-full text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors duration-200"
+          title="My Profile"
+          aria-label="My Profile"
         >
-          {isLoggedIn && (
-            <>
-              <div className="absolute inset-0 rounded-full bg-purple-400/80 backdrop-blur-sm animate-ping"></div>
-              <div className="absolute inset-0 rounded-full 
-                              bg-gradient-to-r from-purple-500/40 via-blue-500/30 to-cyan-400/40 
-                              shadow-[0_0_20px_rgba(168,85,247,0.6)] animate-pulse"></div>
-            </>
-          )}
           {isLoggedIn && localStorage.getItem("user_emoji") ? (
-            <span className="text-2xl relative z-10 p-1">{localStorage.getItem("user_emoji")}</span>
+            <span className="text-2xl p-0.5">
+              {localStorage.getItem("user_emoji")}
+            </span>
           ) : (
-            <CgProfile className="w-7 h-7 relative z-10 drop-shadow-sm text-slate-700 dark:text-white" />
+            <CgProfile className="w-7 h-7" />
           )}
         </button>
 
+        {/* Logout */}
         <button
           onClick={handleLogout}
-          className="hidden md:flex items-center gap-2 bg-blue-600 dark:bg-blue-500 
-                     hover:bg-blue-500 dark:hover:bg-blue-400 
-                     px-4 py-2 rounded-full text-sm font-semibold transition !text-white"
+          className="hidden md:flex items-center gap-2 bg-blue-600 dark:bg-blue-500 hover:bg-blue-500 dark:hover:bg-blue-400 px-4 py-2 rounded-full text-sm font-semibold transition !text-white"
         >
           Logout
           <LogOut size={18} />
         </button>
 
+        {/* Mobile Menu Toggle */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-800 transition text-slate-800 dark:text-white focus:outline-none"
+          aria-label="Toggle menu"
         >
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -484,36 +651,44 @@ const Navbar = () => {
 
       {/* Mobile Menu Drawer */}
       {menuOpen && (
-        <div
-          className="fixed inset-0 bg-white dark:bg-[#111111] text-slate-900 dark:text-white flex flex-col p-6 z-[9999] md:hidden overflow-y-auto"
-        >
-          {/* Header inside drawer */}
+        <div className="fixed inset-0 bg-white dark:bg-[#111111] text-slate-900 dark:text-white flex flex-col p-6 z-[9999] md:hidden overflow-y-auto">
+          {/* Drawer Header */}
           <div className="flex items-center justify-between pb-6 border-b border-slate-200 dark:border-gray-800 mb-6">
             <div className="flex flex-col">
               <div className="flex items-center gap-1">
                 <FaMusic className="text-blue-500" />
-                <span className="text-2xl font-black">Geet</span>
+
+                <span className="text-2xl font-black">
+                  Geet
+                </span>
+
                 <span className="text-blue-500 font-black text-2xl">
                   Hub
                 </span>
               </div>
+
               <span className="text-[10px] font-bold bg-gradient-to-r from-blue-500 via-cyan-500 to-purple-500 bg-clip-text text-transparent">
                 Every Mood Has a Song. 🇮🇳🎧
               </span>
             </div>
+
             <button
               onClick={() => setMenuOpen(false)}
               className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-800 transition text-slate-800 dark:text-white"
+              aria-label="Close menu"
             >
               <X size={28} />
             </button>
           </div>
 
-          {/* Links */}
+          {/* Mobile Navigation Links */}
           <div className="flex flex-col gap-5 flex-1">
             <div
               className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
-              onClick={() => { setMenuOpen(false); navigate('/trending'); }}
+              onClick={() => {
+                setMenuOpen(false);
+                navigate("/trending");
+              }}
             >
               <FaFire className="text-rose-500 w-6 h-6" />
               <span className="font-bold text-lg">Trending</span>
@@ -521,7 +696,10 @@ const Navbar = () => {
 
             <div
               className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
-              onClick={() => { setMenuOpen(false); navigate('/mostliked'); }}
+              onClick={() => {
+                setMenuOpen(false);
+                navigate("/mostliked");
+              }}
             >
               <BiSolidLike className="text-pink-500 w-6 h-6" />
               <span className="font-bold text-lg">Most Liked</span>
@@ -529,7 +707,12 @@ const Navbar = () => {
 
             <div
               className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
-              onClick={() => { setMenuOpen(false); navigate('/mylibrary', { state: { scrollToRecent: true } }); }}
+              onClick={() => {
+                setMenuOpen(false);
+                navigate("/mylibrary", {
+                  state: { scrollToRecent: true },
+                });
+              }}
             >
               <CiViewTimeline className="text-cyan-500 w-6 h-6" />
               <span className="font-bold text-lg">Recently</span>
@@ -537,16 +720,21 @@ const Navbar = () => {
 
             <div
               className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors"
-              onClick={() => { setMenuOpen(false); navigate('/mymostplayed'); }}
+              onClick={() => {
+                setMenuOpen(false);
+                navigate("/mymostplayed");
+              }}
             >
               <PiChatsTeardropThin className="text-purple-500 w-6 h-6" />
               <span className="font-bold text-lg">Most Played</span>
             </div>
 
-
             <div
               className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors w-full"
-              onClick={() => { setMenuOpen(false); navigate('/party'); }}
+              onClick={() => {
+                setMenuOpen(false);
+                navigate("/party");
+              }}
             >
               <Users className="text-blue-500 w-6 h-6" />
               <span className="font-bold text-lg">Sync Party</span>
@@ -554,7 +742,10 @@ const Navbar = () => {
 
             <div
               className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors w-full"
-              onClick={() => { setMenuOpen(false); navigate('/shortcuts'); }}
+              onClick={() => {
+                setMenuOpen(false);
+                navigate("/shortcuts");
+              }}
             >
               <Keyboard className="text-indigo-500 w-6 h-6" />
               <span className="font-bold text-lg">Shortcuts</span>
@@ -562,18 +753,24 @@ const Navbar = () => {
 
             <div
               className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer text-violet-500 dark:text-violet-400 transition-colors w-full"
-              onClick={() => { setMenuOpen(false); setCopilotOpen(true); }}
+              onClick={() => {
+                setMenuOpen(false);
+                setCopilotOpen(true);
+              }}
             >
               <Sparkles className="w-6 h-6 animate-pulse" />
               <span className="font-bold text-lg">AI Copilot</span>
             </div>
           </div>
 
-          {/* Footer inside drawer */}
+          {/* Mobile Drawer Footer */}
           {isLoggedIn && (
             <div className="pt-6 border-t border-slate-200 dark:border-gray-800 mt-auto">
               <button
-                onClick={() => { setMenuOpen(false); handleLogout(); }}
+                onClick={() => {
+                  setMenuOpen(false);
+                  handleLogout();
+                }}
                 className="flex items-center gap-4 p-3 text-red-500 hover:bg-red-500/10 rounded-xl w-full text-left font-bold text-lg transition-colors"
               >
                 <LogOut size={22} />
@@ -583,15 +780,20 @@ const Navbar = () => {
           )}
         </div>
       )}
+
       {/* Settings & Appearance Modal */}
-      <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <SettingsModal
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+      />
 
       {/* AI Music Copilot Modal */}
-      <AICopilotModal isOpen={copilotOpen} onClose={() => setCopilotOpen(false)} />
+      <AICopilotModal
+        isOpen={copilotOpen}
+        onClose={() => setCopilotOpen(false)}
+      />
     </nav>
   );
 };
 
 export default Navbar;
-
-

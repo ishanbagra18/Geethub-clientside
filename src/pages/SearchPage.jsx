@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { 
   Search as SearchIcon, X, Clock, Trash2, Play, Plus, 
-  ListPlus, Share2, Music, Sparkles, TrendingUp, Compass, Heart, Flame,
-  Globe, ExternalLink, Info, ShieldCheck, Layers, Radio
+  ListPlus, Share2, Music, Sparkles, TrendingUp, Compass, Heart, Flame 
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -18,11 +17,11 @@ const POPULAR_TAGS = [
   { name: "Arijit Singh Hits", query: "Arijit" },
   { name: "Punjabi Party Beats", query: "Punjabi" },
   { name: "Hindi Romantic Songs", query: "Hindi" },
-  { name: "Jamendo Chill Lo-Fi", query: "Lo-Fi" },
-  { name: "Workout Energy Beats", query: "Workout" },
+  { name: "Top Charts", query: "Top" },
+  { name: "Lo-Fi Chill", query: "Chill" },
   { name: "Karan Aujla", query: "Karan" },
   { name: "Sidhu Moosewala", query: "Sidhu" },
-  { name: "Acoustic CC Vibes", query: "Acoustic" },
+  { name: "Bollywood Classics", query: "Bollywood" },
 ];
 
 const GENRE_CARDS = [
@@ -30,7 +29,7 @@ const GENRE_CARDS = [
   { name: "Punjabi Hits", color: "from-amber-500 to-orange-600", icon: "🔥", query: "Punjabi" },
   { name: "Romantic Vibes", color: "from-red-500 to-pink-600", icon: "💖", query: "Love" },
   { name: "Lo-Fi & Chill", color: "from-indigo-600 to-blue-700", icon: "🎧", query: "Lo-Fi" },
-  { name: "Workout & EDM", color: "from-purple-600 to-indigo-800", icon: "⚡", query: "Workout" },
+  { name: "Party & Club", color: "from-purple-600 to-indigo-800", icon: "🪩", query: "Party" },
   { name: "Acoustic & Soft", color: "from-emerald-600 to-teal-700", icon: "🎸", query: "Acoustic" },
 ];
 
@@ -41,19 +40,14 @@ const SearchPage = () => {
 
   const initialQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(initialQuery);
-  const [activeSource, setActiveSource] = useState("all"); // 'all' | 'local' | 'jamendo'
+  const [allSongs, setAllSongs] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [breakdown, setBreakdown] = useState({ local: 0, jamendo: 0 });
   const [recentSearches, setRecentSearches] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [licenseModalSong, setLicenseModalSong] = useState(null);
-
-  const debounceTimeoutRef = useRef(null);
 
   // Sync state with URL parameter
   useEffect(() => {
-    const q = searchParams.get("q") || "";
-    setQuery(q);
+    setQuery(searchParams.get("q") || "");
   }, [searchParams]);
 
   // Load recent searches from localStorage on mount
@@ -66,62 +60,99 @@ const SearchPage = () => {
     }
   }, []);
 
-  // Fetch search results from Go backend API: GET /api/music/search?q=...&source=...
+  // Fetch all songs on mount to perform fast searching & filtering
   useEffect(() => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      setBreakdown({ local: 0, jamendo: 0 });
-      return;
-    }
-
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current);
-    }
-
-    setLoading(true);
-    debounceTimeoutRef.current = setTimeout(async () => {
+    const fetchSongs = async () => {
+      setLoading(true);
       try {
         const token = localStorage.getItem("token");
         const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-        
-        const res = await axios.get(
-          `${API_BASE_URL}/api/music/search?q=${encodeURIComponent(query.trim())}&limit=40&source=${activeSource}`,
-          config
-        );
-
-        const songs = res.data?.songs || [];
-        setSearchResults(songs);
-        if (res.data?.breakdown) {
-          setBreakdown(res.data.breakdown);
-        }
+        const res = await axios.get(`${API_BASE_URL}/music/allsongs`, config);
+        setAllSongs(res.data?.songs || []);
       } catch (err) {
-        console.error("Search API failed, fallback to /music/allsongs:", err);
-        // Fallback to local songs if search API encounters unexpected error
-        try {
-          const fallbackRes = await axios.get(`${API_BASE_URL}/music/allsongs`);
-          const all = fallbackRes.data?.songs || [];
-          const lowerQ = query.trim().toLowerCase();
-          const filtered = all.filter(
-            (s) =>
-              (s.title || "").toLowerCase().includes(lowerQ) ||
-              (s.artist || "").toLowerCase().includes(lowerQ) ||
-              (s.genre || "").toLowerCase().includes(lowerQ)
-          );
-          setSearchResults(filtered);
-          setBreakdown({ local: filtered.length, jamendo: 0 });
-        } catch (fbErr) {
-          console.error("Fallback search failed:", fbErr);
-          setSearchResults([]);
-        }
+        console.error("Error fetching songs for search:", err);
       } finally {
         setLoading(false);
       }
-    }, 280);
-
-    return () => {
-      if (debounceTimeoutRef.current) clearTimeout(debounceTimeoutRef.current);
     };
-  }, [query, activeSource]);
+    fetchSongs();
+  }, []);
+
+  // Semantic search matching & relevance scoring algorithm
+  useEffect(() => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    const rawQuery = query.trim().toLowerCase();
+    const tokens = rawQuery.split(/\s+/).filter(Boolean);
+
+    // Semantic Concept & Mood Dictionary
+    const semanticMappings = {
+      lofi: ["lo-fi", "chill", "soft", "acoustic", "ambient", "night", "quiet", "relax"],
+      chill: ["lo-fi", "soft", "peaceful", "slow", "acoustic", "relax", "ambient"],
+      romantic: ["love", "soulful", "heartbreak", "arijit", "sad", "unplugged", "ballad"],
+      love: ["romantic", "soulful", "heartbreak", "arijit", "unplugged"],
+      sad: ["soulful", "heartbreak", "arijit", "slow", "unplugged", "sadness"],
+      introspective: ["soulful", "heartbreak", "arijit", "slow", "acoustic", "lofi"],
+      party: ["dance", "punjabi", "remix", "banger", "club", "hype", "beat", "energy"],
+      energy: ["party", "dance", "punjabi", "club", "workout", "hype", "beat"],
+      workout: ["energy", "party", "dance", "hype", "beat", "club"],
+      retro: ["classic", "old", "vintage", "hindi", "90s", "80s"],
+      punjabi: ["bhangu", "karan", "sidhu", "guru", "hardy", "party", "beat"],
+      bollywood: ["hindi", "arijit", "pritam", "film", "movie", "soundtrack"],
+    };
+
+    // Expand search tokens with semantic synonyms
+    const expandedTokens = new Set(tokens);
+    tokens.forEach((t) => {
+      if (semanticMappings[t]) {
+        semanticMappings[t].forEach((syn) => expandedTokens.add(syn));
+      }
+    });
+
+    const scoredSongs = allSongs.map((song) => {
+      let score = 0;
+      const title = (song.title || "").toLowerCase();
+      const artist = (song.artist || "").toLowerCase();
+      const genre = (song.genre || "").toLowerCase();
+      const language = (song.language || "").toLowerCase();
+      const info = (song.info || "").toLowerCase();
+      const album = (song.album || "").toLowerCase();
+
+      const combinedText = `${title} ${artist} ${genre} ${language} ${info} ${album}`;
+
+      // 1. Direct exact phrase match (highest weight)
+      if (combinedText.includes(rawQuery)) score += 25;
+      if (title.includes(rawQuery)) score += 15;
+      if (artist.includes(rawQuery)) score += 10;
+
+      // 2. Token matches
+      tokens.forEach((token) => {
+        if (title.includes(token)) score += 8;
+        if (artist.includes(token)) score += 6;
+        if (genre.includes(token)) score += 5;
+        if (language.includes(token)) score += 4;
+        if (combinedText.includes(token)) score += 3;
+      });
+
+      // 3. Semantic Synonym Matches
+      expandedTokens.forEach((synToken) => {
+        if (combinedText.includes(synToken)) score += 2;
+      });
+
+      return { song, score };
+    });
+
+    // Filter out 0-score tracks and sort by relevance score descending
+    const results = scoredSongs
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map((item) => item.song);
+
+    setSearchResults(results);
+  }, [query, allSongs]);
 
   const saveRecentSearch = (searchTerm) => {
     if (!searchTerm || !searchTerm.trim()) return;
@@ -175,7 +206,7 @@ const SearchPage = () => {
 
       <main className="max-w-6xl mx-auto px-4 md:px-8 pt-28 pb-32">
         {/* Search Header Container */}
-        <div className="mb-6">
+        <div className="mb-8">
           <div className="relative max-w-2xl mx-auto">
             <form onSubmit={handleSearchSubmit} className="relative flex items-center">
               <SearchIcon className="absolute left-4 text-blue-400 w-5 h-5" />
@@ -195,7 +226,7 @@ const SearchPage = () => {
                     saveRecentSearch(query);
                   }
                 }}
-                placeholder="Search GeetHub library & Jamendo Creative Commons music..."
+                placeholder="Search songs, artists, genres, or languages..."
                 className="w-full pl-12 pr-12 py-4 rounded-2xl bg-[#121524]/90 border border-blue-500/30 focus:border-blue-400 text-white placeholder-slate-400 text-base shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
                 autoFocus
               />
@@ -213,60 +244,6 @@ const SearchPage = () => {
               )}
             </form>
           </div>
-
-          {/* Catalog Source Filter Pills (When active search or browsing) */}
-          {query.trim() && (
-            <div className="flex items-center justify-center gap-2 mt-4 animate-fadeIn">
-              <button
-                onClick={() => setActiveSource("all")}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                  activeSource === "all"
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
-                    : "bg-white/5 text-slate-300 hover:bg-white/10 border border-white/10"
-                }`}
-              >
-                <Layers size={13} />
-                <span>All Catalog</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30 font-mono">
-                  {searchResults.length}
-                </span>
-              </button>
-
-              <button
-                onClick={() => setActiveSource("local")}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                  activeSource === "local"
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
-                    : "bg-white/5 text-slate-300 hover:bg-white/10 border border-white/10"
-                }`}
-              >
-                <Music size={13} />
-                <span>GeetHub Library</span>
-                {breakdown.local > 0 && (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30 font-mono">
-                    {breakdown.local}
-                  </span>
-                )}
-              </button>
-
-              <button
-                onClick={() => setActiveSource("jamendo")}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                  activeSource === "jamendo"
-                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30"
-                    : "bg-white/5 text-emerald-300 hover:bg-emerald-500/10 border border-emerald-500/30"
-                }`}
-              >
-                <Globe size={13} />
-                <span>Jamendo CC Free Music</span>
-                {breakdown.jamendo > 0 && (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30 font-mono">
-                    {breakdown.jamendo}
-                  </span>
-                )}
-              </button>
-            </div>
-          )}
         </div>
 
         {/* ========================================================= */}
@@ -317,7 +294,7 @@ const SearchPage = () => {
             <div>
               <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-4">
                 <Flame size={18} className="text-amber-400 fill-amber-400" />
-                <span>Trending Searches & Curated Tags</span>
+                <span>Trending Searches</span>
               </h3>
 
               <div className="flex flex-wrap gap-3">
@@ -334,35 +311,11 @@ const SearchPage = () => {
               </div>
             </div>
 
-            {/* Jamendo Creative Commons Banner */}
-            <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-950/40 via-[#10192e] to-blue-950/40 border border-emerald-500/20 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 flex-shrink-0">
-                  <Globe size={26} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-base text-white flex items-center gap-2">
-                    Free Creative Commons Music Integration
-                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">Jamendo v3.0</span>
-                  </h4>
-                  <p className="text-xs text-slate-300 mt-1 max-w-xl">
-                    Discover thousands of free, legally streamable independent tracks under Creative Commons licenses. Fully mapped to GeetHub's player format.
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => handleSelectRecent("Workout")}
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition shadow-lg shadow-emerald-600/30 flex-shrink-0"
-              >
-                Explore Jamendo Tracks
-              </button>
-            </div>
-
             {/* Browse Categories & Genres */}
             <div>
               <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-5">
                 <Compass size={18} className="text-cyan-400" />
-                <span>Browse Music Genres & Vibes</span>
+                <span>Browse Music Genres</span>
               </h3>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
@@ -385,22 +338,14 @@ const SearchPage = () => {
           /* CASE 2: ACTIVE QUERY WRITTEN -> SEARCH RESULTS            */
           /* ========================================================= */
           <div className="animate-fadeIn">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 pb-3 border-b border-white/10 gap-3">
+            <div className="flex items-center justify-between mb-6 pb-3 border-b border-white/10">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <Sparkles size={18} className="text-blue-400" />
                 <span>Search Results for "{query}"</span>
               </h2>
-              
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
-                  {searchResults.length} {searchResults.length === 1 ? "track" : "tracks"}
-                </span>
-                {breakdown.jamendo > 0 && (
-                  <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1">
-                    <Globe size={11} /> {breakdown.jamendo} Jamendo CC
-                  </span>
-                )}
-              </div>
+              <span className="text-xs font-semibold text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                {searchResults.length} {searchResults.length === 1 ? "track" : "tracks"} found
+              </span>
             </div>
 
             {loading ? (
@@ -412,19 +357,17 @@ const SearchPage = () => {
                 <Music size={48} className="mx-auto text-slate-500 mb-3 opacity-40" />
                 <h3 className="text-lg font-bold text-white mb-1">No songs found matching "{query}"</h3>
                 <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                  Try checking for typos or search by artist name, genre, or mood (e.g. "Lo-Fi", "Workout", "Arijit").
+                  Try checking for typos or search by artist name, genre, or album.
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {searchResults.map((song) => {
-                  const songId = song.song_id || song._id || song.id;
-                  const isJamendo = typeof songId === "string" && (songId.startsWith("jamendo_") || (song.uploaded_by && song.uploaded_by.includes("Jamendo")));
-                  
+                  const songId = song.song_id || song._id;
                   return (
                     <div
                       key={songId}
-                      className="group bg-[#121524]/80 hover:bg-[#181d33] border border-white/10 hover:border-blue-500/50 rounded-2xl p-3.5 transition-all duration-300 shadow-xl flex items-center gap-3.5 relative"
+                      className="group bg-[#121524]/80 hover:bg-[#181d33] border border-white/10 hover:border-blue-500/50 rounded-2xl p-3.5 transition-all duration-300 shadow-xl flex items-center gap-3.5"
                     >
                       {/* Song Image */}
                       <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-black/50 flex-shrink-0">
@@ -436,11 +379,10 @@ const SearchPage = () => {
                         />
                         <button
                           onClick={() => {
-                            if (playTrack) playTrack(song, searchResults);
+                            if (playTrack) playTrack(song);
                             navigate(`/playsong/${songId}`);
                           }}
                           className="absolute inset-0 bg-black/40 group-hover:bg-black/60 flex items-center justify-center transition"
-                          title={`Play ${song.title}`}
                         >
                           <div className="w-9 h-9 rounded-full bg-blue-500 hover:bg-blue-400 text-black flex items-center justify-center shadow-lg group-hover:scale-110 transition">
                             <Play size={18} fill="black" className="ml-0.5" />
@@ -450,51 +392,24 @@ const SearchPage = () => {
 
                       {/* Song Title & Info */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <h4
-                            onClick={() => {
-                              if (playTrack) playTrack(song, searchResults);
-                              navigate(`/playsong/${songId}`);
-                            }}
-                            className="font-bold text-sm text-white truncate hover:text-blue-400 cursor-pointer transition"
-                          >
-                            {song.title || "Untitled Track"}
-                          </h4>
-                        </div>
-
+                        <h4
+                          onClick={() => navigate(`/playsong/${songId}`)}
+                          className="font-bold text-sm text-white truncate hover:text-blue-400 cursor-pointer transition"
+                        >
+                          {song.title || "Untitled Track"}
+                        </h4>
                         <p className="text-xs text-slate-400 truncate mt-0.5">{song.artist || "Unknown Artist"}</p>
-                        
-                        <div className="flex items-center flex-wrap gap-1.5 mt-1.5">
-                          <span className="inline-block text-[10px] uppercase font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 truncate max-w-[120px]">
-                            {song.genre || song.language || "Music"}
-                          </span>
-
-                          {isJamendo ? (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setLicenseModalSong(song);
-                              }}
-                              className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-300 bg-emerald-500/15 hover:bg-emerald-500/25 px-2 py-0.5 rounded border border-emerald-500/30 transition cursor-pointer"
-                              title="View Creative Commons Attribution & Licensing"
-                            >
-                              <ShieldCheck size={11} className="text-emerald-400" />
-                              <span>CC License</span>
-                            </button>
-                          ) : (
-                            <span className="text-[10px] font-medium text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">
-                              GeetHub
-                            </span>
-                          )}
-                        </div>
+                        <span className="inline-block text-[10px] uppercase font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded mt-1.5 border border-blue-500/20">
+                          {song.language || song.genre || "Music"}
+                        </span>
                       </div>
 
                       {/* Actions Toolbar */}
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => {
-                            if (addToQueue) addToQueue(song);
-                            toast.success(`Added "${song.title}" to Queue!`);
+                            if (addToQueue) addToQueue(songId);
+                            toast.success("Added to Queue!");
                           }}
                           className="p-2 rounded-xl bg-white/5 hover:bg-blue-500/20 text-slate-400 hover:text-blue-400 transition"
                           title="Add to Queue"
@@ -515,74 +430,6 @@ const SearchPage = () => {
                 })}
               </div>
             )}
-          </div>
-        )}
-
-        {/* Jamendo Creative Commons Attribution Modal */}
-        {licenseModalSong && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-            <div className="bg-[#121626] border border-emerald-500/30 rounded-3xl p-6 max-w-md w-full shadow-2xl relative text-white">
-              <button
-                onClick={() => setLicenseModalSong(null)}
-                className="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-full bg-white/5 hover:bg-white/10 transition"
-              >
-                <X size={18} />
-              </button>
-
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-                  <ShieldCheck size={22} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-base text-white">Creative Commons Attribution</h3>
-                  <p className="text-xs text-slate-400">Jamendo Free Music Licensing Compliance</p>
-                </div>
-              </div>
-
-              <div className="space-y-3 bg-white/5 p-4 rounded-2xl border border-white/10 text-xs">
-                <div>
-                  <span className="text-slate-400 block mb-0.5">Track Title:</span>
-                  <span className="font-semibold text-white text-sm">{licenseModalSong.title}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block mb-0.5">Artist:</span>
-                  <span className="font-semibold text-white">{licenseModalSong.artist}</span>
-                </div>
-                {licenseModalSong.album && (
-                  <div>
-                    <span className="text-slate-400 block mb-0.5">Album:</span>
-                    <span className="text-slate-200">{licenseModalSong.album}</span>
-                  </div>
-                )}
-                <div>
-                  <span className="text-slate-400 block mb-0.5">Attribution & License:</span>
-                  <p className="text-emerald-300 font-mono text-[11px] bg-black/30 p-2 rounded-lg border border-emerald-500/20 break-words">
-                    {licenseModalSong.info || "Jamendo CC Track • Creative Commons License"}
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-[11px] text-slate-400 mt-4 leading-relaxed">
-                This track is provided via the Jamendo Music API under Creative Commons licensing. You are free to stream this track for personal entertainment with proper artist attribution.
-              </p>
-
-              <div className="flex items-center justify-end gap-2.5 mt-5">
-                <a
-                  href="https://www.jamendo.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition border border-white/10"
-                >
-                  <Globe size={13} /> Jamendo Portal
-                </a>
-                <button
-                  onClick={() => setLicenseModalSong(null)}
-                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-lg shadow-emerald-600/30"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
           </div>
         )}
       </main>
