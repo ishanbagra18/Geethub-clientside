@@ -43,6 +43,7 @@ const GlobalMusicPlayer = () => {
     toggleMute,
     toggleLike,
     toggleSave,
+    clearQueue,
   } = useMusicPlayer();
 
   const navigate = useNavigate();
@@ -251,43 +252,55 @@ const GlobalMusicPlayer = () => {
             </div>
 
             {/* Volume & Shortcuts Section */}
-            <div className="hidden lg:flex items-center gap-3 min-w-[160px] justify-end">
-              {/* Keyboard shortcuts trigger */}
-              <button
-                onClick={() => setShowShortcutsModal(true)}
-                aria-label="Keyboard shortcuts (Press ?)"
-                className="p-1.5 text-slate-500 dark:text-gray-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-all"
-                title="Keyboard Shortcuts (?)"
-              >
-                <Keyboard size={18} />
-              </button>
+            <div className="flex items-center gap-2 sm:gap-3 justify-end">
+              <div className="hidden lg:flex items-center gap-3">
+                {/* Keyboard shortcuts trigger */}
+                <button
+                  onClick={() => setShowShortcutsModal(true)}
+                  aria-label="Keyboard shortcuts (Press ?)"
+                  className="p-1.5 text-slate-500 dark:text-gray-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-all"
+                  title="Keyboard Shortcuts (?)"
+                >
+                  <Keyboard size={18} />
+                </button>
 
-              {/* Mute / Volume toggle button */}
-              <button
-                onClick={toggleMute}
-                aria-label={isMuted ? "Unmute audio (M)" : "Mute audio (M)"}
-                className="p-1 text-blue-500 hover:text-blue-400 transition-colors"
-                title={isMuted ? "Unmute (M)" : "Mute (M)"}
-              >
-                {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
-              </button>
+                {/* Mute / Volume toggle button */}
+                <button
+                  onClick={toggleMute}
+                  aria-label={isMuted ? "Unmute audio (M)" : "Mute audio (M)"}
+                  className="p-1 text-blue-500 hover:text-blue-400 transition-colors"
+                  title={isMuted ? "Unmute (M)" : "Mute (M)"}
+                >
+                  {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                </button>
 
-              {/* Accessible volume slider */}
-              <input
-                type="range"
-                role="slider"
-                aria-label="Volume level"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow={Math.round((isMuted ? 0 : volume) * 100)}
-                aria-valuetext={`${Math.round((isMuted ? 0 : volume) * 100)} percent`}
-                min="0"
-                max="1"
-                step="0.01"
-                value={isMuted ? 0 : volume}
-                onChange={(e) => changeVolume(parseFloat(e.target.value))}
-                className="w-20 h-1.5 bg-slate-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
-              />
+                {/* Accessible volume slider */}
+                <input
+                  type="range"
+                  role="slider"
+                  aria-label="Volume level"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow={Math.round((isMuted ? 0 : volume) * 100)}
+                  aria-valuetext={`${Math.round((isMuted ? 0 : volume) * 100)} percent`}
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={isMuted ? 0 : volume}
+                  onChange={(e) => changeVolume(parseFloat(e.target.value))}
+                  className="w-20 h-1.5 bg-slate-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                />
+              </div>
+
+              {/* Close / Dismiss Global Player Button */}
+              <button
+                onClick={clearQueue}
+                aria-label="Close music player"
+                className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                title="Close player"
+              >
+                <X size={18} />
+              </button>
             </div>
           </div>
         </div>

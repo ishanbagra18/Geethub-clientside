@@ -45,11 +45,9 @@ export const MusicPlayerProvider = ({ children }) => {
   // Load saved state once
   const savedState = useRef(getSavedPlayerState()).current;
 
-  const [currentSong, setCurrentSong] = useState(() => savedState?.currentSong || null);
-  const [queue, setQueue] = useState(() => (Array.isArray(savedState?.queue) ? savedState.queue : []));
-  const [currentIndex, setCurrentIndex] = useState(() =>
-    typeof savedState?.currentIndex === "number" ? savedState.currentIndex : 0
-  );
+  const [currentSong, setCurrentSong] = useState(null);
+  const [queue, setQueue] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -97,72 +95,30 @@ export const MusicPlayerProvider = ({ children }) => {
   }, [volume]);
 
   // Save current player state to localStorage (throttled for time updates)
-  const persistState = useCallback(
-    (overrides = {}) => {
-      try {
-        const audio = audioRef.current;
-        const curTime = overrides.currentTime !== undefined ? overrides.currentTime : audio?.currentTime || currentTime;
-        const stateToSave = {
-          currentSong: overrides.currentSong !== undefined ? overrides.currentSong : currentSong,
-          queue: overrides.queue !== undefined ? overrides.queue : queue,
-          currentIndex: overrides.currentIndex !== undefined ? overrides.currentIndex : currentIndex,
-          currentTime: curTime,
-          duration: overrides.duration !== undefined ? overrides.duration : audio?.duration || duration,
-          volume: overrides.volume !== undefined ? overrides.volume : volume,
-          repeatMode: overrides.repeatMode !== undefined ? overrides.repeatMode : repeatMode,
-          isShuffle: overrides.isShuffle !== undefined ? overrides.isShuffle : isShuffle,
-          playbackSpeed: overrides.playbackSpeed !== undefined ? overrides.playbackSpeed : playbackSpeed,
-        };
-        localStorage.setItem(STORAGE_STATE_KEY, JSON.stringify(stateToSave));
-      } catch (err) {
-        console.warn("Error persisting player state:", err);
-      }
-    },
-    [currentSong, queue, currentIndex, currentTime, duration, volume, repeatMode, isShuffle, playbackSpeed]
-  );
+  // Playback state is retained in-memory across route changes, but does not persist across full page refresh
+  const persistState = useCallback(() => {}, []);
 
-  // Restore playback element on initial mount without violating autoplay policy
+  // Clear any persisted player state on initial mount so refreshing page resets the player cleanly
   useEffect(() => {
     if (initialRestoreDoneRef.current) return;
     initialRestoreDoneRef.current = true;
 
+    try {
+      localStorage.removeItem(STORAGE_STATE_KEY);
+    } catch {}
+
     const audio = audioRef.current;
-    if (!audio) return;
-
-    if (savedState?.currentSong?.file_url) {
-      audio.src = savedState.currentSong.file_url;
-      audio.volume = savedState.volume ?? 1;
-      audio.playbackRate = savedState.playbackSpeed ?? 1.0;
-
-      const targetPos = savedState.currentTime || 0;
-      if (targetPos > 0) {
-        const restoreTimeHandler = () => {
-          try {
-            audio.currentTime = targetPos;
-            setCurrentTime(targetPos);
-          } catch {
-            // ignore
-          }
-          audio.removeEventListener("loadedmetadata", restoreTimeHandler);
-        };
-        audio.addEventListener("loadedmetadata", restoreTimeHandler);
-      }
+    if (audio) {
+      audio.volume = volume ?? 1;
+      audio.playbackRate = playbackSpeed ?? 1.0;
     }
-  }, [savedState]);
+  }, [volume, playbackSpeed]);
 
   // Securely resolve streaming URL: supports signed media URLs & private tracks
   const resolveStreamURL = async (song) => {
     if (!song) return null;
     const songId = song.song_id || song._id || song.id;
     if (!songId) return song.file_url;
-
-    // Direct playback for external tracks (Jamendo Creative Commons streams)
-    if (typeof songId === "string" && songId.startsWith("jamendo_")) {
-      return song.file_url;
-    }
-    if (song.file_url && (song.file_url.includes("jamendo.com") || song.file_url.includes("storage.jamendo.com"))) {
-      return song.file_url;
-    }
 
     // Check if song is private or if we want signed verification
     if (song.is_private) {
@@ -492,27 +448,6 @@ export const MusicPlayerProvider = ({ children }) => {
     setIsPlaying(false);
 
     if (!currentSong) return;
-
-    const isExternal =
-      Boolean(currentSong.song_id && currentSong.song_id.startsWith("jamendo_")) ||
-      Boolean(currentSong.file_url && currentSong.file_url.includes("jamendo.com"));
-
-    // For external tracks, notify and skip immediately if audio fails to load
-    if (isExternal) {
-      retryCountRef.current = 0;
-      setAudioError("External track unavailable");
-      toast.error(`"${currentSong.title || "External Track"}" audio unavailable. Skipping...`, {
-        id: "audio_recovery",
-        duration: 3000,
-      });
-
-      if (queue && queue.length > 1) {
-        setTimeout(() => {
-          playNext();
-        }, 800);
-      }
-      return;
-    }
 
     // Attempt stream URL re-signing / recovery if under 2 retries
     if (retryCountRef.current < 2) {
@@ -890,18 +825,12 @@ export const MusicPlayerProvider = ({ children }) => {
     setAudioError(null);
 
     try {
-      let song = null;
-      if (typeof songIdInput === "object" && songIdInput.file_url) {
-        song = songIdInput;
-      } else {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        song = res.data.song;
-      }
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
-      if (!song) throw new Error("Track not found");
+      const song = res.data.song;
       setCurrentSong(song);
 
       let newQueue = [];
@@ -951,7 +880,28 @@ export const MusicPlayerProvider = ({ children }) => {
 
   const playTrack = (track, queueData = null) => {
     if (!track) return;
-    playSong(track, queueData);
+    const songId = typeof track === "string" ? track : (track.song_id || track._id || track.id);
+    if (typeof track === "object" && track.file_url) {
+      setCurrentSong(track);
+      const audio = audioRef.current;
+      if (audio) {
+        setIsBuffering(true);
+        resolveStreamURL(track).then((url) => {
+          audio.src = url || track.file_url;
+          audio.currentTime = 0;
+          return audio.play();
+        }).then(() => {
+          setIsPlaying(true);
+          setIsBuffering(false);
+        }).catch((e) => {
+          console.warn(e);
+          setIsBuffering(false);
+        });
+      }
+    }
+    if (songId) {
+      playSong(songId, queueData);
+    }
   };
 
   // Clear queue and stop playback
@@ -978,21 +928,15 @@ export const MusicPlayerProvider = ({ children }) => {
     if (!songId) return false;
 
     try {
-      let song = null;
-      if (typeof songIdInput === "object" && songIdInput.file_url) {
-        song = songIdInput;
-      } else {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        song = res.data.song;
-      }
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
-      if (!song) throw new Error("Track not found");
+      const song = res.data.song;
 
       if (queue.length === 0) {
-        playSong(song);
+        playSong(songId);
         toast.success(`Playing "${song.title}"`);
         return true;
       }
@@ -1011,26 +955,17 @@ export const MusicPlayerProvider = ({ children }) => {
   };
 
   // Add to Queue (End)
-  const addToQueueEnd = async (songIdInput) => {
-    const songId = typeof songIdInput === "object" ? (songIdInput?.song_id || songIdInput?._id || songIdInput?.id) : songIdInput;
-    if (!songId) return false;
-
+  const addToQueueEnd = async (songId) => {
     try {
-      let song = null;
-      if (typeof songIdInput === "object" && songIdInput.file_url) {
-        song = songIdInput;
-      } else {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        song = res.data.song;
-      }
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
-      if (!song) throw new Error("Track not found");
+      const song = res.data.song;
 
       if (queue.length === 0) {
-        playSong(song);
+        playSong(songId);
         toast.success(`Playing "${song.title}"`);
         return true;
       }
