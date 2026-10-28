@@ -8,28 +8,62 @@ import {
   Plus,
   BookmarkPlus,
   Flame,
-  Clock,
+  Clock3,
   Filter,
   Check,
   Loader2,
   Send,
   Zap,
   Volume2,
+  Music2,
+  Headphones,
+  ArrowUpRight,
 } from "lucide-react";
 import toast from "react-hot-toast";
+
 import API_BASE_URL from "../src/config/api";
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
 import { usePlaylist } from "../src/context/PlaylistContext";
 
 const PRESET_PROMPTS = [
-  "Play something energetic for a 30-minute workout, but avoid songs I've already heard today.",
-  "Chill acoustic songs for deep late-night study session.",
-  "Upbeat Punjabi party bangers for a 1-hour road trip with friends.",
-  "Romantic soulful melodies in Hindi for a relaxing evening.",
+  {
+    label: "Workout energy",
+    description: "High-energy tracks to keep you moving",
+    prompt:
+      "Play something energetic for a 30-minute workout, but avoid songs I've already heard today.",
+    icon: Flame,
+    color: "text-orange-400 bg-orange-500/10",
+  },
+  {
+    label: "Late-night focus",
+    description: "Chill acoustic music for deep study",
+    prompt: "Chill acoustic songs for a deep late-night study session.",
+    icon: Clock3,
+    color: "text-cyan-300 bg-cyan-500/10",
+  },
+  {
+    label: "Punjabi party",
+    description: "Upbeat hits for the road",
+    prompt: "Upbeat Punjabi party bangers for a 1-hour road trip with friends.",
+    icon: Zap,
+    color: "text-pink-300 bg-pink-500/10",
+  },
+  {
+    label: "Hindi romance",
+    description: "Soulful melodies for a slower evening",
+    prompt: "Romantic soulful melodies in Hindi for a relaxing evening.",
+    icon: Headphones,
+    color: "text-violet-300 bg-violet-500/10",
+  },
 ];
 
+const FALLBACK_ART =
+  "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=160&auto=format&fit=crop&q=80";
+
 export default function AICopilotModal({ isOpen, onClose }) {
-  const { playQueue, addMultipleToQueue, currentSong, isPlaying } = useMusicPlayer();
+  const { playQueue, addMultipleToQueue, currentSong, isPlaying } =
+    useMusicPlayer();
+
   const { fetchPublicPlaylists } = usePlaylist() || {};
 
   const [query, setQuery] = useState("");
@@ -41,119 +75,157 @@ export default function AICopilotModal({ isOpen, onClose }) {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-    }
+    if (!isOpen) return;
+
+    const timer = setTimeout(() => inputRef.current?.focus(), 100);
+
+    return () => clearTimeout(timer);
   }, [isOpen]);
 
-  // Close on Escape key
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
+    if (!isOpen) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") onClose();
     };
+
     window.addEventListener("keydown", handleKeyDown);
+
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
-  const handleSubmit = async (promptText) => {
-    const textToSend = promptText || query;
-    if (!textToSend.trim() || loading) return;
+  useEffect(() => {
+    if (!isOpen) return;
 
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
+  const handleSubmit = async (promptText) => {
+    const textToSend = (promptText ?? query).trim();
+
+    if (!textToSend || loading) return;
+
+    setQuery(textToSend);
     setLoading(true);
     setResult(null);
     setSavedPlaylistSuccess(false);
 
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
+
+      const response = await axios.post(
         `${API_BASE_URL}/copilot/query`,
-        { query: textToSend.trim() },
+        { query: textToSend },
         {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: token
+            ? { Authorization: `Bearer ${token}` }
+            : {},
         }
       );
 
-      setResult(res.data);
-      toast.success(`Copilot curated ${res.data.songs_count || 0} tracks! ✨`, {
-        id: "copilot_success",
-      });
-    } catch (err) {
-      console.error("Copilot error:", err);
+      setResult(response.data);
+
+      toast.success(
+        `Copilot curated ${response.data.songs_count || 0} tracks! ✨`
+      );
+    } catch (error) {
+      console.error("Copilot error:", error);
+
       toast.error(
-        err.response?.data?.error || "Failed to process query with Copilot",
-        { id: "copilot_err" }
+        error.response?.data?.error ||
+          "Couldn't create your mix. Please try again."
       );
     } finally {
       setLoading(false);
     }
   };
 
+  const songs = result?.songs || [];
+  const candidates = result?.candidates || [];
+
   const handlePlayNow = () => {
-    if (!result?.songs || result.songs.length === 0) {
+    if (!songs.length) {
       toast.error("No songs available to play");
       return;
     }
-    playQueue(result.songs, 0);
+
+    playQueue(songs, 0);
     onClose();
   };
 
   const handleAddToQueue = () => {
-    if (!result?.songs || result.songs.length === 0) {
+    if (!songs.length) {
       toast.error("No songs available to queue");
       return;
     }
-    addMultipleToQueue(result.songs);
-    toast.success(`Added ${result.songs.length} tracks to queue 🎧`);
+
+    addMultipleToQueue(songs);
+    toast.success(`Added ${songs.length} tracks to your queue 🎧`);
   };
 
   const handleSavePlaylist = async () => {
-    if (!result?.songs || result.songs.length === 0 || savingPlaylist) return;
+    if (!songs.length || savingPlaylist || savedPlaylistSuccess) return;
 
     const token = localStorage.getItem("token");
+
     if (!token) {
-      toast.error("Please log in to save a personal playlist! 🔐");
+      toast.error("Please log in to save a personal playlist 🔐");
       return;
     }
 
     setSavingPlaylist(true);
+
     try {
-      const songIds = result.songs.map((s) => s.song_id || s.id || s._id).filter(Boolean);
+      const songIds = songs
+        .map((song) => song.song_id || song.id || song._id)
+        .filter(Boolean);
+
       const playlistName =
         result.action_payload?.suggested_title ||
-        `${result.intent?.mood || "AI"} ${result.intent?.activity || "Music"} Mix`;
-      const playlistDesc =
+        `${result.intent?.mood || "AI"} ${
+          result.intent?.activity || "Music"
+        } Mix`;
+
+      const playlistDescription =
         result.action_payload?.suggested_desc ||
         result.message ||
-        "Curated by Geethub AI Copilot";
+        "Curated by GeetHub AI Copilot";
 
-      const res = await axios.post(
+      const response = await axios.post(
         `${API_BASE_URL}/copilot/action`,
         {
           action_type: "create_playlist",
           playlist_name: playlistName,
-          playlist_description: playlistDesc,
+          playlist_description: playlistDescription,
           song_ids: songIds,
           is_public: true,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
-      if (res.data?.success) {
+      if (response.data?.success) {
         setSavedPlaylistSuccess(true);
         toast.success(`Playlist "${playlistName}" created! 💾`);
-        if (fetchPublicPlaylists) {
-          fetchPublicPlaylists();
-        }
+
+        if (fetchPublicPlaylists) fetchPublicPlaylists();
+      } else {
+        toast.error("Playlist couldn't be saved. Please try again.");
       }
-    } catch (err) {
-      console.error("Create playlist error:", err);
-      toast.error("Failed to create playlist");
+    } catch (error) {
+      console.error("Create playlist error:", error);
+
+      toast.error(
+        error.response?.data?.error || "Failed to create playlist"
+      );
     } finally {
       setSavingPlaylist(false);
     }
@@ -161,329 +233,549 @@ export default function AICopilotModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  return createPortal(
+  const modal = (
     <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: "100vw",
-        height: "100vh",
-        zIndex: 99999999,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "1rem",
-        backgroundColor: "rgba(0, 0, 0, 0.82)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
-        isolation: "isolate",
+      className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 p-0 backdrop-blur-xl sm:p-5"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
       }}
-      onClick={onClose}
     >
-      <div
-        className="relative w-full max-w-2xl max-h-[88vh] flex flex-col bg-gradient-to-b from-[#131726] via-[#0d101a] to-[#07080d] border border-violet-500/40 rounded-2xl shadow-2xl shadow-violet-950/60 overflow-hidden text-white"
-        onClick={(e) => e.stopPropagation()}
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="copilot-title"
+        className="relative flex h-[100dvh] max-h-[900px] w-full flex-col overflow-hidden border border-violet-400/20 bg-[#0b0e17] text-slate-100 shadow-2xl shadow-black/50 sm:h-auto sm:max-h-[91vh] sm:max-w-[900px] sm:rounded-3xl"
       >
-        {/* Glow Header Accents */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500 flex-shrink-0" />
-        <div className="absolute -top-24 -left-24 w-48 h-48 bg-violet-600/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-cyan-600/20 rounded-full blur-3xl pointer-events-none" />
+        {/* Top gradient */}
+        <div className="h-[2px] shrink-0 bg-gradient-to-r from-violet-500 via-pink-500 to-cyan-400" />
 
-        {/* Modal Top Bar (Sticky/Fixed within modal) */}
-        <div className="relative flex items-center justify-between px-5 py-3.5 border-b border-white/10 bg-white/[0.02] flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 p-[1px] shadow-lg shadow-violet-500/25 flex-shrink-0">
-              <div className="w-full h-full rounded-[11px] bg-[#0c0e17] flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
-              </div>
+        {/* Header */}
+        <header className="flex items-center justify-between gap-4 border-b border-white/[0.07] bg-white/[0.015] px-4 py-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-violet-300/20 bg-gradient-to-br from-violet-500/30 to-pink-500/10 text-violet-200 sm:h-12 sm:w-12 sm:rounded-2xl">
+              <Sparkles size={22} />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-white tracking-wide">
-                  Geethub AI Copilot
+
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2
+                  id="copilot-title"
+                  className="text-base font-extrabold tracking-tight text-white sm:text-lg"
+                >
+                  Your AI music copilot
                 </h2>
-                <span className="px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-violet-300 bg-violet-500/20 border border-violet-500/30 rounded-full">
-                  Interactive Assistant
+
+                <span className="hidden items-center gap-1.5 rounded-full border border-emerald-400/15 bg-emerald-400/[0.06] px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-emerald-300 sm:inline-flex">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  AI powered
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 line-clamp-1">
-                Natural language music curation, history filtering & player actions
+
+              <p className="mt-1 text-[11px] text-slate-400 sm:text-xs">
+                Tell us the vibe. We’ll build the soundtrack.
               </p>
             </div>
           </div>
 
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close AI Copilot"
-            className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-slate-400 transition hover:bg-white/[0.07] hover:text-white"
           >
-            <X className="w-5 h-5" />
+            <X size={19} />
           </button>
-        </div>
+        </header>
 
-        {/* Modal Scrollable Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 custom-scrollbar">
-          {/* Preset Prompts / Chips */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <Zap className="w-3 h-3 text-amber-400" />
-                Try Asking
+        {/* Scrollable body */}
+        <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
+          {/* Intro */}
+          {!result && !loading && (
+            <section className="pb-6">
+              <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.15em] text-violet-200/80">
+                <span className="grid h-6 w-6 place-items-center rounded-lg border border-violet-300/20 bg-violet-500/10">
+                  <Sparkles size={13} />
+                </span>
+                YOUR PERSONAL MUSIC DISCOVERY
+              </div>
+
+              <h3 className="mt-4 text-3xl font-extrabold leading-tight tracking-[-0.05em] text-white sm:text-4xl">
+                What do you want to{" "}
+                <span className="bg-gradient-to-r from-violet-300 to-pink-300 bg-clip-text text-transparent">
+                  feel?
+                </span>
+              </h3>
+
+              <p className="mt-2 max-w-xl text-xs leading-6 text-slate-400 sm:text-sm">
+                Describe a mood, an activity, a genre, or a moment. Your mix
+                is tailored to your request and listening context.
+              </p>
+            </section>
+          )}
+
+          {/* Preset prompts */}
+          <section>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className="text-[10px] font-bold tracking-[0.12em] text-slate-400">
+                {result
+                  ? "MAKE ANOTHER MIX"
+                  : "NEED A LITTLE INSPIRATION?"}
               </span>
-              <span className="text-[10px] text-slate-500">Click any prompt to run</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {PRESET_PROMPTS.map((preset, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setQuery(preset);
-                    handleSubmit(preset);
-                  }}
-                  className="text-left p-2.5 rounded-xl text-xs bg-white/[0.03] hover:bg-violet-600/15 border border-white/5 hover:border-violet-500/40 text-slate-300 hover:text-white transition-all duration-200 group flex items-start gap-2"
-                >
-                  <Sparkles className="w-3 h-3 text-violet-400 mt-0.5 shrink-0 group-hover:scale-110 transition-transform" />
-                  <span className="line-clamp-2 leading-relaxed text-[11px]">{preset}</span>
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Conversational Input Bar */}
+              <span className="hidden text-[10px] text-slate-500 sm:inline">
+                Enter ↵ to generate
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              {PRESET_PROMPTS.map((preset) => {
+                const PresetIcon = preset.icon;
+
+                return (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => handleSubmit(preset.prompt)}
+                    disabled={loading}
+                    className="group flex min-w-0 items-center gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3 text-left transition hover:-translate-y-0.5 hover:border-violet-300/30 hover:bg-violet-500/[0.06] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <span
+                      className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${preset.color}`}
+                    >
+                      <PresetIcon size={18} />
+                    </span>
+
+                    <span className="flex min-w-0 flex-1 flex-col gap-1">
+                      <strong className="text-xs font-bold text-slate-100">
+                        {preset.label}
+                      </strong>
+
+                      <span className="truncate text-[10px] text-slate-400">
+                        {preset.description}
+                      </span>
+                    </span>
+
+                    <ArrowUpRight
+                      size={15}
+                      className="shrink-0 text-slate-600 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-violet-300"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Prompt composer */}
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
+            className="mt-6"
+            onSubmit={(event) => {
+              event.preventDefault();
               handleSubmit();
             }}
-            className="relative"
           >
-            <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center rounded-xl bg-white/[0.05] border border-white/10 focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all p-1.5 gap-2 shadow-inner">
-              <textarea
-                ref={inputRef}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSubmit();
-                  }
-                }}
-                rows={2}
-                placeholder='E.g. "Play something energetic for a 30-minute workout, but avoid songs I&#39;ve already heard today."'
-                className="w-full bg-transparent px-3 py-1.5 text-xs text-white placeholder-slate-500 resize-none focus:outline-none custom-scrollbar"
-              />
-              <div className="flex items-center justify-end pr-1 shrink-0">
+            <label
+              htmlFor="copilot-query"
+              className="mb-2 block text-[10px] font-bold tracking-[0.12em] text-slate-400"
+            >
+              DESCRIBE YOUR SOUNDTRACK
+            </label>
+
+            <div className="rounded-2xl border border-violet-300/25 bg-white/[0.025] p-3 transition focus-within:border-violet-300/60 focus-within:ring-4 focus-within:ring-violet-500/[0.08]">
+              <div className="flex items-start gap-3">
+                <Sparkles
+                  size={18}
+                  className="mt-1 shrink-0 text-violet-300"
+                />
+
+                <textarea
+                  id="copilot-query"
+                  ref={inputRef}
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" && !event.shiftKey) {
+                      event.preventDefault();
+                      handleSubmit();
+                    }
+                  }}
+                  rows={2}
+                  maxLength={600}
+                  disabled={loading}
+                  placeholder="e.g. Dreamy indie tracks for a rainy evening..."
+                  className="max-h-32 min-h-[52px] flex-1 resize-y bg-transparent py-1 text-sm leading-6 text-white outline-none placeholder:text-slate-600 disabled:opacity-50"
+                />
+              </div>
+
+              <div className="mt-3 flex flex-col gap-3 border-t border-white/[0.06] pt-3 sm:flex-row sm:items-center sm:justify-between">
+                <span className="text-[10px] text-slate-500">
+                  <kbd className="rounded border border-white/10 px-1.5 py-1 text-slate-400">
+                    ↵
+                  </kbd>{" "}
+                  Generate{" "}
+                  <kbd className="rounded border border-white/10 px-1.5 py-1 text-slate-400">
+                    ⇧ ↵
+                  </kbd>{" "}
+                  New line
+                  <span className="ml-2">{query.length}/600</span>
+                </span>
+
                 <button
                   type="submit"
                   disabled={loading || !query.trim()}
-                  className="w-full sm:w-auto px-4 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-medium text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-violet-600/30 hover:opacity-95 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/10 bg-gradient-to-r from-violet-600 via-purple-500 to-fuchsia-600 px-4 text-xs font-bold text-white shadow-lg shadow-violet-900/20 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
                 >
                   {loading ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      Analyzing...
-                    </>
+                    <Loader2 size={16} className="animate-spin" />
                   ) : (
-                    <>
-                      <Send className="w-3.5 h-3.5" />
-                      Generate Mix
-                    </>
+                    <Send size={16} />
                   )}
+
+                  {loading ? "Creating..." : "Create my mix"}
                 </button>
               </div>
             </div>
           </form>
 
-          {/* Loading Animation */}
+          {/* Loading state */}
           {loading && (
-            <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col items-center justify-center space-y-3 text-center">
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full border-2 border-violet-500/20 border-t-violet-500 animate-spin" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-fuchsia-400 animate-pulse" />
-                </div>
+            <section className="mt-6 flex items-center gap-4 rounded-2xl border border-violet-300/15 bg-gradient-to-r from-violet-500/[0.08] to-white/[0.015] p-5">
+              <div className="relative grid h-12 w-12 shrink-0 place-items-center rounded-full border border-violet-300/25 bg-violet-500/10 text-violet-200">
+                <span className="absolute -inset-2 animate-spin rounded-full border border-transparent border-t-violet-300/70" />
+                <Sparkles size={22} />
               </div>
-              <div>
-                <p className="text-xs font-semibold text-white">
-                  Consulting Music Catalog & Listening History...
-                </p>
-                <p className="text-[11px] text-slate-400 mt-0.5">
-                  Extracting mood, calculating tempo scores, and filtering songs heard today
+
+              <div className="min-w-0">
+                <h3 className="text-sm font-bold text-slate-100">
+                  Finding your next favourite tracks
+                </h3>
+
+                <p className="mt-1 text-xs leading-5 text-slate-400">
+                  Reading the vibe, exploring the catalog, and shaping your
+                  mix…
                 </p>
               </div>
-            </div>
+
+              <div className="ml-auto hidden h-8 items-center gap-1 sm:flex">
+                {[0, 1, 2, 3, 4].map((bar) => (
+                  <span
+                    key={bar}
+                    className="w-1 animate-pulse rounded-full bg-violet-400"
+                    style={{
+                      height: `${12 + (bar % 3) * 7}px`,
+                      animationDelay: `${bar * 100}ms`,
+                    }}
+                  />
+                ))}
+              </div>
+            </section>
           )}
 
-          {/* Results Display */}
+          {/* Results */}
           {result && !loading && (
-            <div className="space-y-3.5 animate-fadeIn">
-              {/* Extracted Intent Badge Row */}
-              <div className="flex flex-wrap items-center gap-1.5 p-3 rounded-xl bg-gradient-to-r from-violet-950/40 via-fuchsia-950/20 to-cyan-950/30 border border-violet-500/20">
-                {result.intent?.mood && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-violet-500/20 text-violet-300 border border-violet-500/30">
-                    <Zap className="w-2.5 h-2.5 text-amber-400" />
-                    {result.intent.mood}
-                  </span>
-                )}
-                {result.intent?.activity && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30">
-                    <Flame className="w-2.5 h-2.5 text-orange-400" />
-                    {result.intent.activity}
-                  </span>
-                )}
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                  <Clock className="w-2.5 h-2.5 text-cyan-400" />
-                  ~{result.total_duration_minutes || 30} mins ({result.songs_count} tracks)
-                </span>
-                {result.intent?.avoid_heard_today && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    <Filter className="w-2.5 h-2.5 text-emerald-400" />
-                    {result.excluded_today_count > 0
-                      ? `Excluded ${result.excluded_today_count} heard today`
-                      : "Filtered for fresh tracks"}
-                  </span>
-                )}
-                {result.intent?.extraction_method && (
-                  <span className="ml-auto text-[9px] text-slate-500 font-mono">
-                    {result.intent.extraction_method}
-                  </span>
-                )}
-              </div>
+            <section className="mt-6">
+              {/* Mix hero */}
+              <div className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-violet-300/20 bg-[radial-gradient(ellipse_at_top_left,rgba(124,58,237,0.17),transparent_55%),linear-gradient(120deg,rgba(255,255,255,0.035),rgba(255,255,255,0.01))] p-4 sm:flex-row sm:items-center sm:gap-5 sm:p-5">
+                <div className="relative grid h-24 w-24 shrink-0 place-items-center self-start overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-900 via-violet-700 to-pink-700 shadow-xl sm:h-28 sm:w-28">
+                  <div className="absolute h-24 w-24 rounded-full bg-fuchsia-400/60 blur-3xl" />
 
-              {/* Conversational Explanation */}
-              <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-start gap-2.5 text-xs leading-relaxed text-slate-300">
-                <Sparkles className="w-3.5 h-3.5 text-violet-400 shrink-0 mt-0.5" />
-                <p>{result.message}</p>
-              </div>
+                  <div className="relative grid h-16 w-16 place-items-center rounded-full border border-white/25 bg-black/30 text-pink-100 shadow-[0_0_0_9px_rgba(255,255,255,0.04),0_0_0_18px_rgba(255,255,255,0.02)]">
+                    <Music2 size={34} />
+                  </div>
 
-              {/* Action Buttons Bar */}
-              <div className="flex flex-wrap items-center gap-2 pt-0.5">
-                <button
-                  onClick={handlePlayNow}
-                  className="flex-1 min-w-[120px] px-3.5 py-2 rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-violet-600/30 hover:opacity-95 active:scale-95 transition-all"
-                >
-                  <Play className="w-3.5 h-3.5 fill-white" />
-                  Play Mix Now
-                </button>
-                <button
-                  onClick={handleAddToQueue}
-                  className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs flex items-center gap-1.5 border border-white/10 active:scale-95 transition-all"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Add All to Queue
-                </button>
-                <button
-                  onClick={handleSavePlaylist}
-                  disabled={savingPlaylist || savedPlaylistSuccess}
-                  className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-xs flex items-center gap-1.5 border border-white/10 active:scale-95 disabled:opacity-60 transition-all"
-                >
-                  {savedPlaylistSuccess ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      Saved
-                    </>
-                  ) : savingPlaylist ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <BookmarkPlus className="w-3.5 h-3.5" />
-                      Save as Playlist
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Track list preview */}
-              <div className="space-y-1.5 pt-1">
-                <div className="flex items-center justify-between text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-1">
-                  <span>Curated Tracklist ({result.songs?.length || 0})</span>
-                  <span>AI Match Reason</span>
+                  <Sparkles
+                    size={16}
+                    className="absolute right-3 top-3 text-white"
+                  />
                 </div>
 
-                <div className="space-y-1.5 max-h-52 overflow-y-auto custom-scrollbar pr-1">
-                  {result.candidates?.map((candidate, idx) => {
-                    const song = candidate.song;
-                    const isCurrentlyPlaying =
+                <div className="min-w-0 flex-1">
+                  <span className="flex items-center gap-1.5 text-[9px] font-extrabold tracking-[0.13em] text-violet-300">
+                    <Sparkles size={12} />
+                    YOUR AI-CURATED MIX
+                  </span>
+
+                  <h3 className="mt-2 break-words text-2xl font-extrabold tracking-tight text-white">
+                    {result.action_payload?.suggested_title ||
+                      `${result.intent?.mood || "Your"} ${
+                        result.intent?.activity || "Mix"
+                      }`}
+                  </h3>
+
+                  <p className="mt-2 text-xs leading-5 text-slate-400">
+                    {result.message ||
+                      "A soundtrack selected around your vibe."}
+                  </p>
+
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {result.intent?.mood && (
+                      <span className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300/15 bg-violet-500/[0.09] px-2 py-1 text-[10px] font-semibold text-violet-200">
+                        <Zap size={12} />
+                        {result.intent.mood}
+                      </span>
+                    )}
+
+                    {result.intent?.activity && (
+                      <span className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300/15 bg-violet-500/[0.09] px-2 py-1 text-[10px] font-semibold text-violet-200">
+                        <Flame size={12} />
+                        {result.intent.activity}
+                      </span>
+                    )}
+
+                    <span className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300/15 bg-violet-500/[0.09] px-2 py-1 text-[10px] font-semibold text-violet-200">
+                      <Clock3 size={12} />~
+                      {result.total_duration_minutes || 30} min
+                    </span>
+
+                    <span className="inline-flex items-center gap-1.5 rounded-lg border border-violet-300/15 bg-violet-500/[0.09] px-2 py-1 text-[10px] font-semibold text-violet-200">
+                      <Music2 size={12} />
+                      {songs.length} tracks
+                    </span>
+                  </div>
+
+                  {result.intent?.avoid_heard_today && (
+                    <div className="mt-3 flex items-center gap-1.5 text-[10px] text-emerald-300">
+                      <Filter size={13} />
+
+                      {result.excluded_today_count > 0
+                        ? `${result.excluded_today_count} tracks heard today filtered out`
+                        : "Prioritising fresh tracks"}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="my-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                <button
+                  type="button"
+                  onClick={handlePlayNow}
+                  disabled={!songs.length}
+                  className="col-span-2 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 text-xs font-bold text-white shadow-lg shadow-violet-900/20 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 sm:col-span-1"
+                >
+                  <Play size={16} fill="currentColor" />
+                  Play mix
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleAddToQueue}
+                  disabled={!songs.length}
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3 text-[10px] font-bold text-slate-200 transition hover:border-violet-300/30 hover:bg-violet-500/[0.08] disabled:cursor-not-allowed disabled:opacity-40 sm:px-4 sm:text-xs"
+                >
+                  <Plus size={16} />
+                  Add to queue
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSavePlaylist}
+                  disabled={
+                    !songs.length ||
+                    savingPlaylist ||
+                    savedPlaylistSuccess
+                  }
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3 text-[10px] font-bold text-slate-200 transition hover:border-violet-300/30 hover:bg-violet-500/[0.08] disabled:cursor-not-allowed disabled:opacity-40 sm:px-4 sm:text-xs"
+                >
+                  {savedPlaylistSuccess ? (
+                    <Check size={16} />
+                  ) : savingPlaylist ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <BookmarkPlus size={16} />
+                  )}
+
+                  {savedPlaylistSuccess
+                    ? "Saved"
+                    : savingPlaylist
+                    ? "Saving..."
+                    : "Save playlist"}
+                </button>
+              </div>
+
+              {/* Tracklist heading */}
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="flex items-center gap-2 text-sm font-extrabold text-slate-100">
+                    Your tracklist
+
+                    <span className="grid h-5 min-w-5 place-items-center rounded-md bg-violet-500/15 px-1.5 text-[10px] text-violet-300">
+                      {songs.length}
+                    </span>
+                  </h3>
+
+                  <p className="mt-1 text-[10px] text-slate-500">
+                    Picked for your vibe, one track at a time.
+                  </p>
+                </div>
+
+                <span className="flex items-center gap-1.5 text-[9px] font-bold tracking-wider text-slate-500">
+                  <Sparkles size={12} />
+                  AI MATCH
+                </span>
+              </div>
+
+              {/* Songs */}
+              {songs.length ? (
+                <div className="flex flex-col gap-1.5">
+                  {songs.map((song, index) => {
+                    const candidate =
+                      candidates.find((item) => {
+                        const candidateSong = item?.song || item;
+
+                        const candidateId =
+                          candidateSong?.song_id ||
+                          candidateSong?.id ||
+                          candidateSong?._id;
+
+                        const songId =
+                          song?.song_id || song?.id || song?._id;
+
+                        return candidateId && songId
+                          ? String(candidateId) === String(songId)
+                          : candidateSong?.title === song?.title;
+                      }) || candidates[index];
+
+                    const isCurrent =
                       currentSong &&
-                      (currentSong.song_id === song.song_id ||
-                        currentSong.id === song.id ||
-                        currentSong._id === song._id) &&
+                      [
+                        currentSong.song_id,
+                        currentSong.id,
+                        currentSong._id,
+                      ].some(
+                        (id) =>
+                          id &&
+                          [song.song_id, song.id, song._id].includes(id)
+                      ) &&
                       isPlaying;
 
                     return (
-                      <div
-                        key={idx}
-                        className="group flex items-center justify-between p-2 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 transition-all"
+                      <article
+                        key={
+                          song.song_id ||
+                          song.id ||
+                          song._id ||
+                          `${song.title}-${index}`
+                        }
+                        className={`group flex min-w-0 items-center gap-2 rounded-xl border p-2 transition sm:gap-3 sm:p-2.5 ${
+                          isCurrent
+                            ? "border-violet-300/20 bg-violet-500/[0.07]"
+                            : "border-transparent bg-white/[0.015] hover:border-white/[0.06] hover:bg-white/[0.035]"
+                        }`}
                       >
-                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                          <span className="w-4 text-center text-[11px] font-mono text-slate-500">
-                            {idx + 1}
-                          </span>
-                          <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-slate-800 shrink-0">
-                            <img
-                              src={
-                                song.image_url ||
-                                "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100&auto=format&fit=crop&q=80"
-                              }
-                              alt={song.title || "Track art"}
-                              className="w-full h-full object-cover"
-                            />
-                            {isCurrentlyPlaying && (
-                              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                <Volume2 className="w-3.5 h-3.5 text-violet-400 animate-bounce" />
-                              </div>
+                        <span
+                          className={`w-5 shrink-0 text-center text-[10px] tabular-nums ${
+                            isCurrent ? "text-violet-300" : "text-slate-600"
+                          }`}
+                        >
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+
+                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-800 sm:h-12 sm:w-12">
+                          <img
+                            src={song.image_url || FALLBACK_ART}
+                            alt=""
+                            loading="lazy"
+                            onError={(event) => {
+                              event.currentTarget.src = FALLBACK_ART;
+                            }}
+                            className="h-full w-full object-cover"
+                          />
+
+                          <span className="absolute inset-0 grid place-items-center bg-black/60 text-white opacity-0 transition group-hover:opacity-100">
+                            {isCurrent ? (
+                              <Volume2 size={17} />
+                            ) : (
+                              <Play size={16} fill="currentColor" />
                             )}
-                          </div>
-                          <div className="min-w-0 pr-2">
-                            <h4
-                              className={`text-xs font-semibold truncate ${
-                                isCurrentlyPlaying ? "text-violet-400" : "text-white"
-                              }`}
-                            >
-                              {song.title || "Untitled Song"}
-                            </h4>
-                            <p className="text-[10px] text-slate-400 truncate">
-                              {song.artist || "Unknown Artist"}
-                            </p>
-                          </div>
+                          </span>
                         </div>
 
-                        {/* Match reason badge */}
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {candidate.tags && candidate.tags.length > 0 && (
-                            <span className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[9px] font-medium bg-violet-500/15 text-violet-300 border border-violet-500/20">
+                        <div className="flex min-w-0 flex-1 flex-col gap-1">
+                          <strong
+                            title={song.title || "Untitled Song"}
+                            className={`truncate text-[11px] font-bold sm:text-xs ${
+                              isCurrent
+                                ? "text-violet-200"
+                                : "text-slate-200"
+                            }`}
+                          >
+                            {song.title || "Untitled Song"}
+                          </strong>
+
+                          <span
+                            title={song.artist || "Unknown Artist"}
+                            className="truncate text-[10px] text-slate-500"
+                          >
+                            {song.artist || "Unknown Artist"}
+                          </span>
+                        </div>
+
+                        <div className="hidden max-w-[35%] min-w-0 flex-col items-end gap-1 sm:flex">
+                          {candidate?.tags?.[0] && (
+                            <span className="max-w-full truncate rounded-md border border-violet-300/15 bg-violet-500/[0.08] px-1.5 py-0.5 text-[9px] text-violet-200">
                               {candidate.tags[0]}
                             </span>
                           )}
-                          <span className="text-[10px] text-slate-400 italic max-w-[140px] truncate text-right">
-                            {candidate.match_reason || "Catalog Match"}
+
+                          <span
+                            title={candidate?.match_reason || "Catalog match"}
+                            className="max-w-full truncate text-[10px] text-slate-500"
+                          >
+                            {candidate?.match_reason || "Catalog match"}
                           </span>
                         </div>
-                      </div>
+                      </article>
                     );
                   })}
                 </div>
-              </div>
+              ) : (
+                <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-white/10 bg-white/[0.015] px-5 py-10 text-center">
+                  <Music2 size={25} className="text-slate-500" />
+
+                  <strong className="text-xs text-slate-300">
+                    No tracks found for this prompt
+                  </strong>
+
+                  <span className="text-[11px] text-slate-500">
+                    Try a different mood, genre, or activity.
+                  </span>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Empty-state tip */}
+          {!result && !loading && (
+            <div className="mt-5 flex items-center gap-3 rounded-xl border border-white/[0.05] bg-white/[0.015] p-3">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-indigo-500/10 text-indigo-300">
+                <Filter size={15} />
+              </span>
+
+              <p className="text-[11px] leading-5 text-slate-400">
+                <strong className="text-slate-300">
+                  More personal, less random.
+                </strong>{" "}
+                Ask for a mood, genre, activity, duration, or tracks to avoid.
+              </p>
             </div>
           )}
         </div>
 
-        {/* Modal Bottom Status Bar */}
-        <div className="px-5 py-2.5 border-t border-white/5 bg-white/[0.01] flex items-center justify-between text-[10px] text-slate-500 flex-shrink-0">
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>AI Copilot Active • Catalog & History Connected</span>
+        {/* Footer */}
+        <footer className="flex items-center justify-between gap-3 border-t border-white/[0.07] bg-white/[0.01] px-4 py-3 sm:px-6">
+          <div className="flex items-center gap-2 text-[10px] text-slate-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
+            GeetHub AI is ready
           </div>
-          <span>Press ESC to exit</span>
-        </div>
-      </div>
-    </div>,
-    document.body
+
+          <span className="flex items-center gap-1.5 text-[10px] text-slate-500">
+            <Sparkles size={12} />
+            Made for your next repeat
+          </span>
+        </footer>
+      </section>
+    </div>
   );
+
+  return createPortal(modal, document.body);
 }

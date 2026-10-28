@@ -156,6 +156,14 @@ export const MusicPlayerProvider = ({ children }) => {
     const songId = song.song_id || song._id || song.id;
     if (!songId) return song.file_url;
 
+    // Direct playback for external tracks (Jamendo Creative Commons streams)
+    if (typeof songId === "string" && songId.startsWith("jamendo_")) {
+      return song.file_url;
+    }
+    if (song.file_url && (song.file_url.includes("jamendo.com") || song.file_url.includes("storage.jamendo.com"))) {
+      return song.file_url;
+    }
+
     // Check if song is private or if we want signed verification
     if (song.is_private) {
       try {
@@ -484,6 +492,27 @@ export const MusicPlayerProvider = ({ children }) => {
     setIsPlaying(false);
 
     if (!currentSong) return;
+
+    const isExternal =
+      Boolean(currentSong.song_id && currentSong.song_id.startsWith("jamendo_")) ||
+      Boolean(currentSong.file_url && currentSong.file_url.includes("jamendo.com"));
+
+    // For external tracks, notify and skip immediately if audio fails to load
+    if (isExternal) {
+      retryCountRef.current = 0;
+      setAudioError("External track unavailable");
+      toast.error(`"${currentSong.title || "External Track"}" audio unavailable. Skipping...`, {
+        id: "audio_recovery",
+        duration: 3000,
+      });
+
+      if (queue && queue.length > 1) {
+        setTimeout(() => {
+          playNext();
+        }, 800);
+      }
+      return;
+    }
 
     // Attempt stream URL re-signing / recovery if under 2 retries
     if (retryCountRef.current < 2) {
@@ -861,12 +890,18 @@ export const MusicPlayerProvider = ({ children }) => {
     setAudioError(null);
 
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      let song = null;
+      if (typeof songIdInput === "object" && songIdInput.file_url) {
+        song = songIdInput;
+      } else {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        song = res.data.song;
+      }
 
-      const song = res.data.song;
+      if (!song) throw new Error("Track not found");
       setCurrentSong(song);
 
       let newQueue = [];
@@ -916,28 +951,7 @@ export const MusicPlayerProvider = ({ children }) => {
 
   const playTrack = (track, queueData = null) => {
     if (!track) return;
-    const songId = typeof track === "string" ? track : (track.song_id || track._id || track.id);
-    if (typeof track === "object" && track.file_url) {
-      setCurrentSong(track);
-      const audio = audioRef.current;
-      if (audio) {
-        setIsBuffering(true);
-        resolveStreamURL(track).then((url) => {
-          audio.src = url || track.file_url;
-          audio.currentTime = 0;
-          return audio.play();
-        }).then(() => {
-          setIsPlaying(true);
-          setIsBuffering(false);
-        }).catch((e) => {
-          console.warn(e);
-          setIsBuffering(false);
-        });
-      }
-    }
-    if (songId) {
-      playSong(songId, queueData);
-    }
+    playSong(track, queueData);
   };
 
   // Clear queue and stop playback
@@ -964,15 +978,21 @@ export const MusicPlayerProvider = ({ children }) => {
     if (!songId) return false;
 
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      let song = null;
+      if (typeof songIdInput === "object" && songIdInput.file_url) {
+        song = songIdInput;
+      } else {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        song = res.data.song;
+      }
 
-      const song = res.data.song;
+      if (!song) throw new Error("Track not found");
 
       if (queue.length === 0) {
-        playSong(songId);
+        playSong(song);
         toast.success(`Playing "${song.title}"`);
         return true;
       }
@@ -991,17 +1011,26 @@ export const MusicPlayerProvider = ({ children }) => {
   };
 
   // Add to Queue (End)
-  const addToQueueEnd = async (songId) => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+  const addToQueueEnd = async (songIdInput) => {
+    const songId = typeof songIdInput === "object" ? (songIdInput?.song_id || songIdInput?._id || songIdInput?.id) : songIdInput;
+    if (!songId) return false;
 
-      const song = res.data.song;
+    try {
+      let song = null;
+      if (typeof songIdInput === "object" && songIdInput.file_url) {
+        song = songIdInput;
+      } else {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`${API_BASE_URL}/song/${songId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        song = res.data.song;
+      }
+
+      if (!song) throw new Error("Track not found");
 
       if (queue.length === 0) {
-        playSong(songId);
+        playSong(song);
         toast.success(`Playing "${song.title}"`);
         return true;
       }
