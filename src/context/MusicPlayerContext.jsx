@@ -1018,6 +1018,45 @@ export const MusicPlayerProvider = ({ children }) => {
     }
   };
 
+  // Play an entire queue of songs directly (used by AI Copilot)
+  const playQueue = async (songsList, startIndex = 0) => {
+    if (!songsList || songsList.length === 0) return;
+    const initialIndex = Math.max(0, Math.min(startIndex, songsList.length - 1));
+    const song = songsList[initialIndex];
+    if (!song) return;
+
+    setCurrentSong(song);
+    setQueue(songsList);
+    setCurrentIndex(initialIndex);
+    persistState({ currentSong: song, queue: songsList, currentIndex: initialIndex, currentTime: 0 });
+
+    const audio = audioRef.current;
+    if (audio) {
+      setIsBuffering(true);
+      try {
+        const streamUrl = await resolveStreamURL(song);
+        audio.src = streamUrl || song.file_url;
+        audio.currentTime = 0;
+        await audio.play();
+        setIsPlaying(true);
+        setIsBuffering(false);
+        toast.success(`Playing mix starting with "${song.title}" 🎶`);
+      } catch (err) {
+        console.warn("Autoplay / stream error:", err);
+        setIsBuffering(false);
+      }
+    }
+  };
+
+  // Add multiple tracks to queue (used by AI Copilot)
+  const addMultipleToQueue = (songsList) => {
+    if (!songsList || songsList.length === 0) return;
+    const newQueue = [...queue, ...songsList];
+    setQueue(newQueue);
+    persistState({ queue: newQueue });
+    toast.success(`Added ${songsList.length} tracks to queue 🎧`);
+  };
+
   // Toggle Like
   const toggleLike = async () => {
     if (!currentSong || !currentSong.song_id) return;
@@ -1207,6 +1246,8 @@ export const MusicPlayerProvider = ({ children }) => {
     toggleSave,
     addToQueue,
     addToQueueEnd,
+    playQueue,
+    addMultipleToQueue,
     clearQueue,
     resolveStreamURL,
 

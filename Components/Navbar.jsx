@@ -1,8 +1,9 @@
-import { LogOut, Menu, X, Mic, MicOff, Users, Settings, Keyboard } from "lucide-react";
+import { LogOut, Menu, X, Mic, MicOff, Users, Settings, Keyboard, Sparkles } from "lucide-react";
 import { useVoiceSearch } from "../src/hooks/useVoiceSearch";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import SettingsModal from "./SettingsModal";
+import AICopilotModal from "./AICopilotModal";
 import { FaMusic, FaFire } from "react-icons/fa";
 import { BiSolidLike } from "react-icons/bi";
 import { CiViewTimeline } from "react-icons/ci";
@@ -45,10 +46,23 @@ const Navbar = () => {
   const [loading, setLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [copilotOpen, setCopilotOpen] = useState(false);
   const searchRef = useRef(null);
   const isInitialCheckRef = useRef(true);
   const sessionStartTimeRef = useRef(Date.now());
   const seenIdsRef = useRef(new Set());
+
+  // Global Alt+C shortcut for Copilot
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.altKey && (e.key === "c" || e.key === "C")) {
+        e.preventDefault();
+        setCopilotOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -398,7 +412,21 @@ const Navbar = () => {
         )}
       </div>
 
-      <div className="flex items-center ml-2 sm:ml-6 gap-3">
+      <div className="flex items-center ml-2 sm:ml-6 gap-2.5">
+        <button
+          onClick={() => setCopilotOpen(true)}
+          className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-600/20 via-fuchsia-600/20 to-cyan-600/20 hover:from-violet-600/35 hover:to-fuchsia-600/35 border border-violet-500/40 text-violet-300 hover:text-white transition shadow-sm group"
+          title="AI Music Copilot (Alt+C)"
+          aria-label="AI Music Copilot"
+        >
+          <Sparkles size={16} className="text-violet-400 group-hover:rotate-12 group-hover:scale-110 transition-transform animate-pulse" />
+          <span className="text-xs font-semibold tracking-wide hidden lg:inline">Copilot</span>
+          <span className="flex h-1.5 w-1.5 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-violet-500"></span>
+          </span>
+        </button>
+
         <button
           onClick={() => navigate("/shortcuts")}
           className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-gray-800/80 transition text-slate-700 hover:text-black dark:text-gray-300 dark:hover:text-white"
@@ -531,6 +559,14 @@ const Navbar = () => {
               <Keyboard className="text-indigo-500 w-6 h-6" />
               <span className="font-bold text-lg">Shortcuts</span>
             </div>
+
+            <div
+              className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer text-violet-500 dark:text-violet-400 transition-colors w-full"
+              onClick={() => { setMenuOpen(false); setCopilotOpen(true); }}
+            >
+              <Sparkles className="w-6 h-6 animate-pulse" />
+              <span className="font-bold text-lg">AI Copilot</span>
+            </div>
           </div>
 
           {/* Footer inside drawer */}
@@ -549,6 +585,9 @@ const Navbar = () => {
       )}
       {/* Settings & Appearance Modal */}
       <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+
+      {/* AI Music Copilot Modal */}
+      <AICopilotModal isOpen={copilotOpen} onClose={() => setCopilotOpen(false)} />
     </nav>
   );
 };
