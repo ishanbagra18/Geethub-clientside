@@ -100,7 +100,12 @@ const TrendingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-black to-slate-950 text-white font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#07090e] text-white font-sans overflow-x-hidden relative">
+      {/* Dynamic Ambient Background Elements */}
+      <div className="fixed inset-0 ambient-mesh-glow pointer-events-none -z-10" />
+      <div className="fixed top-1/4 -left-32 w-96 h-96 bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none -z-10" />
+      <div className="fixed top-2/3 -right-32 w-[28rem] h-[28rem] bg-indigo-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
+
       <Navbar />
 
       <div className="pt-24 px-4 sm:px-6 lg:px-12 pb-32 max-w-7xl mx-auto">

@@ -224,7 +224,8 @@ const DesiMusicTrivia = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 dark:bg-black text-slate-100 font-sans pb-20">
+    <div className="min-h-screen bg-[#07090e] text-slate-100 font-sans pb-20 relative overflow-hidden">
+      <div className="fixed inset-0 ambient-mesh-glow pointer-events-none -z-10" />
       <Navbar />
 
       <audio ref={audioRef} onEnded={() => setIsPlayingAudio(false)} />

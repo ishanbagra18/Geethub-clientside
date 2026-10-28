@@ -37,7 +37,8 @@ const PartyLobby = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#020617] via-black to-[#0f172a] text-white flex flex-col justify-between overflow-x-hidden">
+    <div className="min-h-screen bg-[#07090e] text-white flex flex-col justify-between overflow-x-hidden relative">
+      <div className="fixed inset-0 ambient-mesh-glow pointer-events-none -z-10" />
       <Navbar />
 
       <main className="flex-1 flex items-center justify-center px-6 py-12 relative">

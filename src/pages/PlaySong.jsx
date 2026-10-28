@@ -68,7 +68,8 @@ const PlaySong = () => {
   }, [id, playlistId]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white pb-32">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-white pb-32 relative overflow-hidden">
+      <div className="fixed inset-0 ambient-mesh-glow pointer-events-none -z-10" />
       <Navbar />
       {loading ? (
         <div className="min-h-[60vh] flex items-center justify-center text-blue-500">

@@ -127,7 +127,8 @@ const Mymostplayed = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-black to-slate-950 text-white pb-32">
+      <div className="min-h-screen bg-[#07090e] text-white pb-32 relative overflow-hidden">
+        <div className="fixed inset-0 ambient-mesh-glow pointer-events-none -z-10" />
         <Navbar />
         <div className="flex flex-col items-center justify-center min-h-[70vh]">
           <div className="relative">
@@ -142,10 +143,11 @@ const Mymostplayed = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-black to-slate-950 text-white pb-32">
+      <div className="min-h-screen bg-[#07090e] text-white pb-32 relative overflow-hidden">
+        <div className="fixed inset-0 ambient-mesh-glow pointer-events-none -z-10" />
         <Navbar />
         <div className="flex items-center justify-center min-h-[70vh] px-4">
-          <div className="bg-gray-950/80 border border-blue-500/30 rounded-3xl p-8 max-w-md backdrop-blur-xl text-center shadow-2xl">
+          <div className="bg-[#0e121e]/80 border border-blue-500/30 rounded-3xl p-8 max-w-md backdrop-blur-xl text-center shadow-2xl">
             <Music2 size={48} className="text-blue-400 mx-auto mb-4" />
             <p className="text-gray-300 text-lg font-medium">{error}</p>
           </div>
@@ -155,7 +157,12 @@ const Mymostplayed = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-black to-slate-950 text-white font-sans pb-32">
+    <div className="min-h-screen bg-[#07090e] text-white font-sans pb-32 relative overflow-x-hidden">
+      {/* Dynamic Ambient Background Elements */}
+      <div className="fixed inset-0 ambient-mesh-glow pointer-events-none -z-10" />
+      <div className="fixed top-1/4 -left-32 w-96 h-96 bg-blue-600/10 rounded-full blur-[140px] pointer-events-none -z-10" />
+      <div className="fixed bottom-1/4 -right-32 w-96 h-96 bg-indigo-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
+
       <Navbar />
 
       <div className="pt-24 px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto">

@@ -35,6 +35,7 @@ import DesiMusicTrivia from "./pages/DesiMusicTrivia";
 import Footer from "../Components/Footer";
 import PartyLobby from "./pages/PartyLobby";
 import PartyRoom from "./pages/PartyRoom";
+import ShortcutsPage from "./pages/ShortcutsPage";
 import { PartyProvider } from "./context/PartyContext";
 
 function App() {
@@ -82,6 +83,7 @@ function App() {
             <Route path="/premium" element={<PremiumPage />} />
             <Route path="/party" element={<PartyLobby />} />
             <Route path="/party/:roomId" element={<PartyRoom />} />
+            <Route path="/shortcuts" element={<ShortcutsPage />} />
           </Routes>
 
           {/* Global Footer (Only on Homepage) */}

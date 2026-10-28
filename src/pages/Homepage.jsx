@@ -5,6 +5,9 @@ import Navbar from "../../Components/Navbar.jsx";
 import { useUser } from "../context/UserContext.jsx";
 import { usePlaylist } from "../context/PlaylistContext.jsx";
 import { useHistory } from "../context/historyContext.jsx";
+import { useMusicPlayer } from "../context/MusicPlayerContext.jsx";
+import { useMusicSections } from "../context/MusicSectionsContext.jsx";
+import { Play, Sparkles, Flame, Radio, Music2, ArrowRight, TrendingUp, Headphones, Disc } from "lucide-react";
 // Import the Myplaylist component
 import Myplaylist from "../../Components/Myplaylist.jsx";
 import Hindisongs from "../../Components/Hindisongs.jsx";
@@ -16,6 +19,7 @@ import PremiumBanner from "../../Components/PremiumBanner.jsx";
 import InstagramFeed from "../../Components/InstagramFeed.jsx";
 import MoodRadioBar from "../../Components/MoodRadioBar.jsx";
 import HeadphoneScrollExperience from "../../Components/HeadphoneScrollExperience.jsx";
+import RecommendationFeed from "../../Components/RecommendationFeed.jsx";
 
 // Lazy load components for better performance
 const Mostliked = lazy(() => import("../../Components/Mostliked.jsx"));
@@ -26,31 +30,40 @@ const CompactGrid = lazy(() => import("../../Components/CompactGrid.jsx"));
 
 // --- Helper Components ---
 
-const SectionHeading = ({ emoji, title, subtitle }) => (
-  <div className="group relative mb-8">
-    <div className="flex items-center gap-4">
-      {/* Neon Glow Accent Bar */}
-      <div className="w-1.5 h-12 rounded-full bg-gradient-to-b from-blue-400 via-cyan-400 to-indigo-500 shadow-lg shadow-cyan-500/30 group-hover:scale-y-110 transition-transform duration-300" />
-      <div>
-        {subtitle && (
-          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-400 text-xs font-bold uppercase tracking-[0.2em] mb-1">
-            <span>{emoji}</span>
-            <span>{subtitle}</span>
-          </div>
-        )}
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-white dark:via-slate-100 dark:to-cyan-300 drop-shadow-md dark:drop-shadow-xl">
-          {title}
-        </h2>
-      </div>
+const SectionHeading = ({ emoji, title, subtitle, actionText, onAction }) => (
+  <div className="flex items-end justify-between mb-6 pb-2.5 border-b border-slate-200 dark:border-white/[0.06]">
+    <div>
+      {subtitle && (
+        <div className="flex items-center gap-1.5 mb-1">
+          {emoji && <span className="text-xs">{emoji}</span>}
+          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-600 dark:text-cyan-400">
+            {subtitle}
+          </span>
+        </div>
+      )}
+      <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+        {title}
+      </h2>
     </div>
-    <div className="mt-3 h-[1px] w-full bg-gradient-to-r from-blue-500/40 via-cyan-500/20 to-transparent" />
+
+    {actionText && (
+      <button
+        onClick={onAction}
+        className="group inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors pb-0.5"
+      >
+        <span>{actionText}</span>
+        <span className="group-hover:translate-x-1 transition-transform">→</span>
+      </button>
+    )}
   </div>
 );
 
 SectionHeading.propTypes = {
   emoji: PropTypes.string,
   title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string
+  subtitle: PropTypes.string,
+  actionText: PropTypes.string,
+  onAction: PropTypes.func,
 };
 
 /**
@@ -166,8 +179,11 @@ const Homepage = () => {
   const navigate = useNavigate();
   const { user } = useUser(); // Get user object from context
   const { history, loading: historyLoading } = useHistory();
+  const { currentSong, isPlaying, togglePlayPause, playSong } = useMusicPlayer();
+  const { sections } = useMusicSections();
 
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("all");
   const [mounted, setMounted] = useState(false);
 
   // Ensure SSR compatibility
@@ -194,6 +210,14 @@ const Homepage = () => {
     }
   }, [history, navigate]);
 
+  const scrollToSection = (sectionId, categoryKey) => {
+    setActiveCategory(categoryKey);
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   if (!mounted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-black to-[#1a0a1a] flex items-center justify-center">
@@ -203,96 +227,101 @@ const Homepage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-gradient-to-br dark:from-[#0a0a0a] dark:via-black dark:to-[#1a0a1a] text-slate-900 dark:text-white font-body overflow-x-clip">
+    <div className="min-h-screen bg-slate-50 dark:bg-transparent text-slate-900 dark:text-white font-body relative overflow-x-clip selection:bg-blue-500 selection:text-white">
+      {/* 🌌 DYNAMIC AMBIENT AURORA LIGHTING (Obsidian / Indigo / Cyan) */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        {/* Top-Left Blue Pulsar */}
+        <div className="absolute -top-32 -left-32 w-[650px] h-[650px] bg-blue-600/15 rounded-full blur-[130px] animate-aurora" />
+        {/* Center-Right Cyan Glow */}
+        <div className="absolute top-[25%] -right-40 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[140px]" />
+        {/* Mid-Left Purple Acoustic Echo */}
+        <div className="absolute top-[55%] -left-40 w-[550px] h-[550px] bg-indigo-600/10 rounded-full blur-[120px] animate-aurora" style={{ animationDelay: '4s' }} />
+        {/* Bottom-Right Violet Ambient */}
+        <div className="absolute -bottom-40 right-[15%] w-[700px] h-[700px] bg-purple-600/10 rounded-full blur-[150px]" />
+        {/* Tactile Texture Mesh */}
+        <div className="ambient-mesh-glow" />
+      </div>
+
       {/* NAVBAR */}
       <Navbar />
 
-      {/* HERO SECTION - Improved with better mobile experience */}
-      <section className="relative h-[80vh] md:h-[85vh] flex flex-col lg:flex-row px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto items-center justify-center gap-6 lg:gap-12 pt-12 pb-16">
-        {/* Enhanced Background Elements with Intersection Observer ready */}
+      {/* HERO SECTION - Preserved Original Structure with Senior Designer Polish */}
+      <section className="relative min-h-[75vh] md:min-h-[80vh] flex flex-col lg:flex-row px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto items-center justify-center gap-8 lg:gap-14 pt-8 pb-10">
+        {/* Subtle Background Glow Elements */}
         <div className="absolute inset-0 pointer-events-none">
-          <div
-            className="absolute top-16 left-8 w-32 h-32 md:w-48 md:h-48 bg-blue-400/5 rounded-full blur-xl animate-pulse"
-            style={{ animationDelay: '0s' }}
-          />
-          <div
-            className="absolute bottom-16 right-16 w-48 h-48 md:w-64 md:h-64 bg-indigo-500/5 rounded-full blur-xl animate-pulse"
-            style={{ animationDelay: '1s' }}
-          />
-          {/* Subtle grid pattern */}
-          <div className="absolute inset-0 bg-grid-slate-700/20 [background-size:100px_100px]"></div>
+          <div className="absolute top-12 left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-[100px] animate-pulse" />
+          <div className="absolute bottom-12 right-12 w-80 h-80 bg-indigo-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
         </div>
 
-        {/* LEFT CONTENT - Better mobile stacking, improved focus states */}
-        <article className="relative z-0 w-full lg:w-3/5 space-y-4 backdrop-blur-xl bg-white/80 dark:bg-black/20 border border-slate-200/80 dark:border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.01] focus-within:ring-4 ring-blue-400/30">
-          {/* Enhanced glow effect */}
-          <div
-            className="absolute -inset-1 bg-gradient-to-r from-blue-400/15 via-transparent to-cyan-500/15 rounded-2xl blur opacity-75 animate-pulse-slow"
-            style={{ animationDuration: '4s' }}
-          />
+        {/* LEFT CONTENT - Polished Glassmorphism Console Card */}
+        <article className="relative z-10 w-full lg:w-3/5 space-y-5 backdrop-blur-2xl bg-white/[0.03] dark:bg-[#0c101d]/85 border border-white/10 dark:border-white/[0.08] rounded-[2rem] p-6 sm:p-10 lg:p-12 shadow-2xl shadow-blue-500/5 hover:border-cyan-500/30 transition-all duration-500 hover:scale-[1.005]">
+          {/* Subtle Ambient Backlight Glow */}
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500/10 via-transparent to-blue-600/10 rounded-[2rem] blur-xl opacity-60 pointer-events-none" />
 
-          <header>
-            <h1
-              className="text-xl md:text-3xl lg:text-4xl font-heading font-black bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500 bg-clip-text text-transparent tracking-wide drop-shadow-lg"
-              role="banner"
-            >
-              Welcome {user?.first_name
-                ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}`
-                : "Guest"} 👋
+          <header className="relative z-10">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent tracking-tight">
+              Welcome {user?.first_name ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}` : "Guest"} 👋
             </h1>
-            <p className="text-xs lg:text-sm tracking-[0.2em] font-heading2 font-bold bg-gradient-to-r from-blue-500 via-cyan-500 to-amber-500 bg-clip-text text-transparent uppercase pt-1">
+            <p className="text-xs sm:text-sm tracking-[0.2em] font-bold text-cyan-400/90 uppercase pt-1">
               Every Mood Has a Song. 🇮🇳🎧
             </p>
           </header>
 
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black leading-tight bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 dark:from-white dark:via-gray-100 dark:to-gray-200 bg-clip-text text-transparent drop-shadow-2xl tracking-tight">
-            Highly curated <br className="hidden md:block" /> music & sound effects.
+          <h2 className="relative z-10 text-3xl sm:text-5xl lg:text-6xl font-black leading-[1.1] text-white tracking-tight">
+            Highly curated <br className="hidden sm:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-cyan-200">
+              music & sound effects.
+            </span>
           </h2>
 
-          <p className="text-base md:text-lg text-slate-600 dark:text-gray-300 max-w-xl leading-relaxed backdrop-blur-sm pt-2">
-            Trusted by filmmakers worldwide. Premium cinematic music and SFX collection.
+          <p className="relative z-10 text-sm sm:text-base md:text-lg text-slate-300 max-w-xl leading-relaxed pt-1">
+            Trusted by creators and listeners worldwide. Premium HD audio, curated regional anthems, and cinematic sound design.
           </p>
 
-          {/* Improved Buttons with better focus states and keyboard navigation */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          {/* Action Buttons */}
+          <div className="relative z-10 flex flex-col sm:flex-row gap-3.5 pt-3">
             <button
               onClick={handleCTA}
-              className="group relative bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 !text-white px-8 md:px-10 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg tracking-wide shadow-2xl hover:shadow-3xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-400/50 transition-all duration-400 overflow-hidden border border-transparent font-heading2"
+              className="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 text-white font-bold text-sm sm:text-base tracking-wide shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 active:scale-95 transition-all overflow-hidden"
               aria-label="Create free account"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-              <span className="relative z-10 !text-white">CREATE FREE ACCOUNT</span>
+              <span className="relative z-10">{user ? "EXPLORE MUSIC" : "CREATE FREE ACCOUNT"}</span>
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
+
             <button
               onClick={handlePlayLastSong}
               disabled={historyLoading || !history || history.length === 0}
-              className="border-2 border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400 px-8 md:px-10 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg tracking-wide hover:bg-blue-500 hover:!text-white dark:hover:bg-blue-400 dark:hover:text-black backdrop-blur-sm transition-all duration-400 hover:scale-105 shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-400/50 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-cyan-500/40 text-cyan-300 hover:text-white font-semibold text-sm sm:text-base backdrop-blur-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:pointer-events-none"
               aria-label="Play Last Song"
             >
-              ▶ Play Last Song
+              <Play size={16} fill="currentColor" />
+              <span>Play Last Song</span>
             </button>
           </div>
 
-          <p className="text-slate-500 dark:text-gray-400 text-sm md:text-base pt-3 font-medium">
-            No credit card required. Start creating today.
+          <p className="relative z-10 text-slate-400 text-xs sm:text-sm pt-2 font-medium">
+            No credit card required. Start listening in HD today.
           </p>
         </article>
 
-        {/* RIGHT IMAGE - Better responsive sizing and loading */}
+        {/* RIGHT VISUAL - Polished Visual Frame */}
         <div className="hidden lg:flex w-2/5 justify-center items-center relative group">
-          <div className="absolute w-full h-full bg-gradient-to-t from-black/50 via-transparent to-transparent rounded-2xl -z-10" />
-          <img
-            src="https://i.pinimg.com/originals/dc/c9/ce/dcc9cea8525b59b91d1a6ed0e27fff59.gif"
-            alt="Creative professional wearing headphones visualizing music"
-            className="w-[320px] h-[320px] md:w-[340px] md:h-[340px] object-cover rounded-2xl border-3 border-white/15 shadow-2xl group-hover:shadow-3xl group-hover:scale-105 transition-all duration-500 hover:brightness-110 cursor-pointer loading='lazy'"
-            loading="lazy"
-          />
+          <div className="absolute w-72 h-72 bg-gradient-to-tr from-cyan-500/20 to-blue-600/20 rounded-full blur-[80px] -z-10 group-hover:scale-110 transition-transform duration-700" />
+          <div className="relative rounded-3xl p-2.5 bg-gradient-to-b from-white/15 via-white/5 to-white/10 backdrop-blur-xl border border-white/15 shadow-2xl group-hover:border-cyan-500/40 transition-all duration-500 group-hover:scale-105">
+            <img
+              src="https://i.pinimg.com/originals/dc/c9/ce/dcc9cea8525b59b91d1a6ed0e27fff59.gif"
+              alt="Creative listener wearing headphones visualizing sound"
+              className="w-[300px] h-[300px] xl:w-[340px] xl:h-[340px] object-cover rounded-2xl shadow-inner group-hover:brightness-105 transition-all duration-500"
+              loading="lazy"
+            />
+          </div>
         </div>
       </section>
 
-      {/* VIDEO BANNER - Optimized with loading states */}
-      <section data-preserve-dark className="video-hero relative h-[60vh] md:h-[65vh] w-full max-w-[1600px] mx-auto overflow-hidden my-12 px-4 sm:px-6 lg:px-12">
-        <div className="relative w-full h-full rounded-3xl shadow-2xl overflow-hidden backdrop-blur-md border border-white/5">
+      {/* VIDEO BANNER - Restored with Senior Glassmorphism Polish */}
+      <section data-preserve-dark className="video-hero relative h-[60vh] md:h-[65vh] w-full max-w-[1600px] mx-auto overflow-hidden my-10 px-4 sm:px-6 lg:px-12">
+        <div className="relative w-full h-full rounded-[2.5rem] shadow-2xl overflow-hidden backdrop-blur-md border border-white/10 group">
           <video
             autoPlay
             loop
@@ -306,48 +335,53 @@ const Homepage = () => {
             <source src="video.mp4" type="video/mp4" />
             <img
               src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMjIyIi8+PHRleHQgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmaWxsPSIjNDQ0IiB4PSI1MCUiIHk9IjUwJSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkxvYWRpbmcgVmlkZW88L3RleHQ+PC9zdmc+"
-              alt="Music licensing video preview"
+              alt="Music video preview"
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isVideoLoaded ? 'opacity-0' : 'opacity-100'}`}
             />
           </video>
 
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black/80" />
+          {/* Cinematic Multi-Gradient Overlays */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/90" />
 
-          <article className="relative z-20 h-full flex flex-col justify-center p-6 md:p-10 lg:p-14">
-            <div className="flex flex-col lg:flex-row items-start justify-between w-full gap-8 lg:gap-12">
-              <div className="w-full lg:w-[60%] flex flex-col space-y-5 lg:space-y-6">
-                <h3 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-black leading-tight bg-gradient-to-br from-white via-blue-50 to-cyan-100/50 bg-clip-text text-transparent drop-shadow-3xl tracking-tight">
+          <article className="relative z-20 h-full flex flex-col justify-center p-6 sm:p-10 lg:p-14">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between w-full gap-8 lg:gap-12">
+              <div className="w-full lg:w-[60%] flex flex-col space-y-4 sm:space-y-5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-xs font-bold uppercase tracking-widest w-fit">
+                  <Sparkles size={12} className="text-cyan-400" />
+                  <span>Atmospheric Audio Experience</span>
+                </div>
+
+                <h3 className="text-3xl sm:text-5xl lg:text-6xl font-black leading-tight bg-gradient-to-br from-white via-blue-50 to-cyan-100/70 bg-clip-text text-transparent drop-shadow-2xl tracking-tight">
                   Amplify the emotion <br /> in every scene.
                 </h3>
-                <p className="text-lg font-heading3 md:text-xl text-gray-200 max-w-xl leading-relaxed backdrop-blur-sm bg-white/5 p-4 rounded-xl border border-white/10 shadow-xl">
-                  Emotional scores to atmospheric sound design — crafted to elevate storytelling.
+                <p className="text-sm sm:text-base md:text-lg text-slate-200 max-w-xl leading-relaxed backdrop-blur-md bg-black/40 p-4 rounded-2xl border border-white/10 shadow-xl">
+                  Emotional scores to atmospheric sound design — crafted to elevate your audio journey and storytelling.
                 </p>
               </div>
 
-              <aside className="w-full lg:w-[35%] flex flex-col gap-5 lg:gap-6">
-                <div className="backdrop-blur-xl bg-black/30 border border-blue-400/20 rounded-2xl p-5 shadow-2xl hover:shadow-3xl transition-all duration-400">
-                  <p className="text-3xl md:text-4xl lg:text-5xl font-heading font-black bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
+              <aside className="w-full lg:w-[35%] flex flex-col gap-4">
+                <div className="backdrop-blur-xl bg-black/40 border border-blue-400/25 rounded-2xl p-4 sm:p-5 shadow-2xl hover:border-blue-400/50 hover:scale-[1.02] transition-all">
+                  <p className="text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                     70,000+
                   </p>
-                  <p className="text-lg font-semibold text-gray-200">curated songs</p>
+                  <p className="text-sm sm:text-base font-semibold text-slate-200 mt-1">curated songs</p>
                 </div>
 
-                <div className="backdrop-blur-xl bg-black/30 border border-cyan-500/20 rounded-2xl p-5 shadow-2xl hover:shadow-3xl transition-all duration-400">
-                  <p className="text-3xl md:text-4xl lg:text-5xl font-heading font-black bg-gradient-to-r from-cyan-400 to-indigo-500 bg-clip-text text-transparent">
+                <div className="backdrop-blur-xl bg-black/40 border border-cyan-500/25 rounded-2xl p-4 sm:p-5 shadow-2xl hover:border-cyan-400/50 hover:scale-[1.02] transition-all">
+                  <p className="text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
                     150,000+
                   </p>
-                  <p className="text-lg font-semibold text-gray-200">sound effects</p>
+                  <p className="text-sm sm:text-base font-semibold text-slate-200 mt-1">sound effects</p>
                 </div>
 
                 <button
                   onClick={handleCTA}
-                  className="group relative bg-gradient-to-r from-transparent via-white/15 to-transparent border-2 border-white/40 text-white px-8 py-3 rounded-xl font-bold text-lg tracking-wide hover:bg-white/20 hover:border-white hover:shadow-2xl hover:scale-105 backdrop-blur-xl transition-all duration-400 shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-400/50"
+                  className="group relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 text-white px-8 py-3.5 rounded-2xl font-bold text-base tracking-wide hover:shadow-2xl hover:shadow-cyan-500/30 hover:scale-105 active:scale-95 transition-all shadow-xl"
                   aria-label="Explore music library"
                 >
-                  <span className="group-hover:translate-x-1 transition-transform duration-300 inline-block">
-                    Explore the Library →
-                  </span>
+                  <span>Explore the Library</span>
+                  <span className="group-hover:translate-x-1.5 transition-transform duration-300">→</span>
                 </button>
               </aside>
             </div>
@@ -355,34 +389,69 @@ const Homepage = () => {
         </div>
       </section>
 
+      {/* 🚀 QUICK CATEGORY FILTER BAR */}
+      <div className="px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto mb-6 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        {[
+          { label: "All Mixes", id: "quick-hits", key: "all", icon: "🔥" },
+          { label: "Made For You", id: "recommendations-heading", key: "foryou", icon: "✨" },
+          { label: "Top Charts", id: "top-charts", key: "charts", icon: "🚀" },
+          { label: "Bollywood", id: "hindi-hits", key: "hindi", icon: "🎬" },
+          { label: "Punjabi Beats", id: "punjabi-hits", key: "punjabi", icon: "💥" },
+          { label: "Mood Radio", id: "mood-radio", key: "mood", icon: "📻" },
+          { label: "Artists", id: "featured-artists", key: "artists", icon: "🌟" },
+          { label: "Community", id: "community-chat-heading", key: "community", icon: "💬" },
+        ].map((cat) => {
+          const isActive = activeCategory === cat.key;
+          return (
+            <button
+              key={cat.key}
+              onClick={() => scrollToSection(cat.id, cat.key)}
+              className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
+                isActive
+                  ? "bg-cyan-500 text-black shadow-md shadow-cyan-500/25 scale-105"
+                  : "bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/[0.08]"
+              }`}
+            >
+              <span>{cat.icon}</span>
+              <span>{cat.label}</span>
+            </button>
+          );
+        })}
+      </div>
 
 
-      {/* CONTENT SECTIONS - Better loading states and spacious vertical margins */}
-      <main className="px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto pt-16 md:pt-24 pb-48 space-y-32 lg:space-y-44">
 
-        {/* 🚀 NEW SECTION: User's Private Playlists */}
+      {/* CONTENT SECTIONS - Cohesive vertical rhythm and direct navigation links */}
+      <main className="px-4 sm:px-6 lg:px-12 max-w-[1600px] mx-auto pt-6 pb-36 space-y-16 md:space-y-20">
+
+        {/* 🌟 AI HYBRID RECOMMENDATION FEED */}
+        <div id="section-foryou">
+          <RecommendationFeed />
+        </div>
+
+        {/* 🚀 User's Private Playlists (if logged in) */}
         {user && (
-          <section aria-labelledby="my-playlists">
-            <SectionHeading emoji="🎧" title={`${user?.first_name ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}` : "User"}'s Playlists`} subtitle="Your Library" />
-            {/* Myplaylist handles its own fetching and rendering logic, but we want to show only 4 playlists */}
+          <section id="my-playlists" aria-labelledby="my-playlists">
+            <SectionHeading
+              emoji="🎧"
+              title={`${user?.first_name ? `${user.first_name.charAt(0).toUpperCase()}${user.first_name.slice(1).toLowerCase()}` : "User"}'s Playlists`}
+              subtitle="Your Library"
+              actionText="View All"
+              onAction={() => navigate("/myplaylists")}
+            />
             <Myplaylist maxToShow={4} />
-            <div className="mt-8 text-center">
-              <Link 
-                to="/myplaylists" 
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-600/30 to-cyan-500/30 border border-blue-400/40 text-blue-300 font-bold hover:bg-blue-600 hover:text-white hover:border-blue-400 transition-all shadow-lg shadow-blue-500/20 hover:scale-105"
-              >
-                <span>View All Your Playlists</span>
-                <span>→</span>
-              </Link>
-            </div>
           </section>
         )}
-        {/* 🚀 END NEW SECTION */}
 
-      
-
-        <section aria-labelledby="quick-hits">
-          <SectionHeading emoji="⚡" title="Quick Hits & Collection" subtitle="Featured Mix" />
+        {/* Quick Hits Collection */}
+        <section id="quick-hits" aria-labelledby="quick-hits">
+          <SectionHeading
+            emoji="⚡"
+            title="Quick Hits & Collection"
+            subtitle="Trending Mixes"
+            actionText="Browse Hits"
+            onAction={() => navigate("/trending")}
+          />
           <Suspense fallback={
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-pulse">
               {[...Array(8)].map((_, i) => (
@@ -394,8 +463,22 @@ const Homepage = () => {
           </Suspense>
         </section>
 
-        <section aria-labelledby="curators-spotlight">
-          <SectionHeading emoji="✨" title="Curator's Spotlight" subtitle="Staff Picks" />
+        {/* Top Charts (Clean: native header only, no duplicate banner) */}
+        <section id="top-charts" aria-labelledby="top-charts">
+          <Suspense fallback={<div className="h-4 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 rounded-full w-48 animate-pulse mx-auto" />}>
+            <Topcharts limitToHome={true} />
+          </Suspense>
+        </section>
+
+        {/* Curator's Spotlight */}
+        <section id="curators-spotlight" aria-labelledby="curators-spotlight">
+          <SectionHeading
+            emoji="✨"
+            title="Curator's Spotlight"
+            subtitle="Staff Picks"
+            actionText="Trending Hits"
+            onAction={() => navigate("/trending")}
+          />
           <Suspense fallback={
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-pulse">
               {[...Array(8)].map((_, i) => (
@@ -407,47 +490,60 @@ const Homepage = () => {
           </Suspense>
         </section>
 
-        <section aria-labelledby="top-charts">
-          <SectionHeading emoji="🚀" title="The Industry's Hottest" subtitle="Top Charts" />
-          <Suspense fallback={<div className="h-4 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 rounded-full w-48 animate-pulse mx-auto" />}>
-            <Topcharts limitToHome={true} />
-          </Suspense>
-        </section>
+        {/* Hindi Songs */}
+        <div id="hindi-hits">
+          <Hindisongs limitToHome={true} />
+        </div>
 
-        <section aria-labelledby="most-liked">
-          <SectionHeading emoji="💖" title="Filmmaker Favorites" subtitle="Most Liked" />
+        {/* Punjabi Songs */}
+        <div id="punjabi-hits">
+          <Punjabisongs limitToHome={true} />
+        </div>
+
+        {/* 📻 DESI SMART MOOD RADIO BAR - Positioned higher for quick discovery */}
+        <div id="mood-radio">
+          <MoodRadioBar />
+        </div>
+
+        {/* Most Liked (Clean: native header only) */}
+        <section id="most-liked" aria-labelledby="most-liked">
           <Suspense fallback={<div className="h-4 bg-gradient-to-r from-pink-400/30 to-blue-400/30 rounded-full w-48 animate-pulse mx-auto" />}>
             <Mostliked limitToHome={true} />
           </Suspense>
         </section>
 
-        <section aria-labelledby="most-saved">
-          <SectionHeading emoji="🎬" title="Essential Soundtracks" subtitle="Most Saved" />
+        {/* Most Saved (Clean: native header only) */}
+        <section id="most-saved" aria-labelledby="most-saved">
           <Suspense fallback={<div className="h-4 bg-gradient-to-r from-green-400/30 to-cyan-400/30 rounded-full w-48 animate-pulse mx-auto" />}>
             <Mostsaved limitToHome={true} />
           </Suspense>
         </section>
 
-        {/* Community Playlists (Original Public Section) */}
-        <section aria-labelledby="public-playlists">
-          <SectionHeading emoji="🌐" title="Community Playlists" subtitle="Featured Public Playlists" />
+        {/* Community Playlists */}
+        <section id="public-playlists" aria-labelledby="public-playlists">
+          <SectionHeading
+            emoji="🌐"
+            title="Community Playlists"
+            subtitle="Featured Public Playlists"
+            actionText="Explore All"
+            onAction={() => navigate("/seeallcommunityplaylists")}
+          />
           <Myplaylist showCommunity={true} limitToHome={true} />
         </section>
 
-
-        <Latestreleased />
-        <Hindisongs limitToHome={true} />
-        <Punjabisongs limitToHome={true} />
-
-
-          {/* 📻 DESI SMART MOOD RADIO BAR */}
-        <MoodRadioBar />
-
-        
+        <div id="latest-released">
+          <Latestreleased />
+        </div>
 
         {/* 🎤 Featured Artists Showcase */}
-        <section aria-labelledby="featured-artists">
-          <SectionHeading emoji="🌟" title="Featured Artists" subtitle="Discover Top Music Creators" />
+        <section id="featured-artists" aria-labelledby="featured-artists">
+          <SectionHeading
+            emoji="🌟"
+            title="Featured Artists"
+            subtitle="Discover Top Music Creators"
+            actionText="Explore Artists"
+            onAction={() => navigate("/artists")}
+          />
           <Artists />
         </section>
 
@@ -459,11 +555,19 @@ const Homepage = () => {
   className="relative my-28 mb-36 px-4 sm:my-36 sm:mb-44 md:px-6"
 >
   <div className="mx-auto max-w-7xl">
-    <SectionHeading
-      emoji="💬"
-      title="Desi Community Chat"
-      subtitle="Your people. Your music. Your conversations."
-    />
+    <div className="flex items-end justify-between mb-6 pb-2.5 border-b border-slate-200 dark:border-white/[0.06]">
+      <div>
+        <div className="flex items-center gap-1.5 mb-1">
+          <span className="text-xs">💬</span>
+          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-500 dark:text-cyan-400">
+            Your people. Your music. Your conversations.
+          </span>
+        </div>
+        <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+          Desi Community Chat
+        </h2>
+      </div>
+    </div>
 
     <div className="group relative mt-10 overflow-hidden rounded-[2rem] border border-white/[0.08] bg-[#0b0d14] shadow-2xl shadow-black/20">
       {/* Ambient background */}

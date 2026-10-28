@@ -196,7 +196,12 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0c16] via-[#050509] to-[#020204] text-white font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-[#07090e] text-white font-sans selection:bg-blue-500/30 relative overflow-x-hidden">
+      {/* Dynamic Ambient Background Elements */}
+      <div className="fixed inset-0 ambient-mesh-glow pointer-events-none -z-10" />
+      <div className="fixed top-20 left-1/4 w-[30rem] h-[30rem] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none -z-10" />
+      <div className="fixed bottom-20 right-1/4 w-[28rem] h-[28rem] bg-purple-600/10 rounded-full blur-[150px] pointer-events-none -z-10" />
+
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 md:px-8 pt-28 pb-32">

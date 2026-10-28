@@ -1,4 +1,4 @@
-import { LogOut, Menu, X, Mic, MicOff, Users, Settings } from "lucide-react";
+import { LogOut, Menu, X, Mic, MicOff, Users, Settings, Keyboard } from "lucide-react";
 import { useVoiceSearch } from "../src/hooks/useVoiceSearch";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
@@ -230,7 +230,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full bg-white dark:bg-[#111] pt-4 px-6 py-4 flex items-center justify-between shadow-lg text-slate-900 dark:text-white border-b border-slate-200 dark:border-transparent relative transition-colors duration-200">
+    <nav className="sticky top-0 z-40 w-full bg-white/85 dark:bg-[#07090e]/80 backdrop-blur-2xl py-3.5 px-6 flex items-center justify-between shadow-lg shadow-black/20 text-slate-900 dark:text-white border-b border-slate-200/80 dark:border-white/10 relative transition-all duration-300">
       <Toaster position="top-right" />
       <div
         className="flex flex-col cursor-pointer group"
@@ -400,6 +400,15 @@ const Navbar = () => {
 
       <div className="flex items-center ml-2 sm:ml-6 gap-3">
         <button
+          onClick={() => navigate("/shortcuts")}
+          className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-gray-800/80 transition text-slate-700 hover:text-black dark:text-gray-300 dark:hover:text-white"
+          title="Keyboard Shortcuts & Hotkeys"
+          aria-label="Keyboard shortcuts"
+        >
+          <Keyboard size={22} className="hover:scale-110 transition-transform" />
+        </button>
+
+        <button
           onClick={() => setSettingsOpen(true)}
           className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-gray-800/80 transition text-slate-700 hover:text-black dark:text-gray-300 dark:hover:text-white"
           title="Player Settings & Color Themes"
@@ -513,6 +522,14 @@ const Navbar = () => {
             >
               <Users className="text-blue-500 w-6 h-6" />
               <span className="font-bold text-lg">Sync Party</span>
+            </div>
+
+            <div
+              className="flex items-center gap-4 p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-colors w-full"
+              onClick={() => { setMenuOpen(false); navigate('/shortcuts'); }}
+            >
+              <Keyboard className="text-indigo-500 w-6 h-6" />
+              <span className="font-bold text-lg">Shortcuts</span>
             </div>
           </div>
 

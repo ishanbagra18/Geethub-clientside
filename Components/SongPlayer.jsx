@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useMusicPlayer } from "../src/context/MusicPlayerContext";
 import { usePlaylist } from "../src/context/PlaylistContext";
-import { Heart, Star, SkipBack, SkipForward, Play, Pause, Volume2, ListPlus, X, Check, Share2 } from "lucide-react";
+import { Heart, Star, SkipBack, SkipForward, Play, Pause, Volume2, VolumeX, Loader2, ListPlus, X, Check, Share2 } from "lucide-react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import API_BASE_URL from "../src/config/api";
@@ -21,6 +21,9 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
   const {
     currentSong,
     isPlaying,
+    isBuffering,
+    isMuted,
+    audioError,
     volume,
     currentTime,
     duration,
@@ -31,6 +34,7 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
     playPrevious,
     seekTo,
     changeVolume,
+    toggleMute,
     toggleLike,
     toggleSave,
     playSong,
@@ -304,21 +308,30 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
               <div className="flex items-center justify-center gap-6">
                 <button
                   onClick={playPrevious}
-                  className="p-3 rounded-full  dark:bg-white/6 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent transition shadow-sm"
+                  aria-label="Previous track"
+                  className="p-3 rounded-full dark:bg-white/6 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent transition shadow-sm active:scale-95"
                 >
                   <SkipBack size={22} />
                 </button>
 
                 <button
                   onClick={togglePlayPause}
-                  className="p-4 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 !text-white shadow-lg shadow-blue-500/30 hover:scale-105 transition"
+                  aria-label={isPlaying ? "Pause music (Space)" : "Play music (Space)"}
+                  className="p-4 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 !text-white shadow-lg shadow-blue-500/30 hover:scale-105 transition active:scale-95"
                 >
-                  {isPlaying ? <Pause size={26} className="!text-white" /> : <Play size={26} className="!text-white" />}
+                  {isBuffering ? (
+                    <Loader2 size={26} className="animate-spin !text-white" />
+                  ) : isPlaying ? (
+                    <Pause size={26} className="!text-white" />
+                  ) : (
+                    <Play size={26} className="!text-white translate-x-[1px]" />
+                  )}
                 </button>
 
                 <button
                   onClick={playNext}
-                  className="p-3 rounded-full  dark:bg-white/6 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent transition shadow-sm"
+                  aria-label="Next track"
+                  className="p-3 rounded-full dark:bg-white/6 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent transition shadow-sm active:scale-95"
                 >
                   <SkipForward size={22} />
                 </button>
@@ -334,6 +347,12 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                   <div className="flex-1">
                     <input
                       type="range"
+                      role="slider"
+                      aria-label="Seek track"
+                      aria-valuemin="0"
+                      aria-valuemax={Math.round(duration || 0)}
+                      aria-valuenow={Math.round(currentTime)}
+                      aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
                       min={0}
                       max={duration || 0}
                       step={0.01}
@@ -343,7 +362,6 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
                       style={{
                         background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${progressPct}%, #cbd5e1 ${progressPct}%, #cbd5e1 100%)`,
                       }}
-                      aria-label="Seek"
                     />
                   </div>
 
@@ -355,21 +373,29 @@ const SongPlayer = ({ songId, mode = "random", contextId = null, initialQueue = 
 
               {/* Volume Slider */}
               <div className="flex items-center gap-3 px-3">
-                <div className="flex items-center gap-2 text-slate-600 dark:text-gray-200">
-                  <Volume2 size={16} />
-                </div>
+                <button
+                  onClick={toggleMute}
+                  aria-label={isMuted ? "Unmute audio" : "Mute audio"}
+                  className="flex items-center gap-2 text-slate-600 dark:text-gray-200 hover:text-blue-500 transition-colors"
+                >
+                  {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                </button>
                 <input
                   type="range"
+                  role="slider"
+                  aria-label="Volume"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-valuenow={Math.round((isMuted ? 0 : volume) * 100)}
                   min={0}
                   max={1}
                   step={0.01}
-                  value={volume}
+                  value={isMuted ? 0 : volume}
                   onChange={(e) => changeVolume(parseFloat(e.target.value))}
                   className="w-48 h-2 appearance-none bg-slate-200 dark:bg-white/10 rounded-lg cursor-pointer accent-blue-500"
-                  aria-label="Volume"
                 />
                 <div className="text-xs text-slate-500 dark:text-gray-300 w-10 text-right font-mono">
-                  {Math.round(volume * 100)}%
+                  {Math.round((isMuted ? 0 : volume) * 100)}%
                 </div>
                 {/* Visualizer GIF at the end of volume bar */}
                 <img

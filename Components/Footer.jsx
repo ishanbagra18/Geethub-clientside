@@ -13,7 +13,7 @@ const Footer = () => {
   const navigate = useNavigate();
 
   return (
-    <footer className="w-full bg-white dark:bg-black text-slate-800 dark:text-white border-t border-slate-200 dark:border-white/10 pt-16 pb-28 px-6 md:px-12 lg:px-20 relative overflow-hidden">
+    <footer className="w-full bg-white/90 dark:bg-[#07090e]/95 backdrop-blur-2xl text-slate-800 dark:text-white border-t border-slate-200 dark:border-white/5 pt-16 pb-28 px-6 md:px-12 lg:px-20 relative overflow-hidden">
       {/* Glow Effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-px bg-gradient-to-r from-transparent via-blue-500/30 dark:via-blue-500/50 to-transparent" />
       <div className="absolute -top-40 left-1/3 w-80 h-80 bg-blue-500/5 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />

@@ -27,7 +27,8 @@ const SeeAllLatestReleased = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 dark:bg-black text-slate-100 font-sans">
+    <div className="min-h-screen bg-[#07090e] text-slate-100 font-sans relative overflow-hidden">
+      <div className="fixed inset-0 ambient-mesh-glow pointer-events-none -z-10" />
       <Navbar />
       
       <div className="pt-24 px-4 md:px-8 pb-20 max-w-[1600px] mx-auto">

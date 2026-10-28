@@ -425,7 +425,15 @@ return (
     // recetly played border added 
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white pb-32">
+        <div className="min-h-screen bg-slate-50 dark:bg-transparent text-slate-900 dark:text-white pb-32 relative overflow-x-clip selection:bg-blue-500 selection:text-white">
+            {/* 🌌 Dynamic Ambient Aurora Lighting */}
+            <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+                <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-blue-600/15 rounded-full blur-[130px] animate-aurora" />
+                <div className="absolute top-[35%] -right-40 w-[550px] h-[550px] bg-indigo-600/10 rounded-full blur-[140px]" />
+                <div className="absolute -bottom-40 left-[15%] w-[650px] h-[650px] bg-purple-600/10 rounded-full blur-[150px]" />
+                <div className="ambient-mesh-glow" />
+            </div>
+
             <Navbar />
             <div className="pt-24 pb-12 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto">
                 <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">

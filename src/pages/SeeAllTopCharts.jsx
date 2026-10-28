@@ -23,7 +23,8 @@ const SeeAllTopCharts = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900">
+    <div className="min-h-screen bg-[#07090e] text-white relative overflow-hidden">
+      <div className="fixed inset-0 ambient-mesh-glow pointer-events-none -z-10" />
       <Navbar />
       
       <div className="pt-24 px-4 md:px-8 pb-20">
